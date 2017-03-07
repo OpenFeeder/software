@@ -2,6 +2,8 @@ function OF_config_gui
 
 % Author: Jerome Briot - https://github.com/JeromeBriot
 
+addpath(fullfile(pwd, 'minIni'))
+
 debug = false;
 
 fig = figure(1);
@@ -211,6 +213,7 @@ uicontrol(fig, ...
     'position', [xPos yPos (uiPitTagGroupPos(3)-25)/2 uiPitTagGroupPos(6)]*uiSketchfactor, ...
     'tag', 'uiAvailablePitTags', ...
     'string', '',...
+    'max', 2,...
     'fontweight', 'bold', ...
     'fontname', 'monospaced');
 xPos = xPos+(uiPitTagGroupPos(3)-25)/2+5;
@@ -285,6 +288,7 @@ uicontrol(fig, ...
     'tag', 'uiPitTagsDenied', ...
     'fontweight', 'bold', ...
     'value', 0, ...
+    'max', 2,...
     'fontname', 'monospaced');
 
 xPos = uiPitTagGroupPos(1)+(uiPitTagGroupPos(3)-25)/2+5+10+5;
@@ -307,6 +311,7 @@ uicontrol(fig, ...
     'tag', 'uiPitTagsAccepted', ...
     'fontweight', 'bold', ...
     'value', 0, ...
+    'max', 2,...
     'fontname', 'monospaced');
 
 %% Attractive LEDs color
@@ -990,7 +995,8 @@ handles = guidata(gcbf);
 
 str{1} = get(handles.uiAvailablePitTags, 'string');
 str{1} = cellstr(str{1});
-idx(1) = get(handles.uiAvailablePitTags, 'value');
+% idx(1) = get(handles.uiAvailablePitTags, 'value');
+idx1 = get(handles.uiAvailablePitTags, 'value');
 
 if get(handles.uiRadioPitTagsDenied, 'value')==1
     currentList = handles.uiPitTagsDenied;
@@ -1012,7 +1018,8 @@ switch butstr
     
     case '>'
         
-        str{2} = [str{2} ; str{1}(idx(1))];
+        %         str{2} = [str{2} ; str{1}(idx(1))];
+        str{2} = [str{2} ; str{1}(idx1)];
         if isempty(str{2}{1})
             str{2}(1) = [];
         end
@@ -1021,10 +1028,13 @@ switch butstr
         
     case '<'
         
-        idx(2) = get(currentList, 'value');
+        %         idx(2) = get(currentList, 'value');
+        idx2 = get(currentList, 'value');
         
-        str{1} = [str{1} ; str{2}(idx(2))];
-        str{2}(idx(2)) = [];
+        %         str{1} = [str{1} ; str{2}(idx(2))];
+        %         str{2}(idx(2)) = [];
+        str{1} = [str{1} ; str{2}(idx2)];
+        str{2}(idx2) = [];
         
         str{1} = unique(str{1});
         str{2} = unique(str{2});
@@ -1107,7 +1117,7 @@ X{1} = strrep(X{1}, '[', '<html><font color="#8000FF"><b>[');
 X{1} = strrep(X{1}, ']', ']</b></font></html>');
 X{1} = strrep(X{1}, '=', ' = ');
 
-set(handles.uiPreview, 'string', X{1})
+set(handles.uiPreview, 'string', X{1}, 'value', 1)
 
 delete(fullfile(pathname, filename));
 
@@ -1135,6 +1145,8 @@ if ~filename
     return
 end
 
+filename = upper(filename);
+
 getDataFromUi
 
 handles = guidata(gcbf);
@@ -1157,7 +1169,7 @@ if exist(pittagacceptedfile, 'file') == 2
     delete(pittagacceptedfile)
 end
 
-if handles.config.pittagsaccepted.num>0
+if handles.config.pittagsdenied.num>0
     str = get(handles.uiPitTagsDenied, 'string');
     fid = fopen(pittagdeniedfile, 'wt');
     fprintf(fid, '%s', str{:});
