@@ -1,0 +1,156 @@
+VERSION
+8
+
+COMMSETTINGS
+0
+COM7
+COM1
+9600
+2
+63
+4
+0
+0
+
+COMMDISPLAY
+0
+
+SEND
+0
+======= OpenFeeder Debug Interface =======
+
+0
+5
+
+SEND
+2
+__________ Real-time clock __________
+
+0
+5
+
+SEND
+3
+Get Time from RTCC
+54
+0
+5
+
+SEND
+4
+Set RTCC
+53
+0
+5
+
+SEND
+5
+Set date to 7/03/2017
+37 0D 33 0D 31 37 0D
+0
+5
+
+SEND
+6
+Set time to 18:00:00
+31 38 0D 30 30 0D 30 30 0D
+0
+5
+
+SEND
+7
+__________ Attractive LEDs __________
+
+0
+5
+
+SEND
+8
+Set module OC1 --> PWM1 on LED R
+52
+0
+5
+
+SEND
+9
+Set module OC2 --> PWM2 on LED G
+47
+0
+5
+
+SEND
+10
+Set module OC3 --> PWM3 on LED B
+42
+0
+5
+
+SEND
+11
+__________ Servomotor __________
+
+0
+5
+
+SEND
+12
+Toggle servomotor power
+56
+0
+5
+
+SEND
+12
+Measure analog servomotor position
+41
+0
+5
+
+SEND
+13
+Change servomotor position (600 < HS-322HD < 2400)
+50
+0
+5
+
+SEND
+14
+Open reward door
+4F
+0
+5
+
+SEND
+15
+Close reward door
+43
+0
+5
+
+SEND
+16
+__________ IR Sensor __________
+
+0
+5
+
+SEND
+17
+Change IR command setting ON/OFF
+49
+0
+5
+
+SEND
+18
+__________ RFID Sensor __________
+
+0
+5
+
+SEND
+19
+Measuring RDY/CLK period
+45
+0
+5
