@@ -2,14 +2,6 @@ function [status, dateSet] = OF_serial_setDateTime(comPort)
 
 % Author: Jerome Briot - https://github.com/JeromeBriot
 
-if ~ispc
-    error('Works only on Windows system')
-end
-
-if nargin==0
-    comPort = 'COM31';
-end
-
 delay = 0.03;
 
 s = instrfind('Port', comPort);
