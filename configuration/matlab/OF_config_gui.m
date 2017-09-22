@@ -37,11 +37,11 @@ uiLogGroupPos        =   [5 125 50 5 2 5];
 uiPitTagGroupPos     =   [5 110 90 5 2 105];
 uiLedsGroupPos       =   [45 170 50 5 2 5];
 uiDoorDelaysGroupPos =   [95 170 50 5 2 5];
-uiServoGroupPos      =   [95 125 50 5 2 5];
-uiTimeoutsGroupPos   =   [95 102 50 5 2 5];
-uiNewBirdGroupPos    =   [95 73 50 5 2 5];
-uiScenarioGroupPos   =   [95 60 50 5 2 5];
-uiLogoGroupPos       =   [97 13 48 48*189/250];
+uiServoGroupPos      =   [95 118 50 5 2 5];
+uiTimeoutsGroupPos   =   [95 97 48 5 2 5];
+uiPunishmentGroupPos    =   [95 68 50 5 2 5];
+uiScenarioGroupPos   =   [95 55 50 5 2 5];
+uiLogoGroupPos       =   [97 10 48 48*189/250];
 uiButtonGroupPos     =   [145+5*ismac 170 50 5 2 5];
 uiPreviewGroupPos    =   [145+5*ismac 153 50 5 2 148];
 % uiDebugGroupPos      =   [95 60 50 5 2 5];
@@ -583,7 +583,7 @@ uicontrol(fig, ...
     'units', 'pixels', ...
     'position', [xPos yPos 30 5]*uiSketchfactor, ...
     'string', 'Remain open', ...
-    'tag', 'uiDoorRemainOpen');
+    'tag', 'uiDoorremain_open');
 
 xPos = uiDoorDelaysGroupPos(1)+uiDoorDelaysGroupPos(5);
 yPos = yPos-8;
@@ -594,7 +594,7 @@ uicontrol(fig, ...
     'position', [xPos yPos 20 5]*uiSketchfactor, ...
     'string', 'Open delay', ...
     'hor', 'left');
-xPos = xPos+20;
+xPos = xPos+30;
 uicontrol(fig, ...
     'style', 'popup', ...
     'units', 'pixels', ...
@@ -610,13 +610,30 @@ uicontrol(fig, ...
     'position', [xPos yPos 20 5]*uiSketchfactor, ...
     'string', 'Close delay', ...
     'hor', 'left');
-xPos = xPos+20;
+xPos = xPos+30;
 uicontrol(fig, ...
     'style', 'popup', ...
     'units', 'pixels', ...
     'position', [xPos yPos 12+8*ismac 5]*uiSketchfactor, ...
     'tag', 'uiDoorDelaysClose', ...
     'string', strtrim(cellstr(num2str(([0:5 10:10:30 60]).'))), ...
+    'fontweight', 'bold');
+
+xPos = xPos-30;
+yPos = yPos-8;
+uicontrol(fig, ...
+    'style', 'text', ...
+    'units', 'pixels', ...
+    'position', [xPos yPos 30 5]*uiSketchfactor, ...
+    'string', 'Reward probability', ...
+    'hor', 'left');
+xPos = xPos+30;
+uicontrol(fig, ...
+    'style', 'popup', ...
+    'units', 'pixels', ...
+    'position', [xPos yPos 12+8*ismac 5]*uiSketchfactor, ...
+    'tag', 'uireward_probability', ...
+    'string', strtrim(cellstr(num2str((1:-0.1:0).', '%.1f'))), ...
     'fontweight', 'bold');
 
 %% Servomotor
@@ -690,7 +707,7 @@ uicontrol(fig, ...
     'style', 'text', ...
     'units', 'pixels', ...
     'position', [xPos yPos 20 5]*uiSketchfactor, ...
-    'string', 'Sleep', ...
+    'string', 'Standby', ...
     'hor', 'left');
 xPos = xPos+20;
 uicontrol(fig, ...
@@ -731,18 +748,19 @@ uicontrol(fig, ...
     'position', [xPos yPos 12+8*ismac 5]*uiSketchfactor, ...
     'tag', 'uiRewardTimeout', ...
     'string', strtrim(cellstr(num2str(([0:5 10:10:30 60]).'))), ...
+    'value', 6, ...
     'fontweight', 'bold');
 
-%% NewBird
+%% Punishment
 uicontrol(fig, ...
     'style', 'text', ...
     'units', 'pixels', ...
-    'position', uiNewBirdGroupPos(1:4)*uiSketchfactor, ...
-    'string', 'New bird', ...
+    'position', uiPunishmentGroupPos(1:4)*uiSketchfactor, ...
+    'string', 'Punishment', ...
     'horizontalalignment', 'left', ...
     'fontweight', 'bold');
-xPos = uiNewBirdGroupPos(1)+uiNewBirdGroupPos(5);
-yPos = uiNewBirdGroupPos(2)-uiNewBirdGroupPos(6);
+xPos = uiPunishmentGroupPos(1)+uiPunishmentGroupPos(5);
+yPos = uiPunishmentGroupPos(2)-uiPunishmentGroupPos(6);
 uicontrol(fig, ...
     'style', 'text', ...
     'units', 'pixels', ...
@@ -754,7 +772,7 @@ uicontrol(fig, ...
     'style', 'popup', ...
     'units', 'pixels', ...
     'position', [xPos yPos 12+8*ismac 5]*uiSketchfactor, ...
-    'tag', 'uiNewBirdDelay', ...
+    'tag', 'uiPunishmentDelay', ...
     'string', strtrim(cellstr(num2str((0:5:30).'))), ...
     'fontweight', 'bold');
 
@@ -895,11 +913,12 @@ switch val
         set(handles.uiPitTagsNumOF, 'value', 1)
         setNumOF(handles.uiPitTagsNumOF)
         set(handles.uiAttractLedsAltDelay, 'value', 1)
-        set(handles.uiDoorRemainOpen, 'value', 0)
-        set(handles.uiNewBirdDelay, 'value', 1)
+        set(handles.uiDoorremain_open, 'value', 0)
+        set(handles.uiPunishmentDelay, 'value', 1)
+        set(handles.uiRewardTimeout, 'value', 1)
         
     case 1
-        set(handles.uiDoorRemainOpen, 'value', 1)
+        set(handles.uiDoorremain_open, 'value', 1)
         set([handles.uiDoorDelaysOpen handles.uiDoorDelaysClose handles.uiSleepTimeout handles.uiRewardTimeout], 'value', 1)
         set(handles.uiPitTagsNumOF, 'value', 1)
         setNumOF(handles.uiPitTagsNumOF)
@@ -907,10 +926,11 @@ switch val
         set([handles.uiRadioPitTagsAccepted handles.uiRadioPitTagsDenied], 'value', 0)
         set(handles.uiAttractLedsAltDelay, 'value', 1)
         setAttractLEDsOff;
-        set(handles.uiNewBirdDelay, 'value', 1)
+        set(handles.uiPunishmentDelay, 'value', 1)
+%         set(handles.uiRewardTimeout, 'value', 6)
         
     case 2
-        set(handles.uiDoorRemainOpen, 'value', 0)
+        set(handles.uiDoorremain_open, 'value', 0)
         set(handles.uiPitTagsNumOF, 'value', 9)
         setNumOF(handles.uiPitTagsNumOF)
         set([handles.uiPitTagsDenied handles.uiPitTagsAccepted], 'string', '', 'value', 1);
@@ -918,10 +938,11 @@ switch val
         set(handles.uiRadioPitTagsDenied, 'value', 0)
         setAttractLEDsOff;
         set(handles.uiAttractLedsAltDelay, 'value', 1)
-        set(handles.uiNewBirdDelay, 'value', 1)
+        set(handles.uiPunishmentDelay, 'value', 1)
+        set(handles.uiRewardTimeout, 'value', 6)
         
     case 3
-        set(handles.uiDoorRemainOpen, 'value', 0)
+        set(handles.uiDoorremain_open, 'value', 0)
         set(handles.uiPitTagsNumOF, 'value', 1)
         setNumOF(handles.uiPitTagsNumOF)
         set(handles.uiPitTagsDenied, 'string', '', 'value', 1);
@@ -930,7 +951,8 @@ switch val
         set(handles.uiRadioPitTagsDenied, 'value', 0)
         setAttractLEDsOff;
         set(handles.uiAttractLedsAltDelay, 'value', 1)
-        set(handles.uiNewBirdDelay, 'value', 1)
+        set(handles.uiPunishmentDelay, 'value', 1)
+        set(handles.uiRewardTimeout, 'value', 6)
         
     case 4
         str{1} = get(handles.uiAvailablePitTags, 'string');
@@ -963,11 +985,13 @@ switch val
         
         set(handles.uiAttractLedsAltDelay, 'value', 2)
         set(handles.uiSleepTimeout, 'value', 1)
-        set(handles.uiDoorRemainOpen, 'value', 0)
+        set(handles.uiDoorremain_open, 'value', 0)
         
-        if get(handles.uiNewBirdDelay, 'value')==1
-            set(handles.uiNewBirdDelay, 'value', 4)
-        end
+%         if get(handles.uiPunishmentDelay, 'value')==1
+            set(handles.uiPunishmentDelay, 'value', 2)
+%         end
+        
+        set(handles.uiRewardTimeout, 'value', 6)
         
 end
 
@@ -1140,7 +1164,7 @@ set(handles.uiExportButton, 'enable', 'on')
 
 function exportIniFile(~, ~)
 
-[filename, pathname] = uiputfile('*.ini');
+[filename, pathname] = uiputfile('*.ini', 'Openfeeder configuration file', 'CONFIG.INI');
 if ~filename
     return
 end
@@ -1228,45 +1252,49 @@ val = get(handles.uiLogFileSeparator, 'value');
 handles.config.logfile.separator = str{val};
 
 %% Attractive LEDs
-col = 255*get(handles.uiAttractLedsFrameA,'backgroundcolor');
-handles.config.attractiveleds.red_a = int32(col(1));
-handles.config.attractiveleds.green_a = int32(col(2));
-handles.config.attractiveleds.blue_a = int32(col(3));
-col = 255*get(handles.uiAttractLedsFrameB,'backgroundcolor');
-handles.config.attractiveleds.red_b = int32(col(1));
-handles.config.attractiveleds.green_b = int32(col(2));
-handles.config.attractiveleds.blue_b = int32(col(3));
-
-str = get(handles.uiAttractLedsAltDelay, 'string');
-val = get(handles.uiAttractLedsAltDelay, 'value');
-handles.config.attractiveleds.alt_delay = int32(str2double(str{val}));
-
-str = get(handles.uiAttractLedsOnHour, 'string');
-val = get(handles.uiAttractLedsOnHour, 'value');
-handles.config.attractiveleds.on_hour = int32(str2double(str{val}));
-str = get(handles.uiAttractLedsOnMinute, 'string');
-val = get(handles.uiAttractLedsOnMinute, 'value');
-handles.config.attractiveleds.on_minute = int32(str2double(str{val}));
-
-if handles.config.attractiveleds.on_hour<handles.config.time.wakeup_hour || (handles.config.attractiveleds.on_hour==0 && handles.config.time.wakeup_hour~=0)
-    handles.config.attractiveleds.on_hour = handles.config.time.wakeup_hour;
-    handles.config.attractiveleds.on_minute = handles.config.time.wakeup_minute;
-elseif handles.config.attractiveleds.on_hour==handles.config.time.wakeup_hour && handles.config.attractiveleds.on_minute<handles.config.time.wakeup_minute
-    handles.config.attractiveleds.on_minute = handles.config.time.wakeup_minute;
-end
-
-str = get(handles.uiAttractLedsOffHour, 'string');
-val = get(handles.uiAttractLedsOffHour, 'value');
-handles.config.attractiveleds.off_hour = int32(str2double(str{val}));
-str = get(handles.uiAttractLedsOffMinute, 'string');
-val = get(handles.uiAttractLedsOffMinute, 'value');
-handles.config.attractiveleds.off_minute = int32(str2double(str{val}));
-
-if handles.config.attractiveleds.off_hour>handles.config.time.sleep_hour || (handles.config.attractiveleds.off_hour==0 && handles.config.time.sleep_hour~=0)
-    handles.config.attractiveleds.off_hour = handles.config.time.sleep_hour;
-    handles.config.attractiveleds.off_minute = handles.config.time.sleep_minute;
-elseif handles.config.attractiveleds.off_hour==handles.config.time.sleep_hour && handles.config.attractiveleds.off_minute>handles.config.time.sleep_minute
-    handles.config.attractiveleds.off_minute = handles.config.time.sleep_minute;
+if handles.config.scenario.num==4
+    
+    col = 255*get(handles.uiAttractLedsFrameA,'backgroundcolor');
+    handles.config.attractiveleds.red_a = int32(col(1));
+    handles.config.attractiveleds.green_a = int32(col(2));
+    handles.config.attractiveleds.blue_a = int32(col(3));
+    col = 255*get(handles.uiAttractLedsFrameB,'backgroundcolor');
+    handles.config.attractiveleds.red_b = int32(col(1));
+    handles.config.attractiveleds.green_b = int32(col(2));
+    handles.config.attractiveleds.blue_b = int32(col(3));
+    
+    str = get(handles.uiAttractLedsAltDelay, 'string');
+    val = get(handles.uiAttractLedsAltDelay, 'value');
+    handles.config.attractiveleds.alt_delay = int32(str2double(str{val}));
+    
+    str = get(handles.uiAttractLedsOnHour, 'string');
+    val = get(handles.uiAttractLedsOnHour, 'value');
+    handles.config.attractiveleds.on_hour = int32(str2double(str{val}));
+    str = get(handles.uiAttractLedsOnMinute, 'string');
+    val = get(handles.uiAttractLedsOnMinute, 'value');
+    handles.config.attractiveleds.on_minute = int32(str2double(str{val}));
+    
+    if handles.config.attractiveleds.on_hour<handles.config.time.wakeup_hour || (handles.config.attractiveleds.on_hour==0 && handles.config.time.wakeup_hour~=0)
+        handles.config.attractiveleds.on_hour = handles.config.time.wakeup_hour;
+        handles.config.attractiveleds.on_minute = handles.config.time.wakeup_minute;
+    elseif handles.config.attractiveleds.on_hour==handles.config.time.wakeup_hour && handles.config.attractiveleds.on_minute<handles.config.time.wakeup_minute
+        handles.config.attractiveleds.on_minute = handles.config.time.wakeup_minute;
+    end
+    
+    str = get(handles.uiAttractLedsOffHour, 'string');
+    val = get(handles.uiAttractLedsOffHour, 'value');
+    handles.config.attractiveleds.off_hour = int32(str2double(str{val}));
+    str = get(handles.uiAttractLedsOffMinute, 'string');
+    val = get(handles.uiAttractLedsOffMinute, 'value');
+    handles.config.attractiveleds.off_minute = int32(str2double(str{val}));
+    
+    if handles.config.attractiveleds.off_hour>handles.config.time.sleep_hour || (handles.config.attractiveleds.off_hour==0 && handles.config.time.sleep_hour~=0)
+        handles.config.attractiveleds.off_hour = handles.config.time.sleep_hour;
+        handles.config.attractiveleds.off_minute = handles.config.time.sleep_minute;
+    elseif handles.config.attractiveleds.off_hour==handles.config.time.sleep_hour && handles.config.attractiveleds.off_minute>handles.config.time.sleep_minute
+        handles.config.attractiveleds.off_minute = handles.config.time.sleep_minute;
+    end
+    
 end
 
 %% Pit tags
@@ -1299,20 +1327,24 @@ handles.config.door.close_minute = int32(str2double(str{val}));
 
 if handles.config.door.close_hour>handles.config.time.sleep_hour || (handles.config.door.close_hour==0 && handles.config.time.sleep_hour~=0)
     handles.config.door.close_hour = handles.config.time.sleep_hour;
-    handles.config.door.closen_minute = handles.config.time.sleep_minute;
+    handles.config.door.close_minute = handles.config.time.sleep_minute;
 elseif handles.config.door.close_hour==handles.config.time.sleep_hour && handles.config.door.close_minute>handles.config.time.sleep_minute
-    handles.config.door.closen_minute = handles.config.time.sleep_minute;
+    handles.config.door.close_minute = handles.config.time.sleep_minute;
 end
 
-val = get(handles.uiDoorRemainOpen, 'value');
-handles.config.door.remainopen = val==1;
+val = get(handles.uiDoorremain_open, 'value');
+handles.config.door.remain_open = val==1;
 
 str = get(handles.uiDoorDelaysOpen, 'string');
 val = get(handles.uiDoorDelaysOpen, 'value');
-handles.config.door.opendelay = int32(str2double(str{val}));
+handles.config.door.open_delay = int32(str2double(str{val}));
 str = get(handles.uiDoorDelaysClose, 'string');
 val = get(handles.uiDoorDelaysClose, 'value');
-handles.config.door.closedelay = int32(str2double(str{val}));
+handles.config.door.close_delay = int32(str2double(str{val}));
+
+str = get(handles.uireward_probability, 'string');
+val = get(handles.uireward_probability, 'value');
+handles.config.door.reward_probability = str2double(str{val});
 
 %% Servomotor
 handles.config.door.ton_min = int32(str2double(get(handles.uiServoMinPos, 'string')));
@@ -1330,10 +1362,10 @@ str = get(handles.uiRewardTimeout, 'string');
 val = get(handles.uiRewardTimeout, 'value');
 handles.config.timeouts.reward = int32(str2double(str{val}));
 
-% New bird
-str = get(handles.uiNewBirdDelay, 'string');
-val = get(handles.uiNewBirdDelay, 'value');
-handles.config.newbird.delay = int32(str2double(str{val}));
+% Punishment
+str = get(handles.uiPunishmentDelay, 'string');
+val = get(handles.uiPunishmentDelay, 'value');
+handles.config.punishment.delay = int32(str2double(str{val}));
 
 guidata(gcbf, handles);
 
@@ -1369,35 +1401,37 @@ str = get(handles.uiSleepTimeMinute, 'string');
 idx = find(strcmp(str, num2str(handles.config.time.sleep_minute, '%02d')));
 set(handles.uiSleepTimeMinute, 'value', idx)
 
-%% Attractive LEDs
-rgb = [handles.config.attractiveleds.red_a handles.config.attractiveleds.green_a handles.config.attractiveleds.blue_a];
-set(handles.uiAttractLedsValueA, 'string', sprintf('[%d %d %d]', rgb));
-if ~any(rgb==-1)
-    set(handles.uiAttractLedsFrameA, 'backgroundcolor', double(rgb)/255)
+if handles.config.scenario.num==4
+    %% Attractive LEDs
+    rgb = [handles.config.attractiveleds.red_a handles.config.attractiveleds.green_a handles.config.attractiveleds.blue_a];
+    set(handles.uiAttractLedsValueA, 'string', sprintf('[%d %d %d]', rgb));
+    if ~any(rgb==-1)
+        set(handles.uiAttractLedsFrameA, 'backgroundcolor', double(rgb)/255)
+    end
+    rgb = [handles.config.attractiveleds.red_b handles.config.attractiveleds.green_b handles.config.attractiveleds.blue_b];
+    set(handles.uiAttractLedsValueB, 'string', sprintf('[%d %d %d]', rgb));
+    if ~any(rgb==-1)
+        set(handles.uiAttractLedsFrameB, 'backgroundcolor', double(rgb)/255)
+    end
+
+    str = get(handles.uiAttractLedsAltDelay, 'string');
+    idx = find(strcmp(str, num2str(handles.config.attractiveleds.alt_delay)));
+    set(handles.uiAttractLedsAltDelay, 'value', idx)
+
+    str = get(handles.uiAttractLedsOnHour, 'string');
+    idx = find(strcmp(str, num2str(handles.config.attractiveleds.on_hour, '%02d')));
+    set(handles.uiAttractLedsOnHour, 'value', idx)
+    str = get(handles.uiAttractLedsOnMinute, 'string');
+    idx = find(strcmp(str, num2str(handles.config.attractiveleds.on_minute, '%02d')));
+    set(handles.uiAttractLedsOnMinute, 'value', idx)
+
+    str = get(handles.uiAttractLedsOffHour, 'string');
+    idx = find(strcmp(str, num2str(handles.config.attractiveleds.off_hour, '%02d')));
+    set(handles.uiAttractLedsOffHour, 'value', idx)
+    str = get(handles.uiAttractLedsOffMinute, 'string');
+    idx = find(strcmp(str, num2str(handles.config.attractiveleds.off_minute, '%02d')));
+    set(handles.uiAttractLedsOffMinute, 'value', idx)
 end
-rgb = [handles.config.attractiveleds.red_b handles.config.attractiveleds.green_b handles.config.attractiveleds.blue_b];
-set(handles.uiAttractLedsValueB, 'string', sprintf('[%d %d %d]', rgb));
-if ~any(rgb==-1)
-    set(handles.uiAttractLedsFrameB, 'backgroundcolor', double(rgb)/255)
-end
-
-str = get(handles.uiAttractLedsAltDelay, 'string');
-idx = find(strcmp(str, num2str(handles.config.attractiveleds.alt_delay)));
-set(handles.uiAttractLedsAltDelay, 'value', idx)
-
-str = get(handles.uiAttractLedsOnHour, 'string');
-idx = find(strcmp(str, num2str(handles.config.attractiveleds.on_hour, '%02d')));
-set(handles.uiAttractLedsOnHour, 'value', idx)
-str = get(handles.uiAttractLedsOnMinute, 'string');
-idx = find(strcmp(str, num2str(handles.config.attractiveleds.on_minute, '%02d')));
-set(handles.uiAttractLedsOnMinute, 'value', idx)
-
-str = get(handles.uiAttractLedsOffHour, 'string');
-idx = find(strcmp(str, num2str(handles.config.attractiveleds.off_hour, '%02d')));
-set(handles.uiAttractLedsOffHour, 'value', idx)
-str = get(handles.uiAttractLedsOffMinute, 'string');
-idx = find(strcmp(str, num2str(handles.config.attractiveleds.off_minute, '%02d')));
-set(handles.uiAttractLedsOffMinute, 'value', idx)
 
 %% Servomotor
 set(handles.uiServoMinPos, 'string', num2str(handles.config.door.ton_min));
@@ -1420,13 +1454,13 @@ str = get(handles.uiDoorCloseMinute, 'string');
 idx = find(strcmp(str, num2str(handles.config.door.close_minute, '%02d')));
 set(handles.uiDoorCloseMinute, 'value', idx)
 
-set(handles.uiDoorRemainOpen, 'value', handles.config.door.remainopen);
+set(handles.uiDoorremain_open, 'value', handles.config.door.remain_open);
 
 str = get(handles.uiDoorDelaysOpen, 'string');
-idx = find(strcmp(str, num2str(handles.config.door.opendelay)));
+idx = find(strcmp(str, num2str(handles.config.door.open_delay)));
 set(handles.uiDoorDelaysOpen, 'value', idx)
 str = get(handles.uiDoorDelaysClose, 'string');
-idx = find(strcmp(str, num2str(handles.config.door.closedelay)));
+idx = find(strcmp(str, num2str(handles.config.door.close_delay)));
 set(handles.uiDoorDelaysClose, 'value', idx)
 
 %% Pit tag
@@ -1474,10 +1508,10 @@ str = get(handles.uiRewardTimeout, 'string');
 idx = find(strcmp(str, num2str(handles.config.timeouts.reward)));
 set(handles.uiRewardTimeout, 'value', idx)
 
-% New bird
-str = get(handles.uiNewBirdDelay, 'string');
-idx = find(strcmp(str, num2str(handles.config.newbird.delay)));
-set(handles.uiNewBirdDelay, 'value', idx)
+% Punishment
+str = get(handles.uiPunishmentDelay, 'string');
+idx = find(strcmp(str, num2str(handles.config.punishment.delay)));
+set(handles.uiPunishmentDelay, 'value', idx)
 
 %% Log file
 set(handles.uiLogFileSeparator, 'string', handles.config.logfile.separator);
@@ -1568,10 +1602,10 @@ config.door.open_minute = ini_getl('door', 'open_minute', -1, filename);
 config.door.close_hour = ini_getl('door', 'close_hour', -1, filename);
 config.door.close_minute = ini_getl('door', 'close_minute', -1, filename);
 
-config.door.remainopen = ini_getbool('door', 'remainopen', false, filename);
+config.door.remain_open = ini_getbool('door', 'remain_open', false, filename);
 
-config.door.opendelay = ini_getl('door', 'opendelay', -1, filename);
-config.door.closedelay = ini_getl('door', 'closedelay', -1, filename);
+config.door.open_delay = ini_getl('door', 'open_delay', -1, filename);
+config.door.close_delay = ini_getl('door', 'close_delay', -1, filename);
 
 config.door.ton_min = ini_getl('door', 'ton_min', -1, filename);
 config.door.ton_max = ini_getl('door', 'ton_max', -1, filename);
@@ -1581,7 +1615,7 @@ config.timeouts.sleep = ini_getl('timeouts', 'sleep', -1, filename);
 config.timeouts.pir = ini_getl('timeouts', 'pir', -1, filename);
 config.timeouts.reward = ini_getl('timeouts', 'reward', -1, filename);
 
-config.newbird.delay = ini_getl('newbird', 'delay', -1, filename);
+config.punishment.delay = ini_getl('punishment', 'delay', -1, filename);
 
 function OF_writeIni(config, pathname, filename)
 
