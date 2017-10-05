@@ -24,7 +24,7 @@ if debug
     set(fig, 'name', '/!\ DEBUG /!\ OpenFeeder - Configuration parameters - INI file /!\ DEBUG /!\')
 end
 
-movegui(fig, 'center')
+% movegui(fig, 'center')
 
 set(fig, 'visible', 'on');
 
@@ -39,9 +39,10 @@ uiLedsGroupPos       =   [45 170 50 5 2 5];
 uiDoorDelaysGroupPos =   [95 170 50 5 2 5];
 uiServoGroupPos      =   [95 118 50 5 2 5];
 uiTimeoutsGroupPos   =   [95 97 48 5 2 5];
-uiPunishmentGroupPos    =   [95 68 50 5 2 5];
-uiScenarioGroupPos   =   [95 55 50 5 2 5];
-uiLogoGroupPos       =   [97 10 48 48*189/250];
+uiDoorHabitGroupPos  =   [95 70 50 5 2 5];
+uiPunishmentGroupPos =   [95 58 50 5 2 5];
+uiScenarioGroupPos   =   [95 47 50 5 2 5];
+uiLogoGroupPos       =   [97 3 48 48*189/250];
 uiButtonGroupPos     =   [145+5*ismac 170 50 5 2 5];
 uiPreviewGroupPos    =   [145+5*ismac 153 50 5 2 148];
 % uiDebugGroupPos      =   [95 60 50 5 2 5];
@@ -751,6 +752,31 @@ uicontrol(fig, ...
     'value', 6, ...
     'fontweight', 'bold');
 
+%% Door habituation
+uicontrol(fig, ...
+    'style', 'text', ...
+    'units', 'pixels', ...
+    'position', uiDoorHabitGroupPos(1:4)*uiSketchfactor, ...
+    'string', 'Door habituation', ...
+    'horizontalalignment', 'left', ...
+    'fontweight', 'bold');
+xPos = uiDoorHabitGroupPos(1)+uiDoorHabitGroupPos(5);
+yPos = uiDoorHabitGroupPos(2)-uiDoorHabitGroupPos(6);
+uicontrol(fig, ...
+    'style', 'text', ...
+    'units', 'pixels', ...
+    'position', [xPos yPos 20 5]*uiSketchfactor, ...
+    'string', 'Open %', ...
+    'hor', 'left');
+xPos = xPos+20;
+uicontrol(fig, ...
+    'style', 'popup', ...
+    'units', 'pixels', ...
+    'position', [xPos yPos 12+8*ismac 5]*uiSketchfactor, ...
+    'tag', 'uiDoorHabitPercent', ...
+    'string', strtrim(cellstr(num2str((25:25:75).'))), ...
+    'fontweight', 'bold');
+
 %% Punishment
 uicontrol(fig, ...
     'style', 'text', ...
@@ -791,7 +817,7 @@ uicontrol(fig, ...
     'units', 'pixels', ...
     'position', [xPos yPos 50 5]*uiSketchfactor, ...
     'tag', 'uiScenario', ...
-    'string', {'0 - none' ; '1 - OpenBar' ; '2 - LongTermSpatialMemory' ; '3 - WorkingSpatialMemory' ; '4 - ColorAssociativeLearning'},...    'fontweight', 'bold', ...
+    'string', {'0 - none' ; '1 - OpenBar' ; '2 - LongTermSpatialMemory' ; '3 - WorkingSpatialMemory' ; '4 - ColorAssociativeLearning' ; '5 - DoorHabituation'},...    'fontweight', 'bold', ...
     'callback', @setScenario);
 
 %% Load/Preview/Export buttons
@@ -852,14 +878,14 @@ ax = axes('units','pixels', 'position', uiLogoGroupPos*uiSketchfactor, ...
 image( img,'parent', ax, 'alphadata', transparency);
 axis(ax, 'image', 'off')
 
-xPos = uiLogoGroupPos(1);
-yPos = uiLogoGroupPos(2)-10;
-uicontrol(fig, ...
-    'style', 'text', ...
-    'units', 'pixels', ...
-    'position', [xPos yPos uiLogoGroupPos(3) 10]*uiSketchfactor, ...
-    'string', {'OpenFeeder Team' 'contact.openfeeder@gmail.com'}, ...
-    'horizontalalignment', 'center');
+% xPos = uiLogoGroupPos(1);
+% yPos = uiLogoGroupPos(2)-10;
+% uicontrol(fig, ...
+%     'style', 'text', ...
+%     'units', 'pixels', ...
+%     'position', [xPos yPos uiLogoGroupPos(3) 10]*uiSketchfactor, ...
+%     'string', {'OpenFeeder Team' 'contact.openfeeder@gmail.com'}, ...
+%     'horizontalalignment', 'center');
 
 handles.debug = debug;
 
@@ -993,6 +1019,18 @@ switch val
         
         set(handles.uiRewardTimeout, 'value', 6)
         
+    case 5
+        set(handles.uiDoorremain_open, 'value', 0)
+        set([handles.uiDoorDelaysOpen handles.uiDoorDelaysClose handles.uiSleepTimeout], 'value', 1)
+        set(handles.uiRewardTimeout, 'value', 6)
+        set(handles.uiPitTagsNumOF, 'value', 1)
+        setNumOF(handles.uiPitTagsNumOF)
+        set([handles.uiPitTagsDenied handles.uiPitTagsAccepted], 'string', '', 'value', 1);
+        set([handles.uiRadioPitTagsAccepted handles.uiRadioPitTagsDenied], 'value', 0)
+        set(handles.uiAttractLedsAltDelay, 'value', 1)
+        setAttractLEDsOff;
+        set(handles.uiPunishmentDelay, 'value', 1)
+%         set(handles.uiRewardTimeout, 'value', 6)
 end
 
 guidata(gcbf, handles);
@@ -1362,6 +1400,13 @@ str = get(handles.uiRewardTimeout, 'string');
 val = get(handles.uiRewardTimeout, 'value');
 handles.config.timeouts.reward = int32(str2double(str{val}));
 
+% Door habituation
+if handles.config.scenario.num==5
+    str = get(handles.uiDoorHabitPercent, 'string');
+    val = get(handles.uiDoorHabitPercent, 'value');
+    handles.config.door.habituation = int32(str2double(str{val}));
+end
+
 % Punishment
 str = get(handles.uiPunishmentDelay, 'string');
 val = get(handles.uiPunishmentDelay, 'value');
@@ -1508,6 +1553,13 @@ str = get(handles.uiRewardTimeout, 'string');
 idx = find(strcmp(str, num2str(handles.config.timeouts.reward)));
 set(handles.uiRewardTimeout, 'value', idx)
 
+% Door habituation
+if isfield(handles.config.door, 'habituation')
+    str = get(handles.uiDoorHabitPercent, 'string');
+    idx = find(strcmp(str, num2str(handles.config.door.habituation)));
+    set(handles.uiDoorHabitPercent, 'value', idx)
+end
+
 % Punishment
 str = get(handles.uiPunishmentDelay, 'string');
 idx = find(strcmp(str, num2str(handles.config.punishment.delay)));
@@ -1557,21 +1609,23 @@ config.time.sleep_minute = ini_getl('time', 'sleep_minute', -1, filename);
 
 config.logfile.separator = ini_gets('logfile', 'separator', '', filename);
 
-config.attractiveleds.red_a = ini_getl('attractiveleds', 'red_a', -1, filename);
-config.attractiveleds.green_a = ini_getl('attractiveleds', 'green_a', -1, filename);
-config.attractiveleds.blue_a = ini_getl('attractiveleds', 'blue_a', -1, filename);
+if ismember('attractiveleds', sections)
+    config.attractiveleds.red_a = ini_getl('attractiveleds', 'red_a', -1, filename);
+    config.attractiveleds.green_a = ini_getl('attractiveleds', 'green_a', -1, filename);
+    config.attractiveleds.blue_a = ini_getl('attractiveleds', 'blue_a', -1, filename);
 
-config.attractiveleds.red_b = ini_getl('attractiveleds', 'red_b', -1, filename);
-config.attractiveleds.green_b = ini_getl('attractiveleds', 'green_b', -1, filename);
-config.attractiveleds.blue_b = ini_getl('attractiveleds', 'blue_b', -1, filename);
+    config.attractiveleds.red_b = ini_getl('attractiveleds', 'red_b', -1, filename);
+    config.attractiveleds.green_b = ini_getl('attractiveleds', 'green_b', -1, filename);
+    config.attractiveleds.blue_b = ini_getl('attractiveleds', 'blue_b', -1, filename);
 
-config.attractiveleds.alt_delay = ini_getl('attractiveleds', 'alt_delay', -1, filename);
+    config.attractiveleds.alt_delay = ini_getl('attractiveleds', 'alt_delay', -1, filename);
 
-config.attractiveleds.on_hour = ini_getl('attractiveleds', 'on_hour', -1, filename);
-config.attractiveleds.on_minute = ini_getl('attractiveleds', 'on_minute', -1, filename);
+    config.attractiveleds.on_hour = ini_getl('attractiveleds', 'on_hour', -1, filename);
+    config.attractiveleds.on_minute = ini_getl('attractiveleds', 'on_minute', -1, filename);
 
-config.attractiveleds.off_hour = ini_getl('attractiveleds', 'off_hour', -1, filename);
-config.attractiveleds.off_minute = ini_getl('attractiveleds', 'off_minute', -1, filename);
+    config.attractiveleds.off_hour = ini_getl('attractiveleds', 'off_hour', -1, filename);
+    config.attractiveleds.off_minute = ini_getl('attractiveleds', 'off_minute', -1, filename);
+end
 
 if ismember('pittagsdenied', sections)
     n = 0;
@@ -1614,6 +1668,10 @@ config.door.speed = ini_getl('door', 'speed', -1, filename);
 config.timeouts.sleep = ini_getl('timeouts', 'sleep', -1, filename);
 config.timeouts.pir = ini_getl('timeouts', 'pir', -1, filename);
 config.timeouts.reward = ini_getl('timeouts', 'reward', -1, filename);
+
+if config.scenario.num==5
+    config.door.habituation = ini_getl('door', 'habituation', -1, filename);
+end
 
 config.punishment.delay = ini_getl('punishment', 'delay', -1, filename);
 
