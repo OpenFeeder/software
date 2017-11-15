@@ -4,8 +4,8 @@ function OF_serial_gui
 
 comPort = 'COM32';
 
-ton_min = 1070;
-ton_max = 2500;
+ton_min = 600;
+ton_max = 2400;
 
 echoCommands = true;
 delay = 0.03;
@@ -148,14 +148,8 @@ uiButtonSliderDoor = uicontrol(fig, ...
     'min', ton_min, ...
     'max', ton_max, ...
     'value', ton_min, ...
-    'SliderStep', [0.01 0.10], ...
+    'SliderStep', [0.1 0.1], ...
     'callback', @setDoorPosition);
-
-
-
-
-
-
 
 uiButtonEmptyBuffer = uicontrol(fig, ...
     'units', 'pixels', ...
@@ -180,9 +174,11 @@ uiButtonQuit = uicontrol(fig, ...
 uiCommunicationWindow = uicontrol(fig, ...
     'style', 'listbox', ...
     'units', 'pixels', ...
-    'position', [80 0 60 105]*uiSketchfactor, ...
+    'position', [60 0 80 105]*uiSketchfactor, ...
     'horizontalalignment', 'left', ...
     'fontweight', 'bold', ...
+    'fontname', 'monospaced', ...
+    'fontsize', 10, ...
     'tag', 'uiCommunicationWindow', ...
     'min', 0, ...
     'max', 2, ...
@@ -272,8 +268,11 @@ set(uiCommunicationWindow,'uicontextmenu',hcmenu)
         else
             idx = get(uiCommunicationWindow, 'value');
             str = get(uiCommunicationWindow, 'string');
+            if isempty(str)
+                return
+            end
             str(idx) = [];
-            set(uiCommunicationWindow, 'string', str, 'value', idx(1))
+            set(uiCommunicationWindow, 'string', str, 'value', idx(1)-1)
         end
     end
 
@@ -286,9 +285,7 @@ set(uiCommunicationWindow,'uicontextmenu',hcmenu)
             str = get(uiCommunicationWindow, 'string');
             str = str(idx);
         end
-        
-        
-        %         str = sprintf('%s\n', str{:});
+
         str = sprintf('%s', str{:});
         clipboard('copy', str)
         
@@ -301,11 +298,6 @@ set(uiCommunicationWindow,'uicontextmenu',hcmenu)
             return
         end
         
-        if echoCommands
-            str = get(uiCommunicationWindow, 'string');
-            str{end+1} = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', event.Character);
-            set(uiCommunicationWindow, 'string', str, 'value', numel(str));
-        end
         sendCommand(event.Character)
         
     end
@@ -401,7 +393,7 @@ set(uiCommunicationWindow,'uicontextmenu',hcmenu)
         end
         
         fprintf(s, 'o', 'async');
-        
+        pause(delay)        
         set(uiButtonSliderDoor, 'value', ton_max)
     end
 
@@ -415,13 +407,16 @@ set(uiCommunicationWindow,'uicontextmenu',hcmenu)
         end
         
         fprintf(s, 'c', 'async');
+        pause(delay)
         set(uiButtonSliderDoor, 'value', ton_min)
     end
 
     function setDoorPosition(obj, event)
         
+        event
+        
         val = get(obj, 'value');
-        val = uint16(round(val))
+        val = uint16(round(val));
         
         if echoCommands
             str = get(uiCommunicationWindow, 'string');
@@ -431,7 +426,17 @@ set(uiCommunicationWindow,'uicontextmenu',hcmenu)
         
         fprintf(s, 'p', 'async');
         pause(delay)
-        fwrite(s, num2str(val), 'async');
+        strv = num2str(val, '%04d');
+        if echoCommands            
+            for n = 1:numel(strv)                
+                str{end+1} = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', strv(n));
+                set(uiCommunicationWindow, 'string', str, 'value', numel(str));                
+            end            
+        end
+        
+        fprintf(s, strv, 'async');
+        pause(delay)
+        
     end
 
     function empty_uart_buffer(obj, event)
@@ -445,15 +450,15 @@ set(uiCommunicationWindow,'uicontextmenu',hcmenu)
 
     function closeCOMWindow(obj, event)
         
-       s = instrfind('Port', comPort);
-       
-       if ~isempty(s)
-           
-           disconnectCOM([],[])
-           
-       end
+        s = instrfind('Port', comPort);
         
-       closereq;
+        if ~isempty(s)
+            
+            disconnectCOM([],[])
+            
+        end
+        
+        closereq;
     end
 
 end
