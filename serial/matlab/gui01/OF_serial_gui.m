@@ -2,7 +2,7 @@ function OF_serial_gui
 
 % Author: Jerome Briot - https://github.com/JeromeBriot
 
-comPort = 'COM32';
+comPort = 'COM6';
 
 ton_min = 600;
 ton_max = 2400;
@@ -255,6 +255,7 @@ set(uiCommunicationWindow,'uicontextmenu',hcmenu)
         str = cellstr(str);
         
         tmp = fscanf(s);
+        tmp = strrep(tmp,[13 10], '');
         str{end+1} = strrep(tmp, 9, [32 32 32]);
         
         set(uiCommunicationWindow, 'string', str, 'value', numel(str));
@@ -412,8 +413,6 @@ set(uiCommunicationWindow,'uicontextmenu',hcmenu)
     end
 
     function setDoorPosition(obj, event)
-        
-        event
         
         val = get(obj, 'value');
         val = uint16(round(val));
