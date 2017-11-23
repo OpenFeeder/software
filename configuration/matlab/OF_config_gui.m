@@ -6,6 +6,9 @@ addpath(fullfile(pwd, 'minIni'))
 
 debug = false;
 
+servoClosePosition = 600;
+servoOpenPosition = 2400;
+
 fig = figure(1);
 clf
 
@@ -658,7 +661,7 @@ uicontrol(fig, ...
     'style', 'edit', ...
     'units', 'pixels', ...
     'position', [xPos yPos 15 uiServoGroupPos(6)]*uiSketchfactor, ...
-    'string', '1070', ...
+    'string', servoClosePosition, ...
     'tag', 'uiServoMinPos', ...
     'fontweight', 'bold');
 xPos = xPos - 25;
@@ -674,7 +677,7 @@ uicontrol(fig, ...
     'style', 'edit', ...
     'units', 'pixels', ...
     'position', [xPos yPos 15 uiServoGroupPos(6)]*uiSketchfactor, ...
-    'string', '2500', ...
+    'string', servoOpenPosition, ...
     'tag', 'uiServoMaxPos', ...
     'fontweight', 'bold');
 xPos = xPos - 25;
@@ -1385,8 +1388,18 @@ val = get(handles.uireward_probability, 'value');
 handles.config.door.reward_probability = str2double(str{val});
 
 %% Servomotor
-handles.config.door.ton_min = int32(str2double(get(handles.uiServoMinPos, 'string')));
-handles.config.door.ton_max = int32(str2double(get(handles.uiServoMaxPos, 'string')));
+
+v = int32(str2double(get(handles.uiServoMinPos, 'string')));
+if v<600
+    v = 600;
+end
+handles.config.door.ton_min = v;
+
+v = int32(str2double(get(handles.uiServoMaxPos, 'string')));
+if v>2400
+    v = 2400;
+end
+handles.config.door.ton_max = v;
 handles.config.door.speed = int32(str2double(get(handles.uiServoSpeedInc, 'string')));
 
 %% Timeouts
