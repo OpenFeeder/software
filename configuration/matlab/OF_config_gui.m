@@ -7,7 +7,7 @@ addpath(fullfile(pwd, 'minIni'))
 debug = false;
 
 servoClosePosition = 600;
-servoOpenPosition = 2400;
+servoOpenPosition = 1200;
 
 fig = figure(1);
 clf
@@ -815,12 +815,19 @@ uicontrol(fig, ...
     'fontweight', 'bold');
 xPos = uiScenarioGroupPos(1)+uiScenarioGroupPos(5);
 yPos = uiScenarioGroupPos(2)-uiScenarioGroupPos(6);
+% uicontrol(fig, ...
+%     'style', 'popup', ...
+%     'units', 'pixels', ...
+%     'position', [xPos yPos 50 5]*uiSketchfactor, ...
+%     'tag', 'uiScenario', ...
+%     'string', {'0 - none' ; '1 - OpenBar' ; '2 - LongTermSpatialMemory' ; '3 - WorkingSpatialMemory' ; '4 - ColorAssociativeLearning' ; '5 - DoorHabituation'},...    'fontweight', 'bold', ...
+%     'callback', @setScenario);
 uicontrol(fig, ...
     'style', 'popup', ...
     'units', 'pixels', ...
     'position', [xPos yPos 50 5]*uiSketchfactor, ...
     'tag', 'uiScenario', ...
-    'string', {'0 - none' ; '1 - OpenBar' ; '2 - LongTermSpatialMemory' ; '3 - WorkingSpatialMemory' ; '4 - ColorAssociativeLearning' ; '5 - DoorHabituation'},...    'fontweight', 'bold', ...
+    'string', {'0 - none' ; '1 - OpenBar' ; '2 - DoorHabituation' ; '3 - LongTermSpatialMemory' ; '4 - WorkingSpatialMemory' ; '5 - ColorAssociativeLearning'},...    'fontweight', 'bold', ...
     'callback', @setScenario);
 
 %% Load/Preview/Export buttons
@@ -934,6 +941,108 @@ handles = guidata(gcbf);
 
 val = get(obj, 'value')-1;
 
+% switch val
+%     
+%     case 0
+%         setAttractLEDsOff;
+%         set([handles.uiPitTagsDenied handles.uiPitTagsAccepted], 'string', '', 'value', 1);
+%         set(handles.uiPitTagsNumOF, 'value', 1)
+%         setNumOF(handles.uiPitTagsNumOF)
+%         set(handles.uiAttractLedsAltDelay, 'value', 1)
+%         set(handles.uiDoorremain_open, 'value', 0)
+%         set(handles.uiPunishmentDelay, 'value', 1)
+%         set(handles.uiRewardTimeout, 'value', 1)
+%         
+%     case 1
+%         set(handles.uiDoorremain_open, 'value', 1)
+%         set([handles.uiDoorDelaysOpen handles.uiDoorDelaysClose handles.uiSleepTimeout handles.uiRewardTimeout], 'value', 1)
+%         set(handles.uiPitTagsNumOF, 'value', 1)
+%         setNumOF(handles.uiPitTagsNumOF)
+%         set([handles.uiPitTagsDenied handles.uiPitTagsAccepted], 'string', '', 'value', 1);
+%         set([handles.uiRadioPitTagsAccepted handles.uiRadioPitTagsDenied], 'value', 0)
+%         set(handles.uiAttractLedsAltDelay, 'value', 1)
+%         setAttractLEDsOff;
+%         set(handles.uiPunishmentDelay, 'value', 1)
+% %         set(handles.uiRewardTimeout, 'value', 6)
+%         
+%     case 2
+%         set(handles.uiDoorremain_open, 'value', 0)
+%         set(handles.uiPitTagsNumOF, 'value', 9)
+%         setNumOF(handles.uiPitTagsNumOF)
+%         set([handles.uiPitTagsDenied handles.uiPitTagsAccepted], 'string', '', 'value', 1);
+%         set(handles.uiRadioPitTagsAccepted, 'value', 1)
+%         set(handles.uiRadioPitTagsDenied, 'value', 0)
+%         setAttractLEDsOff;
+%         set(handles.uiAttractLedsAltDelay, 'value', 1)
+%         set(handles.uiPunishmentDelay, 'value', 1)
+%         set(handles.uiRewardTimeout, 'value', 6)
+%         
+%     case 3
+%         set(handles.uiDoorremain_open, 'value', 0)
+%         set(handles.uiPitTagsNumOF, 'value', 1)
+%         setNumOF(handles.uiPitTagsNumOF)
+%         set(handles.uiPitTagsDenied, 'string', '', 'value', 1);
+%         set(handles.uiPitTagsAccepted, 'string', get(handles.uiAvailablePitTags, 'string'), 'value', 1)
+%         set(handles.uiRadioPitTagsAccepted, 'value', 1)
+%         set(handles.uiRadioPitTagsDenied, 'value', 0)
+%         setAttractLEDsOff;
+%         set(handles.uiAttractLedsAltDelay, 'value', 1)
+%         set(handles.uiPunishmentDelay, 'value', 1)
+%         set(handles.uiRewardTimeout, 'value', 6)
+%         
+%     case 4
+%         str{1} = get(handles.uiAvailablePitTags, 'string');
+%         str{1} = cellstr(str{1});
+%         
+%         N = 2;
+%         
+%         nPitTags = round(numel(str{1})/N);
+%         
+%         n = 1;
+%         str{2} = str{1}((n-1)*nPitTags+1:nPitTags*n);
+%         set(handles.uiPitTagsDenied, 'string', str{2}, 'value', 1);
+%         
+%         n = 2;
+%         str{2} = str{1}((n-1)*nPitTags+1:end);
+%         set(handles.uiPitTagsAccepted, 'string', str{2}, 'value', 1)
+%         
+%         set([handles.uiRadioPitTagsAccepted handles.uiRadioPitTagsDenied], 'value', 0)
+%         
+%         rgb = [0 155 0];
+%         set(handles.uiAttractLedsValueA, 'string', sprintf('[%d %d %d]', rgb));
+%         if ~any(rgb==-1)
+%             set(handles.uiAttractLedsFrameA, 'backgroundcolor', double(rgb)/255)
+%         end
+%         rgb = [155 0 0];
+%         set(handles.uiAttractLedsValueB, 'string', sprintf('[%d %d %d]', rgb));
+%         if ~any(rgb==-1)
+%             set(handles.uiAttractLedsFrameB, 'backgroundcolor', double(rgb)/255)
+%         end
+%         
+%         set(handles.uiAttractLedsAltDelay, 'value', 2)
+%         set(handles.uiSleepTimeout, 'value', 1)
+%         set(handles.uiDoorremain_open, 'value', 0)
+%         
+% %         if get(handles.uiPunishmentDelay, 'value')==1
+%             set(handles.uiPunishmentDelay, 'value', 2)
+% %         end
+%         
+%         set(handles.uiRewardTimeout, 'value', 6)
+%         
+%     case 5
+%         set(handles.uiDoorremain_open, 'value', 0)
+%         set([handles.uiDoorDelaysOpen handles.uiDoorDelaysClose handles.uiSleepTimeout], 'value', 1)
+%         set(handles.uiRewardTimeout, 'value', 6)
+%         set(handles.uiPitTagsNumOF, 'value', 1)
+%         setNumOF(handles.uiPitTagsNumOF)
+%         set([handles.uiPitTagsDenied handles.uiPitTagsAccepted], 'string', '', 'value', 1);
+%         set([handles.uiRadioPitTagsAccepted handles.uiRadioPitTagsDenied], 'value', 0)
+%         set(handles.uiAttractLedsAltDelay, 'value', 1)
+%         setAttractLEDsOff;
+%         set(handles.uiPunishmentDelay, 'value', 1)
+% %         set(handles.uiRewardTimeout, 'value', 6)
+% end
+
 switch val
     
     case 0
@@ -957,8 +1066,21 @@ switch val
         setAttractLEDsOff;
         set(handles.uiPunishmentDelay, 'value', 1)
 %         set(handles.uiRewardTimeout, 'value', 6)
-        
+
     case 2
+        set(handles.uiDoorremain_open, 'value', 0)
+        set([handles.uiDoorDelaysOpen handles.uiDoorDelaysClose handles.uiSleepTimeout], 'value', 1)
+        set(handles.uiRewardTimeout, 'value', 6)
+        set(handles.uiPitTagsNumOF, 'value', 1)
+        setNumOF(handles.uiPitTagsNumOF)
+        set([handles.uiPitTagsDenied handles.uiPitTagsAccepted], 'string', '', 'value', 1);
+        set([handles.uiRadioPitTagsAccepted handles.uiRadioPitTagsDenied], 'value', 0)
+        set(handles.uiAttractLedsAltDelay, 'value', 1)
+        setAttractLEDsOff;
+        set(handles.uiPunishmentDelay, 'value', 1)
+%         set(handles.uiRewardTimeout, 'value', 6) 
+
+    case 3
         set(handles.uiDoorremain_open, 'value', 0)
         set(handles.uiPitTagsNumOF, 'value', 9)
         setNumOF(handles.uiPitTagsNumOF)
@@ -970,7 +1092,7 @@ switch val
         set(handles.uiPunishmentDelay, 'value', 1)
         set(handles.uiRewardTimeout, 'value', 6)
         
-    case 3
+    case 4
         set(handles.uiDoorremain_open, 'value', 0)
         set(handles.uiPitTagsNumOF, 'value', 1)
         setNumOF(handles.uiPitTagsNumOF)
@@ -983,7 +1105,7 @@ switch val
         set(handles.uiPunishmentDelay, 'value', 1)
         set(handles.uiRewardTimeout, 'value', 6)
         
-    case 4
+    case 5
         str{1} = get(handles.uiAvailablePitTags, 'string');
         str{1} = cellstr(str{1});
         
@@ -1021,19 +1143,7 @@ switch val
 %         end
         
         set(handles.uiRewardTimeout, 'value', 6)
-        
-    case 5
-        set(handles.uiDoorremain_open, 'value', 0)
-        set([handles.uiDoorDelaysOpen handles.uiDoorDelaysClose handles.uiSleepTimeout], 'value', 1)
-        set(handles.uiRewardTimeout, 'value', 6)
-        set(handles.uiPitTagsNumOF, 'value', 1)
-        setNumOF(handles.uiPitTagsNumOF)
-        set([handles.uiPitTagsDenied handles.uiPitTagsAccepted], 'string', '', 'value', 1);
-        set([handles.uiRadioPitTagsAccepted handles.uiRadioPitTagsDenied], 'value', 0)
-        set(handles.uiAttractLedsAltDelay, 'value', 1)
-        setAttractLEDsOff;
-        set(handles.uiPunishmentDelay, 'value', 1)
-%         set(handles.uiRewardTimeout, 'value', 6)
+
 end
 
 guidata(gcbf, handles);
@@ -1293,7 +1403,8 @@ val = get(handles.uiLogFileSeparator, 'value');
 handles.config.logfile.separator = str{val};
 
 %% Attractive LEDs
-if handles.config.scenario.num==4
+% if handles.config.scenario.num==4
+if handles.config.scenario.num==5
     
     col = 255*get(handles.uiAttractLedsFrameA,'backgroundcolor');
     handles.config.attractiveleds.red_a = int32(col(1));
@@ -1414,7 +1525,8 @@ val = get(handles.uiRewardTimeout, 'value');
 handles.config.timeouts.reward = int32(str2double(str{val}));
 
 % Door habituation
-if handles.config.scenario.num==5
+% if handles.config.scenario.num==5
+if handles.config.scenario.num==2
     str = get(handles.uiDoorHabitPercent, 'string');
     val = get(handles.uiDoorHabitPercent, 'value');
     handles.config.door.habituation = int32(str2double(str{val}));
@@ -1459,7 +1571,8 @@ str = get(handles.uiSleepTimeMinute, 'string');
 idx = find(strcmp(str, num2str(handles.config.time.sleep_minute, '%02d')));
 set(handles.uiSleepTimeMinute, 'value', idx)
 
-if handles.config.scenario.num==4
+% if handles.config.scenario.num==4
+if handles.config.scenario.num==5
     %% Attractive LEDs
     rgb = [handles.config.attractiveleds.red_a handles.config.attractiveleds.green_a handles.config.attractiveleds.blue_a];
     set(handles.uiAttractLedsValueA, 'string', sprintf('[%d %d %d]', rgb));
@@ -1682,7 +1795,8 @@ config.timeouts.sleep = ini_getl('timeouts', 'sleep', -1, filename);
 config.timeouts.pir = ini_getl('timeouts', 'pir', -1, filename);
 config.timeouts.reward = ini_getl('timeouts', 'reward', -1, filename);
 
-if config.scenario.num==5
+% if config.scenario.num==5
+if config.scenario.num==2
     config.door.habituation = ini_getl('door', 'habituation', -1, filename);
 end
 
