@@ -43,6 +43,11 @@ ligne = ser.read_all()
 pic_date_str = ligne[:-28].decode("utf-8")
 rtc_ext_str = ligne[26:50].decode("utf-8")
 
+if rtc_ext_str[5]=='-':
+    ext_rtc_available = False
+else:
+    ext_rtc_available = True
+
 print("\nPC : {:02d}/{:02d}/20{:02d} {:02d}:{:02d}:{:02d}".format(current_time.day, current_time.month, current_time.year-2000, current_time.hour, current_time.minute, current_time.second))
 
 print("{}\n{}".format(pic_date_str, rtc_ext_str))
@@ -57,11 +62,32 @@ if delta.days < 1:
     m = math.floor((delta.seconds-h*60*60)/60)
     s = math.floor(delta.seconds-h*60*60-m*60)
 
-    print("\n\nDiff: {:02d}:{:02d}:{:02d}".format(h, m, s))
+    print("\nDiff PC-PIC: {:02d}:{:02d}:{:02d}".format(h, m, s))
 
 else:
 
-    print("\nDiff: greater than one day ({} days and {} seconds)".format(delta.days, delta.seconds))
+    print("\nDiff PC-PIC: greater than one day ({} days and {} seconds)".format(delta.days, delta.seconds))
+
+if ext_rtc_available:
+
+    rtc_ext_datetime = datetime.datetime(int(rtc_ext_str[11:15]), int(rtc_ext_str[8:10]), int(rtc_ext_str[5:7]), int(rtc_ext_str[16:18]), int(rtc_ext_str[19:21]), int(rtc_ext_str[22:24]))
+
+    delta = current_time-rtc_ext_datetime
+
+    if delta.days < 1:
+
+        h = math.floor(delta.seconds/(60*60))
+        m = math.floor((delta.seconds-h*60*60)/60)
+        s = math.floor(delta.seconds-h*60*60-m*60)
+
+        print("Diff PC-EXT: {:02d}:{:02d}:{:02d}".format(h, m, s))
+
+    else:
+
+        print("Diff PC-EXT: greater than one day ({} days and {} seconds)".format(delta.days, delta.seconds))
+
+else:
+    print("Diff PC-EXT: --:--:--")
 
 ser.write(b's')
 
