@@ -6,61 +6,93 @@ Created on Wed Dec  6 09:50:33 2017
 """
 
 import serial
+import sys
 import time
+import math
 
-delay = 0.05
+import datetime
+
+delay = 0.15
 
 serialPort = "COM36"
 
-try:
-    
-    ser = serial.Serial(port=serialPort, baudrate=9600, timeout=1, writeTimeout=1)
+ser = serial.Serial(port=None, baudrate=9600, timeout=1, writeTimeout=1)
 
-    ligne = ser.read_all()
-    
-    ser.write(b't')
-    
-    time.sleep(delay*5)
-    
-    ligne = ser.read_all()
-    
-    print('{}'.format(ligne.decode("utf-8")))
-    
-    ser.write(b's')
-    
-    time.sleep(delay*5)
-    ligne = ser.read_all()
-    
-    current_time = time.localtime()
-    
-    b = bytes(str(current_time.tm_mday), 'ascii') + b'\r'
-    ser.write(b)
-    b = bytes(str(current_time.tm_mon), 'ascii') + b'\r'
-    ser.write(b)
-    b = bytes(str(current_time.tm_year-2000), 'ascii') + b'\r'
-    ser.write(b)
-    
-    time.sleep(delay*5)
-    ligne = ser.read_all()
-    
-    b = bytes(str(current_time.tm_hour), 'ascii') + b'\r'
-    ser.write(b)
-    b = bytes(str(current_time.tm_min), 'ascii') + b'\r'
-    ser.write(b)
-    b = bytes(str(current_time.tm_sec), 'ascii') + b'\r'
-    ser.write(b)
-    
-    time.sleep(delay*5)
-    ligne = ser.read_all()
-    
-    ser.write(b't')
-    time.sleep(delay*5)
-    ligne = ser.read_all()
-    
-    print('{}'.format(ligne.decode("utf-8")))
-    
-    ser.close()
-    
-except:
-    
-    print('\nPB: check serial port number on line 13 in the Python script')
+ser.port = serialPort
+
+try:
+
+    ser.open()
+
+except serial.SerialException as e:
+
+    print(e)
+    sys.exit(1)
+
+ligne = ser.read_all()
+
+ser.write(b't')
+
+#current_time = time.localtime()
+current_time = datetime.datetime.now()
+
+time.sleep(delay)
+
+ligne = ser.read_all()
+
+pic_date_str = ligne[:-28].decode("utf-8")
+rtc_ext_str = ligne[26:50].decode("utf-8")
+
+print("\nPC : {:02d}/{:02d}/20{:02d} {:02d}:{:02d}:{:02d}".format(current_time.day, current_time.month, current_time.year-2000, current_time.hour, current_time.minute, current_time.second))
+
+print("{}\n{}".format(pic_date_str, rtc_ext_str))
+
+pic_datetime = datetime.datetime(int(pic_date_str[11:15]), int(pic_date_str[8:10]), int(pic_date_str[5:7]), int(pic_date_str[16:18]), int(pic_date_str[19:21]), int(pic_date_str[22:24]))
+
+delta = current_time-pic_datetime
+
+if delta.days < 1:
+
+    h = math.floor(delta.seconds/(60*60))
+    m = math.floor((delta.seconds-h*60*60)/60)
+    s = math.floor(delta.seconds-h*60*60-m*60)
+
+    print("\n\nDiff: {:02d}:{:02d}:{:02d}".format(h, m, s))
+
+else:
+
+    print("\nDiff: greater than one day ({} days and {} seconds)".format(delta.days, delta.seconds))
+
+ser.write(b's')
+
+time.sleep(delay)
+ligne = ser.read_all()
+
+#current_time = time.localtime()
+current_time = datetime.datetime.now()
+
+b = bytes(str(current_time.day), 'ascii') + b'\r'
+ser.write(b)
+b = bytes(str(current_time.month), 'ascii') + b'\r'
+ser.write(b)
+b = bytes(str(current_time.year-2000), 'ascii') + b'\r'
+ser.write(b)
+
+time.sleep(delay)
+ligne = ser.read_all()
+
+b = bytes(str(current_time.hour), 'ascii') + b'\r'
+ser.write(b)
+b = bytes(str(current_time.minute), 'ascii') + b'\r'
+ser.write(b)
+b = bytes(str(current_time.second), 'ascii') + b'\r'
+ser.write(b)
+
+time.sleep(delay)
+ligne = ser.read_all()
+
+ligne = ser.read_all()
+ligne = ser.read_all()
+ligne = ser.read_all()
+
+ser.close()
