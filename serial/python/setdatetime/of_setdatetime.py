@@ -68,7 +68,7 @@ if delta.days < 1:
     s = math.floor(delta.seconds-h*60*60-m*60)
     cs = math.floor(delta.microseconds/1000)
 
-    print("\nDiff PC-PIC: {}{:02d}:{:02d}:{:02d}.{:02d} ({}, {}, {} | {})".format(sign, h, m, s, cs, delta.days, delta.seconds, delta.microseconds, delta.total_seconds()))
+    print("\nDiff PC-PIC: {}{:02d}:{:02d}:{:02d}.{:03d} ({}, {}, {} | {})".format(sign, h, m, s, cs, delta.days, delta.seconds, delta.microseconds, delta.total_seconds()))
 
 else:
 
@@ -92,7 +92,7 @@ if ext_rtc_available:
         s = math.floor(delta.seconds-h*60*60-m*60)
         cs = math.floor(delta.microseconds/1000)
 
-        print("Diff PC-EXT: {}{:02d}:{:02d}:{:02d}.{:02d} ({}, {}, {} | {})".format(sign, h, m, s, cs, delta.days, delta.seconds, delta.microseconds, delta.total_seconds()))
+        print("Diff PC-EXT: {}{:02d}:{:02d}:{:02d}.{:03d} ({}, {}, {} | {})".format(sign, h, m, s, cs, delta.days, delta.seconds, delta.microseconds, delta.total_seconds()))
 
     else:
 
