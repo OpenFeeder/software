@@ -14,7 +14,7 @@ import datetime
 
 delay = 0.15
 
-serialPort = "COM36"
+serialPort = "COM6"
 
 ser = serial.Serial(port=None, baudrate=9600, timeout=1, writeTimeout=1)
 
@@ -53,16 +53,22 @@ print("\nPC : {:02d}/{:02d}/20{:02d} {:02d}:{:02d}:{:02d}".format(current_time.d
 print("{}\n{}".format(pic_date_str, rtc_ext_str))
 
 pic_datetime = datetime.datetime(int(pic_date_str[11:15]), int(pic_date_str[8:10]), int(pic_date_str[5:7]), int(pic_date_str[16:18]), int(pic_date_str[19:21]), int(pic_date_str[22:24]))
-
-delta = current_time-pic_datetime
-
+        
+if current_time > pic_datetime:    
+    delta = current_time-pic_datetime
+    sign = '+'
+else:
+    delta = pic_datetime-current_time
+    sign = '-'
+    
 if delta.days < 1:
 
     h = math.floor(delta.seconds/(60*60))
     m = math.floor((delta.seconds-h*60*60)/60)
     s = math.floor(delta.seconds-h*60*60-m*60)
+    cs = math.floor(delta.microseconds/1000)
 
-    print("\nDiff PC-PIC: {:02d}:{:02d}:{:02d}".format(h, m, s))
+    print("\nDiff PC-PIC: {}{:02d}:{:02d}:{:02d}.{:02d} ({}, {}, {} | {})".format(sign, h, m, s, cs, delta.days, delta.seconds, delta.microseconds, delta.total_seconds()))
 
 else:
 
@@ -72,22 +78,28 @@ if ext_rtc_available:
 
     rtc_ext_datetime = datetime.datetime(int(rtc_ext_str[11:15]), int(rtc_ext_str[8:10]), int(rtc_ext_str[5:7]), int(rtc_ext_str[16:18]), int(rtc_ext_str[19:21]), int(rtc_ext_str[22:24]))
 
-    delta = current_time-rtc_ext_datetime
+    if current_time > rtc_ext_datetime:    
+        delta = current_time-rtc_ext_datetime
+        sign = '+'
+    else:
+        delta = rtc_ext_datetime-current_time
+        sign = '-'
 
     if delta.days < 1:
 
         h = math.floor(delta.seconds/(60*60))
         m = math.floor((delta.seconds-h*60*60)/60)
         s = math.floor(delta.seconds-h*60*60-m*60)
+        cs = math.floor(delta.microseconds/1000)
 
-        print("Diff PC-EXT: {:02d}:{:02d}:{:02d}".format(h, m, s))
+        print("Diff PC-EXT: {}{:02d}:{:02d}:{:02d}.{:02d} ({}, {}, {} | {})".format(sign, h, m, s, cs, delta.days, delta.seconds, delta.microseconds, delta.total_seconds()))
 
     else:
 
         print("Diff PC-EXT: greater than one day ({} days and {} seconds)".format(delta.days, delta.seconds))
 
 else:
-    print("Diff PC-EXT: --:--:--")
+    print("Diff PC-EXT:  --:--:--.--- (0, 0, 0, | 0)")
 
 ser.write(b's')
 
