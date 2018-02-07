@@ -58,12 +58,16 @@ cd(currentPath)
 archstr = computer('arch');
 
 if strcmp(archstr(1:3), 'win')
-    cmd = sprintf('copy /b %s-*%s %s%s', fullfile(tempdir,fname), ext, fullfile(pathname,fname), ext);
+    cmd = sprintf('copy /b %s-*%s "%s%s"', fullfile(tempdir,fname), ext, fullfile(pathname,fname), ext);
     
 else
-    cmd = sprintf('cat %s-*%s > %s%s', fullfile(tempdir,fname), ext, fullfile(pathname,fname), ext);
+    cmd = sprintf('cat %s-*%s > "%s%s"', fullfile(tempdir,fname), ext, fullfile(pathname,fname), ext);
 end
 
-[~, ~] = system(cmd);
+s = system(cmd);
+
+if s~=0
+    errordlg(sprintf('Wrong command in ini_strucfile: %s (%s)', cmd, archstr));
+end
 
 delete(sprintf('%s-*%s', fullfile(tempdir,fname), ext))
