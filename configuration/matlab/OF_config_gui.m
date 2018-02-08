@@ -12,7 +12,7 @@ servoOpenPosition = 1200;
 fig = figure(1);
 clf
 
-figSize = [800 600]*1.5;
+figSize = [800 600]*1.25;
 
 set(fig, ...
     'units', 'pixels', ...
@@ -405,15 +405,14 @@ uicontrol(fig, ...
     'tag', 'uiAttractLedsFrameB', ...
     'backgroundcolor', [0 0 0]);
 xPos = uiLedsGroupPos(1)+uiLedsGroupPos(5);
-
-yPos = yPos-3;
+yPos = yPos-4;
 uicontrol(fig, ...
     'style', 'text', ...
     'units', 'pixels', ...
     'position', [xPos yPos 15 5]*uiSketchfactor, ...
     'string', 'Pattern', ...
     'hor', 'left');
-xPos = xPos+5;
+xPos = xPos+2;
 yPos = yPos-3;
 uicontrol(fig, ...
     'style', 'checkbox', ...
@@ -424,29 +423,57 @@ uicontrol(fig, ...
     'tag', 'uiAttractLeds_pattern_all', ...
     'callback', {@attractiveledpattern, 'a'}, ...
     'userdata', 'leds_pattern');
-yPos = yPos-4;
+xPos = xPos+12;
+uicontrol(fig, ...
+    'style', 'text', ...
+    'units', 'pixels', ...
+    'position', [xPos yPos-1 15 5]*uiSketchfactor, ...
+    'string', '% on', ...
+    'hor', 'left');
+xPos = xPos+8;
+uicontrol(fig, ...
+    'style', 'popup', ...
+    'units', 'pixels', ...
+    'position', [xPos yPos 12+8*ismac 5]*uiSketchfactor, ...
+    'tag', 'uiAttractLeds_pattern_all_percent', ...
+    'string', strtrim(cellstr(num2str((0:0.05:1).'))), ...
+    'fontweight', 'bold');
+
+xPos = uiLedsGroupPos(1)+uiLedsGroupPos(5);
+xPos = xPos+2;
+yPos = yPos-6;
 uicontrol(fig, ...
     'style', 'checkbox', ...
     'units', 'pixels', ...
     'position', [xPos yPos 30 5]*uiSketchfactor, ...
-    'string', 'Left/Right', ...
+    'string', 'One', ...
+    'value', 0, ...
+    'tag', 'uiAttractLeds_pattern_one', ...
+    'callback', {@attractiveledpattern, 'o'}, ...
+    'userdata', 'leds_pattern');
+xPos = xPos+12;
+uicontrol(fig, ...
+    'style', 'checkbox', ...
+    'units', 'pixels', ...
+    'position', [xPos yPos 30 5]*uiSketchfactor, ...
+    'string', 'L/R', ...
     'value', 0, ...
     'tag', 'uiAttractLeds_pattern_lr', ...
     'callback', {@attractiveledpattern, 'lr'}, ...
     'userdata', 'leds_pattern');
-yPos = yPos-4;
+xPos = xPos+12;
 uicontrol(fig, ...
     'style', 'checkbox', ...
     'units', 'pixels', ...
     'position', [xPos yPos 30 5]*uiSketchfactor, ...
-    'string', 'Top/Bottom', ...
+    'string', 'T/B', ...
     'value', 0, ...
     'tag', 'uiAttractLeds_pattern_tb', ...
     'callback', {@attractiveledpattern, 'tb'}, ...
     'userdata', 'leds_pattern');
 
-xPos = xPos-5;
-yPos = yPos-6;
+xPos = uiLedsGroupPos(1)+uiLedsGroupPos(5);
+yPos = yPos-7;
 uicontrol(fig, ...
     'style', 'text', ...
     'units', 'pixels', ...
@@ -462,7 +489,7 @@ uicontrol(fig, ...
     'string', strtrim(cellstr(num2str(([0:5 10:10:30 60]).'))), ...
     'fontweight', 'bold');
 xPos = uiLedsGroupPos(1)+uiLedsGroupPos(5);
-yPos = yPos-6;
+yPos = yPos-7;
 uicontrol(fig, ...
     'style', 'text', ...
     'units', 'pixels', ...
@@ -1040,7 +1067,7 @@ scenarios = {'None' ...
 % switch val
 switch scenarios{val}
     
-%     case 0 % None
+    %     case 0 % None
     case 'None'
         setAttractLEDsOff;
         set([handles.uiPitTagsDenied handles.uiPitTagsAccepted], 'string', '', 'value', 1);
@@ -1056,7 +1083,7 @@ switch scenarios{val}
         set([handles.uiRadioPitTagsAccepted handles.uiRadioPitTagsDenied], 'value', 0)
         set([handles.uiAttractLedsButtonA handles.uiAttractLedsButtonB], 'enable', 'on')
         
-%     case 1 % Open bar
+        %     case 1 % Open bar
     case 'Open Bar'
         set(handles.uiDoorremain_open, 'value', 1)
         set([handles.uiDoorDelaysOpen handles.uiDoorDelaysClose handles.uiSleepTimeout handles.uiRewardTimeout], 'value', 1)
@@ -1072,10 +1099,10 @@ switch scenarios{val}
         set(h, 'value', 0);
         set(handles.uiRadioPitTagsDenied, 'String', '')
         set(handles.uiRadioPitTagsAccepted, 'String', '')
-
+        
         set([handles.uiAttractLedsButtonA handles.uiAttractLedsButtonB], 'enable', 'off')
         
-%     case 2 % door habituation
+        %     case 2 % door habituation
     case 'Door Habituation'
         set(handles.uiDoorremain_open, 'value', 0)
         set([handles.uiDoorDelaysOpen handles.uiDoorDelaysClose handles.uiSleepTimeout], 'value', 1)
@@ -1111,40 +1138,48 @@ switch scenarios{val}
         set(handles.uiRadioPitTagsAccepted, 'String', '')
         
     case 'Go-No go'
+
+        setNumOF(handles.uiPitTagsNumOF)
         
         if get(handles.uiAttractLeds_pattern_all, 'value')==1
-        
+            
             set([handles.uiPitTagsDenied handles.uiPitTagsAccepted], 'string', '', 'value', 1);
-            set([handles.uiRadioPitTagsAccepted handles.uiRadioPitTagsDenied], 'value', 0)
-            set(handles.uiRadioPitTagsDenied, 'String', 'Denied')
-            set(handles.uiRadioPitTagsAccepted, 'String', 'Accepted')      
-        
+            set([handles.uiRadioPitTagsAccepted handles.uiRadioPitTagsDenied], 'string', '', 'value', 0)
+
+            set(handles.uiAttractLeds_pattern_all_percent, 'value', 6);
+            
         elseif get(handles.uiAttractLeds_pattern_lr, 'value')==1 || get(handles.uiAttractLeds_pattern_tb, 'value')==1
-        
-                str{1} = get(handles.uiAvailablePitTags, 'string');
-                str{1} = cellstr(str{1});
-
-                N = 2;
-
-                nPitTags = round(numel(str{1})/N);
-
-                n = 1;
-                str{2} = str{1}((n-1)*nPitTags+1:nPitTags*n);
-                set(handles.uiPitTagsDenied, 'string', str{2}, 'value', 1);
-
-                n = 2;
-                str{2} = str{1}((n-1)*nPitTags+1:end);
-                set(handles.uiPitTagsAccepted, 'string', str{2}, 'value', 1)
-
-                set([handles.uiRadioPitTagsAccepted handles.uiRadioPitTagsDenied], 'value', 0)
-
-                if get(handles.uiAttractLeds_pattern_lr, 'value')==1
-                    set(handles.uiRadioPitTagsDenied, 'String', 'Color A / Left')
-                    set(handles.uiRadioPitTagsAccepted, 'String', 'Color B / Right')
-                else
-                    set(handles.uiRadioPitTagsDenied, 'String', 'Color A / Top')
-                    set(handles.uiRadioPitTagsAccepted, 'String', 'Color B / Bottom')
-                end
+            
+            str{1} = get(handles.uiAvailablePitTags, 'string');
+            str{1} = cellstr(str{1});
+            
+            N = 2;
+            
+            nPitTags = round(numel(str{1})/N);
+            
+            n = 1;
+            str{2} = str{1}((n-1)*nPitTags+1:nPitTags*n);
+            set(handles.uiPitTagsDenied, 'string', str{2}, 'value', 1);
+            
+            n = 2;
+            str{2} = str{1}((n-1)*nPitTags+1:end);
+            set(handles.uiPitTagsAccepted, 'string', str{2}, 'value', 1)
+            
+            set([handles.uiRadioPitTagsAccepted handles.uiRadioPitTagsDenied], 'value', 0)
+            
+            if get(handles.uiAttractLeds_pattern_lr, 'value')==1
+                set(handles.uiRadioPitTagsDenied, 'String', 'Color A / Left')
+                set(handles.uiRadioPitTagsAccepted, 'String', 'Color B / Right')
+            else
+                set(handles.uiRadioPitTagsDenied, 'String', 'Color A / Top')
+                set(handles.uiRadioPitTagsAccepted, 'String', 'Color B / Bottom')
+            end
+            
+        elseif get(handles.uiAttractLeds_pattern_one, 'value')==1
+            
+            set(handles.uiPitTagsAccepted, 'string', get(handles.uiAvailablePitTags, 'string'), 'value', 1)
+            set(handles.uiRadioPitTagsAccepted, 'value', 1)
+            
         else
             set([handles.uiRadioPitTagsDenied handles.uiRadioPitTagsAccepted], 'String', '')
             set([handles.uiPitTagsDenied handles.uiPitTagsAccepted], 'string', '', 'value', 1);
@@ -1175,7 +1210,7 @@ switch scenarios{val}
         set(handles.uiRewardTimeout, 'value', 6)
         
         
-%     case 3 % Long Term Spatial Memory
+        %     case 3 % Long Term Spatial Memory
     case 'Long Term Spatial Memory'
         set(handles.uiDoorremain_open, 'value', 0)
         set(handles.uiPitTagsNumOF, 'value', 9)
@@ -1205,7 +1240,7 @@ switch scenarios{val}
         set(handles.uiAttractLedsButtonA, 'enable', 'on')
         set(handles.uiAttractLedsButtonB, 'enable', 'off')
         
-%     case 4 % working Spatial Memory
+        %     case 4 % working Spatial Memory
     case 'Working Spatial Memory'
         set(handles.uiDoorremain_open, 'value', 0)
         set(handles.uiPitTagsNumOF, 'value', 1)
@@ -1236,7 +1271,7 @@ switch scenarios{val}
         set(handles.uiAttractLedsButtonA, 'enable', 'on')
         set(handles.uiAttractLedsButtonB, 'enable', 'off')
         
-%     case 5 % Color Associative Learning
+        %     case 5 % Color Associative Learning
     case 'Color Associative Learning'
         str{1} = get(handles.uiAvailablePitTags, 'string');
         str{1} = cellstr(str{1});
@@ -1286,7 +1321,7 @@ switch scenarios{val}
     otherwise
         
         errordlg(sprintf('Scenario %s not found', scenarios{val}))
-
+        
 end
 
 guidata(gcbf, handles);
@@ -1370,11 +1405,11 @@ switch butstr
         end
         
     otherwise
-        
+
         n = str2double(butstr(1));
         N = str2double(butstr(3));
-        
-        nPitTags = round(numel(str{1})/N);
+
+        nPitTags = floor(numel(str{1})/N);
         
         if n<N
             str{2} = str{1}((n-1)*nPitTags+1:nPitTags*n);
@@ -1403,6 +1438,8 @@ else
 end
 
 guidata(gcbf, handles);
+
+previewIniFile
 
 function setNumOF(obj, ~)
 
@@ -1548,7 +1585,7 @@ handles.config.logfile.separator = str{val};
 %% Attractive LEDs
 % if handles.config.scenario.num==4
 % if handles.config.scenario.num==6 || handles.config.scenario.num==2 || handles.config.scenario.num==3
-% if handles.config.scenario.num==6 || handles.config.scenario.num==2 || handles.config.scenario.num==3    
+% if handles.config.scenario.num==6 || handles.config.scenario.num==2 || handles.config.scenario.num==3
 if handles.config.scenario.num==0 || handles.config.scenario.num>=2
     
     col = 255*get(handles.uiAttractLedsFrameA,'backgroundcolor');
@@ -1592,16 +1629,21 @@ if handles.config.scenario.num==0 || handles.config.scenario.num>=2
         handles.config.attractiveleds.off_minute = handles.config.time.sleep_minute;
     end
     
-    if handles.config.scenario.num==3        
+    if handles.config.scenario.num==3
         if get(handles.uiAttractLeds_pattern_all, 'value')==1
             handles.config.attractiveleds.pattern = uint32(0);
+            
+            str = get(handles.uiAttractLeds_pattern_all_percent, 'string');
+            val = get(handles.uiAttractLeds_pattern_all_percent, 'value');
+            handles.config.attractiveleds.pattern_percent =  str2double(str{val});
+            
         elseif get(handles.uiAttractLeds_pattern_lr, 'value')==1
             handles.config.attractiveleds.pattern = uint32(1);
         elseif get(handles.uiAttractLeds_pattern_tb, 'value')==1
             handles.config.attractiveleds.pattern = uint32(2);
-        else
-            
-        end 
+        elseif get(handles.uiAttractLeds_pattern_one, 'value')==1
+            handles.config.attractiveleds.pattern = uint32(3);
+        end
     end
     
 end
@@ -1744,18 +1786,18 @@ if handles.config.scenario.num==6 || handles.config.scenario.num==2 || handles.c
     if ~any(rgb==-1)
         set(handles.uiAttractLedsFrameB, 'backgroundcolor', double(rgb)/255)
     end
-
+    
     str = get(handles.uiAttractLedsAltDelay, 'string');
     idx = find(strcmp(str, num2str(handles.config.attractiveleds.alt_delay)));
     set(handles.uiAttractLedsAltDelay, 'value', idx)
-
+    
     str = get(handles.uiAttractLedsOnHour, 'string');
     idx = find(strcmp(str, num2str(handles.config.attractiveleds.on_hour, '%02d')));
     set(handles.uiAttractLedsOnHour, 'value', idx)
     str = get(handles.uiAttractLedsOnMinute, 'string');
     idx = find(strcmp(str, num2str(handles.config.attractiveleds.on_minute, '%02d')));
     set(handles.uiAttractLedsOnMinute, 'value', idx)
-
+    
     str = get(handles.uiAttractLedsOffHour, 'string');
     idx = find(strcmp(str, num2str(handles.config.attractiveleds.off_hour, '%02d')));
     set(handles.uiAttractLedsOffHour, 'value', idx)
@@ -1773,11 +1815,13 @@ if handles.config.scenario.num==6 || handles.config.scenario.num==2 || handles.c
                 set(handles.uiAttractLeds_pattern_lr, 'value', 1)
             case 2
                 set(handles.uiAttractLeds_pattern_tb, 'value', 1)
-
+            case 3
+                set(handles.uiAttractLeds_pattern_one, 'value', 1)
+                
         end
         
-    end    
-        
+    end
+    
 end
 
 %% Servomotor
@@ -1916,11 +1960,20 @@ switch typ
         set(handles.uiRadioPitTagsAccepted, 'String', '')
         set([handles.uiPitTagsDenied handles.uiPitTagsAccepted], 'string', '', 'value', 1);
         set([handles.uiRadioPitTagsAccepted handles.uiRadioPitTagsDenied], 'value', 0)
+        set(handles.uiAttractLeds_pattern_all_percent, 'value', 6);
+        
+    case 'o'
+
+        set(handles.uiPitTagsDenied, 'string', '', 'value', 1);
+        set(handles.uiRadioPitTagsDenied, 'string', '', 'value', 0)
+        
+        set(handles.uiPitTagsAccepted, 'string', get(handles.uiAvailablePitTags, 'string'), 'value', 1)
+        set(handles.uiRadioPitTagsAccepted, 'string', 'All PIT tags', 'value', 1)
         
     case 'lr'
         
-        set(handles.uiRadioPitTagsDenied, 'String', 'Color A / Left')
-        set(handles.uiRadioPitTagsAccepted, 'String', 'Color B / Right')
+        set(handles.uiRadioPitTagsDenied, 'String', 'Left LEDs')
+        set(handles.uiRadioPitTagsAccepted, 'String', 'Right LEDs')
         str{1} = get(handles.uiAvailablePitTags, 'string');
         str{1} = cellstr(str{1});
         
@@ -1940,8 +1993,8 @@ switch typ
         
     case 'tb'
         
-        set(handles.uiRadioPitTagsDenied, 'String', 'Color A / Top')
-        set(handles.uiRadioPitTagsAccepted, 'String', 'Color B / Bottom')
+        set(handles.uiRadioPitTagsDenied, 'String', 'Top LEDs')
+        set(handles.uiRadioPitTagsAccepted, 'String', 'Bottom LEDs')
         str{1} = get(handles.uiAvailablePitTags, 'string');
         str{1} = cellstr(str{1});
         
@@ -1961,6 +2014,18 @@ switch typ
 end
 
 previewIniFile
+
+% function attractivelednum(obj, ~)
+% 
+% handles = guidata(gcbf);
+% 
+% v = get(obj, 'value');
+% str = get(obj, 'string');
+% 
+% set(handles.uiRadioPitTagsAccepted, 'String', sprintf('LED %s', str{v}), 'value', 1)
+% 
+% previewIniFile
+
 
 function config = OF_readIni(filename)
 
@@ -1985,16 +2050,16 @@ if ismember('attractiveleds', sections)
     config.attractiveleds.red_a = ini_getl('attractiveleds', 'red_a', -1, filename);
     config.attractiveleds.green_a = ini_getl('attractiveleds', 'green_a', -1, filename);
     config.attractiveleds.blue_a = ini_getl('attractiveleds', 'blue_a', -1, filename);
-
+    
     config.attractiveleds.red_b = ini_getl('attractiveleds', 'red_b', -1, filename);
     config.attractiveleds.green_b = ini_getl('attractiveleds', 'green_b', -1, filename);
     config.attractiveleds.blue_b = ini_getl('attractiveleds', 'blue_b', -1, filename);
-
+    
     config.attractiveleds.alt_delay = ini_getl('attractiveleds', 'alt_delay', -1, filename);
-
+    
     config.attractiveleds.on_hour = ini_getl('attractiveleds', 'on_hour', -1, filename);
     config.attractiveleds.on_minute = ini_getl('attractiveleds', 'on_minute', -1, filename);
-
+    
     config.attractiveleds.off_hour = ini_getl('attractiveleds', 'off_hour', -1, filename);
     config.attractiveleds.off_minute = ini_getl('attractiveleds', 'off_minute', -1, filename);
 end
