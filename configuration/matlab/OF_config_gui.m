@@ -1326,10 +1326,10 @@ switch scenarios{val}
                 set(handles.uiRadioPitTagsAccepted, 'String', 'Color B / Bottom')
             end
             
-        elseif get(handles.uiAttractLeds_pattern_one, 'value')==1
+%         elseif get(handles.uiAttractLeds_pattern_one, 'value')==1
             
-            set(handles.uiPitTagsAccepted, 'string', get(handles.uiAvailablePitTags, 'string'), 'value', 1)
-            set(handles.uiRadioPitTagsAccepted, 'value', 1)
+%             set(handles.uiPitTagsAccepted, 'string', get(handles.uiAvailablePitTags, 'string'), 'value', 1)
+%             set(handles.uiRadioPitTagsAccepted, 'value', 1)
             
         else
             set([handles.uiRadioPitTagsDenied handles.uiRadioPitTagsAccepted], 'String', '')
@@ -1664,31 +1664,116 @@ exportPITtag(pathname);
 function exportPITtag(pathname)
 
 handles = guidata(gcbf);
-
+   
 pittagdeniedfile = fullfile(pathname, 'PTDENIED.TXT');
-pittagacceptedfile = fullfile(pathname, 'PTACCEPT.TXT');
-
 if exist(pittagdeniedfile, 'file') == 2
     delete(pittagdeniedfile)
 end
+
+pittagacceptedfile = fullfile(pathname, 'PTACCEPT.TXT');
 if exist(pittagacceptedfile, 'file') == 2
     delete(pittagacceptedfile)
 end
 
-if handles.config.pittagsdenied.num>0
-    str = get(handles.uiPitTagsDenied, 'string');
-    fid = fopen(pittagdeniedfile, 'wt');
-    fprintf(fid, '%s', str{:});
-    fclose(fid);
+pittagcolorAfile = fullfile(pathname, 'PTCOLORA.TXT');
+if exist(pittagcolorAfile, 'file') == 2
+    delete(pittagcolorAfile)
+end
+pittagcolorBfile = fullfile(pathname, 'PTCOLORB.TXT');
+if exist(pittagcolorBfile, 'file') == 2
+    delete(pittagcolorBfile)
+end
+    
+pittagleftfile = fullfile(pathname, 'PTLEFT.TXT');
+if exist(pittagleftfile, 'file') == 2
+    delete(pittagleftfile)
+end
+pittagrightfile = fullfile(pathname, 'PTRIGHT.TXT');
+if exist(pittagrightfile, 'file') == 2
+    delete(pittagrightfile)
 end
 
-if handles.config.pittagsaccepted.num>0
-    str = get(handles.uiPitTagsAccepted, 'string');
-    fid = fopen(pittagacceptedfile, 'wt');
-    fprintf(fid, '%s', str{:});
-    fclose(fid);
+pittagtopfile = fullfile(pathname, 'PTTOP.TXT');
+if exist(pittagtopfile, 'file') == 2
+    delete(pittagtopfile)
+end
+pittagbottomfile = fullfile(pathname, 'PTBOTTOM.TXT');
+if exist(pittagbottomfile, 'file') == 2
+    delete(pittagbottomfile)
 end
 
+pittagone1file = fullfile(pathname, 'PTONE1.TXT');
+if exist(pittagone1file, 'file') == 2
+    delete(pittagone1file)
+end
+pittagone2file = fullfile(pathname, 'PTONE2.TXT');
+if exist(pittagone2file, 'file') == 2
+    delete(pittagone2file)
+end
+pittagone3file = fullfile(pathname, 'PTONE3.TXT');
+if exist(pittagone3file, 'file') == 2
+    delete(pittagone3file)
+end
+pittagone4file = fullfile(pathname, 'PTONE4.TXT');
+if exist(pittagone4file, 'file') == 2
+    delete(pittagone4file)
+end
+
+if handles.config.scenario.num>3
+    
+    if handles.config.pittags.num_denied>0
+        str = get(handles.uiPitTagsDenied, 'string');
+        fid = fopen(pittagdeniedfile, 'wt');
+        fprintf(fid, '%s', str{:});
+        fclose(fid);
+    end
+    if handles.config.pittags.num_accepted>0
+        str = get(handles.uiPitTagsAccepted, 'string');
+        fid = fopen(pittagacceptedfile, 'wt');
+        fprintf(fid, '%s', str{:});
+        fclose(fid);
+    end
+    
+elseif handles.config.scenario.num==3
+   
+    if handles.config.attractiveleds.pattern==1
+        if handles.config.pittags.num_left>0
+            str = get(handles.uiPitTagsDenied, 'string');
+            fid = fopen(pittagleftfile, 'wt');
+            fprintf(fid, '%s', str{:});
+            fclose(fid);
+        end
+        if handles.config.pittags.num_right>0
+            str = get(handles.uiPitTagsAccepted, 'string');
+            fid = fopen(pittagrightfile, 'wt');
+            fprintf(fid, '%s', str{:});
+            fclose(fid);
+        end
+    elseif handles.config.attractiveleds.pattern==2
+        if handles.config.pittags.num_top>0
+            str = get(handles.uiPitTagsDenied, 'string');
+            fid = fopen(pittagtopfile, 'wt');
+            fprintf(fid, '%s', str{:});
+            fclose(fid);
+        end
+        if handles.config.pittags.num_bottom>0
+            str = get(handles.uiPitTagsAccepted, 'string');
+            fid = fopen(pittagbottomfile, 'wt');
+            fprintf(fid, '%s', str{:});
+            fclose(fid);
+        end
+    elseif handles.config.attractiveleds.pattern==3
+        fid = fopen(pittagone1file, 'wt');
+        fclose(fid);
+        fid = fopen(pittagone2file, 'wt');
+        fclose(fid);
+        fid = fopen(pittagone3file, 'wt');
+        fclose(fid);
+        fid = fopen(pittagone4file, 'wt');
+        fclose(fid);
+    end
+    
+end
 
 function getDataFromUi
 
@@ -1808,10 +1893,41 @@ if handles.config.scenario.num==0 || handles.config.scenario.num>=2
 end
 
 %% Pit tags
-str = get(handles.uiPitTagsAccepted, 'string');
-handles.config.pittagsaccepted.num = uint32(numel(str));
-str = get(handles.uiPitTagsDenied, 'string');
-handles.config.pittagsdenied.num = uint32(numel(str));
+% str = get(handles.uiPitTagsAccepted, 'string');
+% handles.config.pittagsaccepted.num = uint32(numel(str));
+% str = get(handles.uiPitTagsDenied, 'string');
+% handles.config.pittagsdenied.num = uint32(numel(str));
+
+if handles.config.scenario.num>2
+    if handles.config.scenario.num == 3 && isfield(handles.config.attractiveleds, 'pattern')        
+%         if handles.config.attractiveleds.pattern==0
+%             
+%             handles.config.pittags.num = uint32(0);
+%             
+%         else
+        if handles.config.attractiveleds.pattern==1
+            str = get(handles.uiPitTagsAccepted, 'string');
+            handles.config.pittags.num_left = uint32(numel(str));
+            str = get(handles.uiPitTagsDenied, 'string');
+            handles.config.pittags.num_right = uint32(numel(str));
+        elseif handles.config.attractiveleds.pattern==2
+            str = get(handles.uiPitTagsAccepted, 'string');
+            handles.config.pittags.num_top = uint32(numel(str));
+            str = get(handles.uiPitTagsDenied, 'string');
+            handles.config.pittags.num_bottom = uint32(numel(str));
+        elseif handles.config.attractiveleds.pattern==3
+            handles.config.pittags.num_led_1 = uint32(0);
+            handles.config.pittags.num_led_2 = uint32(0);
+            handles.config.pittags.num_led_3 = uint32(0);
+            handles.config.pittags.num_led_4 = uint32(0);
+        end
+    else  
+        str = get(handles.uiPitTagsAccepted, 'string');
+        handles.config.pittags.num_accepted = uint32(numel(str));
+        str = get(handles.uiPitTagsDenied, 'string');
+        handles.config.pittags.num_denied = uint32(numel(str));
+    end
+end
 
 %% Door
 str = get(handles.uiDoorOpenHour, 'string');
@@ -2149,11 +2265,14 @@ switch typ
         
     case 'o'
 
-        set(handles.uiPitTagsDenied, 'string', '', 'value', 1);
-        set(handles.uiRadioPitTagsDenied, 'string', '', 'value', 0)
+        set([handles.uiPitTagsDenied handles.uiPitTagsAccepted], 'string', '', 'value', 1);
+        set([handles.uiRadioPitTagsDenied handles.uiRadioPitTagsAccepted], 'string', '', 'value', 0)
         
-        set(handles.uiPitTagsAccepted, 'string', get(handles.uiAvailablePitTags, 'string'), 'value', 1)
-        set(handles.uiRadioPitTagsAccepted, 'string', 'All PIT tags', 'value', 1)
+%         set(handles.uiPitTagsDenied, 'string', '', 'value', 1);
+%         set(handles.uiRadioPitTagsDenied, 'string', '', 'value', 0)
+%         
+%         set(handles.uiPitTagsAccepted, 'string', get(handles.uiAvailablePitTags, 'string'), 'value', 1)
+%         set(handles.uiRadioPitTagsAccepted, 'string', 'All PIT tags', 'value', 1)
         
     case 'lr'
         
