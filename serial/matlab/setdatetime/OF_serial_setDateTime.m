@@ -119,13 +119,13 @@ for n = 1:2
         if delta(3) < 1
 
             if delta(6)>9
-                fprintf('\nDiff PC-EXT: %c%02d:%02d:%.3f (%e)\n', s, delta(4:6) , datenum(delta))
+                fprintf('Diff PC-EXT: %c%02d:%02d:%.3f (%e)\n', s, delta(4:6) , datenum(delta))
             else
-                fprintf('\nDiff PC-EXT: %c%02d:%02d:0%.3f (%e)\n', s, delta(4:6) , datenum(delta))
+                fprintf('Diff PC-EXT: %c%02d:%02d:0%.3f (%e)\n', s, delta(4:6) , datenum(delta))
             end
 
         else
-            fprintf('\nDiff PC-EXT: greater than one day (%e)\n', datenum(delta))
+            fprintf('Diff PC-EXT: greater than one day (%e)\n', datenum(delta))
         end
 
     else
