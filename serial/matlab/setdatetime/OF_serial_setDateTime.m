@@ -1,110 +1,145 @@
-function [status, dateSet] = OF_serial_setDateTime(comPort)
+function [status, OF_time] = OF_serial_setDateTime(comPort)
 
 % Author: Jerome Briot - https://github.com/JeromeBriot
 
-delay = 0.03;
+if nargin==0
+    comPort = 'COM36';
+end
 
-s = instrfind('Port', comPort);
+delay = 0.5;
 
-if isempty(s)
+ser = instrfind('Port', comPort);
+
+if isempty(ser)
     alreadyExistCOM = false;
-    s = serial(comPort, ...
+    ser = serial(comPort, ...
         'Terminator', {'CR/LF', '' }, ...
-        'Timeout', 1);
+        'Timeout', 2);
     pause(delay)
-    fopen(s);
+    fopen(ser);
     alreadyOpenCOM = false;
 else
-    if ~strcmp(s.Status, 'open')
+    if ~strcmp(ser.Status, 'open')
         alreadyOpenCOM = false;
-        fopen(s);
+        fopen(ser);
     else
         alreadyOpenCOM = true;
     end
     alreadyExistCOM = true;
 end
 
+clc
+
 t = 0;
-while strcmp(s.Status, 'open')~=1 && t<=0.5
+while strcmp(ser.Status, 'open')~=1 && t<=0.5
     pause(delay)
     t = t+delay;
 end
 
 if t>0.5
     if alreadyExistCOM==false
-        delete(s)
+        delete(ser)
     end
     error('Unable to open communication with port %s', comPort);
 end
 
-empty_uart_buffer(s)
-fprintf(s, 's');
-pause(delay);
-while(s.BytesAvailable>0)
-    fscanf(s);
-    pause(delay);
-end
+num = 12;
 
-V = datevec(now);
-V(1) = V(1)-2000;
-
-% mS = mod(V(end),1);
-V(end) = round(V(end));
-
-fprintf(s, '%d\r', V([3 2 1]));
-pause(delay);
-while(s.BytesAvailable>0)
-    fscanf(s);
-    pause(delay);
-end
-fprintf(s, '%d\r', V([4 5 6]));
-pause(delay);
-while(s.BytesAvailable>0)
-    fscanf(s);
-    pause(delay);
-end
-
-fprintf(s, 't');
-pause(delay)
-while(s.BytesAvailable>0)
-    dateSet = fscanf(s);
-    pause(delay);
-end
-
-if exist('dateSet', 'var')~=1
-    if alreadyOpenCOM==false
-        fclose(s);
+for n = 1:2
+    
+    % Query PC date and time
+    PC_time = now;
+    
+    % Dont synchronize OF date and time during the first iteration to allow offsets computation
+    if n > 1
+        fwrite(ser, uint8(['S' datevec(PC_time)-[2000 0 0 0 0 0]]))
     end
-    if alreadyExistCOM==false
-        delete(s)
+        
+    % Query OF date and time
+    fwrite(ser, uint8('T'))
+    while(ser.BytesAvailable<num)
     end
-    error('Unable to set date and time. Try again !');
-end
-
-dateSet(dateSet==13 | dateSet==10) = [];
-
-V(1) = V(1)+2000;
-
-status = strcmp(dateSet,datestr(V, 'dd/mm/yy HH:MM:SS'));
-
-if status==0
-    while(s.BytesAvailable>0)
-        dateSet = fscanf(s);
-        pause(delay);
+    OF_time = fread(ser, [1 ser.BytesAvailable]);
+    
+    if ~any(OF_time(7:end))
+        ext_rtc_available = false;
+    else
+        ext_rtc_available = true;
     end
+    
+    % Print dates and times in the console
+    fprintf('\nPC : %s\n', datestr(PC_time, 'dd/mm/yyyy HH:MM:SS'));
+    fprintf('PIC: %02d/%02d/20%02d %02d:%02d:%02d\n', OF_time(3), OF_time(2), OF_time(1) , OF_time(4), OF_time(5), OF_time(6))
+    if ext_rtc_available
+        fprintf('EXT: %02d/%02d/20%02d %02d:%02d:%02d\n', OF_time(9), OF_time(8), OF_time(7), OF_time(10), OF_time(11), OF_time(12))
+    else
+        fprintf('EXT: --/--/---- --:--:--\n')
+    end
+
+    % Compute offset between PC and PIC date and time
+    PIC_time = datenum(OF_time(1:6)+[2000 0 0 0 0 0]);
+
+    if PC_time > PIC_time
+        delta = PC_time-PIC_time;
+        s = '+';
+    else
+        delta = PIC_time-PC_time;
+        s = '-';
+    end
+    
+    delta = datevec(delta);
+
+    if delta(3) < 1
+
+        if delta(6)>9
+            fprintf('\nDiff PC-PIC: %c%02d:%02d:%.3f (%e)\n', s, delta(4:6) , datenum(delta))
+        else
+            fprintf('\nDiff PC-PIC: %c%02d:%02d:0%.3f (%e)\n', s, delta(4:6) , datenum(delta))
+        end
+
+    else
+        fprintf('\nDiff PC-PIC: greater than one day (%e)\n', datenum(delta))
+    end
+
+    % Compute offset between PC and external module date and time (if available)
+    if ext_rtc_available
+
+        EXT_time = datenum(OF_time(7:end)+[2000 0 0 0 0 0]);
+            
+        if PC_time > EXT_time
+            delta = PC_time-EXT_time;
+            s = '+';
+        else
+            delta = EXT_time-PC_time;
+            s = '-';
+        end
+        
+        delta = datevec(delta);
+
+        if delta(3) < 1
+
+            if delta(6)>9
+                fprintf('\nDiff PC-EXT: %c%02d:%02d:%.3f (%e)\n', s, delta(4:6) , datenum(delta))
+            else
+                fprintf('\nDiff PC-EXT: %c%02d:%02d:0%.3f (%e)\n', s, delta(4:6) , datenum(delta))
+            end
+
+        else
+            fprintf('\nDiff PC-EXT: greater than one day (%e)\n', datenum(delta))
+        end
+
+    else
+        fprintf('Diff PC-EXT:  --:--:--.--- (0)\n')
+    end
+        
 end
 
 if alreadyOpenCOM==false
-    fclose(s);
+    fclose(ser);
 end
 
 if alreadyExistCOM==false
-    delete(s)
+    delete(ser)
 end
 
-function empty_uart_buffer(s)
-
-while(s.BytesAvailable>0)
-    fscanf(s);
-    pause(delay)
 end
