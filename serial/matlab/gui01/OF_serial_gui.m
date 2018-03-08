@@ -2,7 +2,7 @@ function OF_serial_gui
 
 % Author: Jerome Briot - https://github.com/JeromeBriot
 
-comPort = 'COM6';
+comPort = 'COM36';
 
 ton_min = 600;
 ton_max = 2400;
@@ -22,7 +22,7 @@ set(fig, ...
     'resize', 'off', ...
     'menubar', 'none', ...
     'numbertitle', 'off', ...
-    'name', 'OpenFeeder - Serial interface', ...
+    'name', 'OpenFeeder - Serial interface - Not connected', ...
     'visible', 'off', ...
     'CloseRequestFcn', @closeCOMWindow);
 
@@ -228,6 +228,8 @@ set(uiCommunicationWindow,'uicontextmenu',hcmenu)
         set(uiButtonCloseDoor, 'enable', 'on')
         set(uiButtonEmptyBuffer, 'enable', 'on')
         
+        set(fig, 'name', sprintf('OpenFeeder - Serial interface - Connected to port %s', comPort))
+        
     end
 
     function disconnectCOM(obj, event)
@@ -246,6 +248,9 @@ set(uiCommunicationWindow,'uicontextmenu',hcmenu)
         set(uiButtonOpenDoor, 'enable', 'off')
         set(uiButtonCloseDoor, 'enable', 'off')
         set(uiButtonEmptyBuffer, 'enable', 'off')
+        
+         set(fig, 'name', 'OpenFeeder - Serial interface - Not connected')
+         
     end
 
 
@@ -319,21 +324,15 @@ set(uiCommunicationWindow,'uicontextmenu',hcmenu)
         
         if echoCommands
             str = get(uiCommunicationWindow, 'string');
-            str{end+1} = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', 's');
+            str{end+1} = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', 'S');
             set(uiCommunicationWindow, 'string', str, 'value', numel(str));
         end
-        fprintf(s, 's', 'async');
-        pause(5*delay)
-        
-        V = datevec(now);
-        V(1) = V(1)-2000;
-        V(end) = round(V(end));
-        
-        fprintf(s, '%d\r', V([3 2 1]), 'async');
-        pause(5*delay)
-        fprintf(s, '%d\r', V([4 5 6]), 'async');
-        pause(5*delay)
-        
+
+        v = datevec (now);
+        v(1) = v(1)-2000;
+
+        fwrite(s, uint8(['S' v]), 'async')
+
     end
 
     function setDate(obj, event)
