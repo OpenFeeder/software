@@ -6,6 +6,7 @@ comPort = 'COM36';
 
 ton_min = 600;
 ton_max = 2400;
+autoscroll = 1;
 
 echoCommands = true;
 delay = 0.03;
@@ -183,12 +184,15 @@ uiCommunicationWindow = uicontrol(fig, ...
     'min', 0, ...
     'max', 2, ...
     'keypressfcn', @keyPressComWindow);
+
 hcmenu = uicontextmenu;
-uimenu(hcmenu,'Label','Clear all','Callback',{@clearComWindow 'all'});
-uimenu(hcmenu,'Label','Clear selection','Callback', {@clearComWindow 'select'});
-uimenu(hcmenu,'Label','Copy all','Callback',{@copyComWindow 'all'}, 'separator', 'on');
-uimenu(hcmenu,'Label','Copy selection','Callback', {@copyComWindow 'select'});
-set(uiCommunicationWindow,'uicontextmenu',hcmenu)
+uimenu(hcmenu, 'Label', 'Clear all', 'Callback', {@clearComWindow 'all'});
+uimenu(hcmenu, 'Label', 'Clear selection', 'Callback', {@clearComWindow 'select'});
+uimenu(hcmenu, 'Label', 'Copy all', 'Callback', {@copyComWindow 'all'}, 'separator', 'on');
+uimenu(hcmenu, 'Label', 'Copy selection', 'Callback', {@copyComWindow 'select'});
+autoscrollmenu = uimenu(hcmenu, 'Label', 'Auto scroll', 'Callback', @toggleAutoScroll, 'separator', 'on', ...
+    'checked', 'on');
+set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
 
     function connectCOM(obj, event)
         
@@ -253,17 +257,28 @@ set(uiCommunicationWindow,'uicontextmenu',hcmenu)
          
     end
 
-
-    function readDataFromOF(obj, event)
+    function populateCommunicationWindow(substr)
         
         str = get(uiCommunicationWindow, 'string');
         str = cellstr(str);
+        n = numel(str);
+        str{n+1} = substr;
         
+        if autoscroll
+            set(uiCommunicationWindow, 'string', str, 'value', numel(str));
+        else
+            set(uiCommunicationWindow, 'string', str);
+        end
+        
+    end
+
+    function readDataFromOF(obj, event)
+
         tmp = fscanf(s);
         tmp = strrep(tmp,[13 10], '');
-        str{end+1} = strrep(tmp, 9, [32 32 32]);
+        str = strrep(tmp, 9, [32 32 32]);
         
-        set(uiCommunicationWindow, 'string', str, 'value', numel(str));
+        populateCommunicationWindow(str)
         
     end
 
@@ -278,6 +293,7 @@ set(uiCommunicationWindow,'uicontextmenu',hcmenu)
                 return
             end
             str(idx) = [];
+
             set(uiCommunicationWindow, 'string', str, 'value', idx(1)-1)
         end
     end
@@ -298,8 +314,7 @@ set(uiCommunicationWindow,'uicontextmenu',hcmenu)
     end
 
     function keyPressComWindow(obj, event)
-        
-        
+
         if strcmp(event.Key, 'shift') || strcmp(event.Key, 'alt') || strcmp(event.Key, 'control')
             return
         end
@@ -311,9 +326,8 @@ set(uiCommunicationWindow,'uicontextmenu',hcmenu)
     function sendCommand(arg)
         
         if echoCommands
-            str = get(uiCommunicationWindow, 'string');
-            str{end+1} = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', arg);
-            set(uiCommunicationWindow, 'string', str, 'value', numel(str));
+            str = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', arg);
+            populateCommunicationWindow(str)
         end
         fprintf(s, arg, 'async');
         pause(delay)
@@ -323,9 +337,8 @@ set(uiCommunicationWindow,'uicontextmenu',hcmenu)
     function setCurrentDate(obj, event)
         
         if echoCommands
-            str = get(uiCommunicationWindow, 'string');
-            str{end+1} = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', 'S');
-            set(uiCommunicationWindow, 'string', str, 'value', numel(str));
+            str = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', 'S');
+            populateCommunicationWindow(str)
         end
 
         v = datevec (now);
@@ -338,9 +351,8 @@ set(uiCommunicationWindow,'uicontextmenu',hcmenu)
     function setDate(obj, event)
         
         if echoCommands
-            str = get(uiCommunicationWindow, 'string');
-            str{end+1} = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', 's');
-            set(uiCommunicationWindow, 'string', str, 'value', numel(str));
+            str = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', 's');
+            populateCommunicationWindow(str)
         end
         fprintf(s, 's', 'async');
         pause(5*delay)
@@ -375,9 +387,8 @@ set(uiCommunicationWindow,'uicontextmenu',hcmenu)
     function getCurrentDate(obj, event)
         
         if echoCommands
-            str = get(uiCommunicationWindow, 'string');
-            str{end+1} = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', 't');
-            set(uiCommunicationWindow, 'string', str, 'value', numel(str));
+            str = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', 't');
+            populateCommunicationWindow(str)
         end
         
         fprintf(s, 't', 'async');
@@ -387,9 +398,8 @@ set(uiCommunicationWindow,'uicontextmenu',hcmenu)
     function openDoor(obj, event)
         
         if echoCommands
-            str = get(uiCommunicationWindow, 'string');
-            str{end+1} = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', 'o');
-            set(uiCommunicationWindow, 'string', str, 'value', numel(str));
+            str = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', 'o');
+            populateCommunicationWindow(str)
         end
         
         fprintf(s, 'o', 'async');
@@ -401,9 +411,8 @@ set(uiCommunicationWindow,'uicontextmenu',hcmenu)
     function closeDoor(obj, event)
         
         if echoCommands
-            str = get(uiCommunicationWindow, 'string');
-            str{end+1} = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', 'c');
-            set(uiCommunicationWindow, 'string', str, 'value', numel(str));
+            str = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', 'c');
+            populateCommunicationWindow(str)
         end
         
         fprintf(s, 'c', 'async');
@@ -417,9 +426,8 @@ set(uiCommunicationWindow,'uicontextmenu',hcmenu)
         val = uint16(round(val));
         
         if echoCommands
-            str = get(uiCommunicationWindow, 'string');
-            str{end+1} = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', 'p');
-            set(uiCommunicationWindow, 'string', str, 'value', numel(str));
+            str = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', 'p');
+            populateCommunicationWindow(str)
         end
         
         fprintf(s, 'p', 'async');
@@ -427,13 +435,24 @@ set(uiCommunicationWindow,'uicontextmenu',hcmenu)
         strv = num2str(val, '%04d');
         if echoCommands            
             for n = 1:numel(strv)                
-                str{end+1} = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', strv(n));
-                set(uiCommunicationWindow, 'string', str, 'value', numel(str));                
+                str = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', strv(n));
+                populateCommunicationWindow(str)                
             end            
         end
         
         fprintf(s, strv, 'async');
         pause(delay)
+        
+    end
+
+    function toggleAutoScroll(obj, event)
+       
+        autoscroll = ~autoscroll;
+        if autoscroll
+           set(autoscrollmenu, 'checked', 'on');
+        else
+            set(autoscrollmenu, 'checked', 'off');
+        end
         
     end
 
