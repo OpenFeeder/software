@@ -26,12 +26,13 @@ function v = ini_getf(Section, Key, DefValue, Filename)
 %           http://briot-jerome.developpez.com/
 %           fr.mathworks.com/matlabcentral/profile/authors/492531-jerome-briot
 % Version : 0.1 - 18 Nov 2016
+% Version : 0.2 - 21 Mar 2018 Bug fix: convert double to single
 %
 
 narginchk(4, 4);
 
-if ~isa(DefValue,'float')
-    DefValue = float(DefValue);
+if ~isa(DefValue,'float') || isa(DefValue,'double')
+    DefValue = single(DefValue);
 end
 
 if ~ischar(Section)
