@@ -68,11 +68,12 @@ uiLogGroupPos        =   [5 126 50 5 2 5];
 uiPitTagGroupPos     =   [5 100 90 5 2 95];
 uiLedsGroupPos       =   [48 170 50 5 2 5];
 uiDoorGroupPos       =   [95 170 50 5 2 5];
-uiServoGroupPos      =   [95 125 50 5 2 5];
-uiDoorHabitGroupPos  =   [95 86 50 5 2 5];
-uiRewardGroupPos     =   [95 73 48 5 2 5];
-uiTimeoutsGroupPos   =   [95 47 48 5 2 5];
-uiPunishmentGroupPos =   [95 19 50 5 2 5];
+uiServoGroupPos      =   [95 127 50 5 2 5];
+uiDoorHabitGroupPos  =   [95 92 50 5 2 5];
+uiRewardGroupPos     =   [95 81 48 5 2 5];
+uiTimeoutsGroupPos   =   [95 56 48 5 2 5];
+uiPunishmentGroupPos =   [95 30 50 5 2 5];
+uiCheckGroupPos      =   [95 11 50 5 2 5];
 uiPreviewGroupPos    =   [145+5*ismac 170 50 5 2 148];
 uiButtonGroupPos     =   [145+5*ismac 15 50 5 2 5];
 
@@ -1082,7 +1083,7 @@ uicontrol(fig, ...
     'position', [xPos yPos 20 5]*uiSketchfactor, ...
     'string', 'Delay (s)', ...
     'hor', 'left');
-xPos = xPos+20;
+xPos = xPos+24;
 uicontrol(fig, ...
     'style', 'popup', ...
     'units', 'pixels', ...
@@ -1091,6 +1092,91 @@ uicontrol(fig, ...
     'string', strtrim(cellstr(num2str((0:5:30).'))), ...
     'fontweight', 'bold', ...
     'callback', @previewIniFile);
+xPos = uiPunishmentGroupPos(1)+uiPunishmentGroupPos(5);
+yPos = uiPunishmentGroupPos(2)-uiPunishmentGroupPos(6)-7;
+uicontrol(fig, ...
+    'style', 'text', ...
+    'units', 'pixels', ...
+    'position', [xPos yPos 22 5]*uiSketchfactor, ...
+    'string', 'Proba. thresh. (%)', ...
+    'hor', 'left');
+xPos = xPos+24;
+
+prob = sort(prob, 2, 'ascend');
+
+uicontrol(fig, ...
+    'style', 'popup', ...
+    'units', 'pixels', ...
+    'position', [xPos yPos 12+8*ismac 5]*uiSketchfactor, ...
+    'tag', 'uiPunishmentProbaThreshold', ...
+    'string', cellstr(num2str(prob.')), ..., ...
+    'fontweight', 'bold', ...
+    'callback', @previewIniFile);
+
+%% Check
+uicontrol(fig, ...
+    'style', 'text', ...
+    'units', 'pixels', ...
+    'position', uiCheckGroupPos(1:4)*uiSketchfactor, ...
+    'string', 'Check', ...
+    'horizontalalignment', 'left', ...
+    'fontweight', 'bold');
+xPos = uiCheckGroupPos(1)+uiCheckGroupPos(5);
+yPos = uiCheckGroupPos(2)-uiCheckGroupPos(6);
+uicontrol(fig, ...
+    'style', 'checkbox', ...
+    'units', 'pixels', ...
+    'position', [xPos yPos 30 5]*uiSketchfactor, ...
+    'string', 'Food level', ...
+    'value', 0, ...
+    'tag', 'uiCheckFoodLevel', ...
+    'callback', @previewIniFile);
+% xPos = xPos+13;
+% uicontrol(fig, ...
+%     'style', 'checkbox', ...
+%     'units', 'pixels', ...
+%     'position', [xPos yPos 30 5]*uiSketchfactor, ...
+%     'string', 'UDID', ...
+%     'value', 0, ...
+%     'tag', 'uiLogUDID', ...
+%     'callback', @previewIniFile);
+% xPos = xPos+13;
+% uicontrol(fig, ...
+%     'style', 'checkbox', ...
+%     'units', 'pixels', ...
+%     'position', [xPos yPos 30 5]*uiSketchfactor, ...
+%     'string', 'Events', ...
+%     'value', 0, ...
+%     'tag', 'uiLogEvents', ...
+%     'callback', @previewIniFile);
+% xPos = uiCheckGroupPos(1)+uiCheckGroupPos(5);
+% yPos = yPos-6;
+% uicontrol(fig, ...
+%     'style', 'checkbox', ...
+%     'units', 'pixels', ...
+%     'position', [xPos yPos 30 5]*uiSketchfactor, ...
+%     'string', 'Errors', ...
+%     'value', 0, ...
+%     'tag', 'uiLogErrors', ...
+%     'callback', @previewIniFile);
+% xPos = xPos+13;
+% uicontrol(fig, ...
+%     'style', 'checkbox', ...
+%     'units', 'pixels', ...
+%     'position', [xPos yPos 30 5]*uiSketchfactor, ...
+%     'string', 'Battery', ...
+%     'value', 0, ...
+%     'tag', 'uiLogBattery', ...
+%     'callback', @previewIniFile);
+% xPos = xPos+13;
+% uicontrol(fig, ...
+%     'style', 'checkbox', ...
+%     'units', 'pixels', ...
+%     'position', [xPos yPos 30 5]*uiSketchfactor, ...
+%     'string', 'RFID', ...
+%     'value', 0, ...
+%     'tag', 'uiLogRFID', ...
+%     'callback', @previewIniFile);
 
 %% Load/Preview/Export buttons
 uicontrol(fig, ...
@@ -1213,6 +1299,9 @@ switch scenarios{val}
             handles.uiRadioPitTags4], 'value', 0, 'enable', 'off', 'string', '')
         set(handles.uiPitTagsButtonLoad, 'enable', 'off')
         
+        % Check
+        set(handles.uiCheckFoodLevel, 'value', 0)
+        
     case 'Open Bar'
         
         % Time
@@ -1273,6 +1362,10 @@ switch scenarios{val}
         
         % Punishment
         set(handles.uiPunishmentDelay, 'enable', 'off')
+        set(handles.uiPunishmentProbaThreshold, 'enable', 'off')
+        
+        % Check
+        set(handles.uiCheckFoodLevel, 'value', 0)
         
     case 'Door Habituation'
         
@@ -1341,6 +1434,10 @@ switch scenarios{val}
         
         % Punishment
         set(handles.uiPunishmentDelay, 'enable', 'off')
+        set(handles.uiPunishmentProbaThreshold, 'enable', 'off')
+        
+         % Check
+        set(handles.uiCheckFoodLevel, 'value', 0)
         
     case 'Go-No go'
         
@@ -1408,6 +1505,10 @@ switch scenarios{val}
         
         % Punishment
         set(handles.uiPunishmentDelay, 'value', 3, 'enable', 'on')
+        set(handles.uiPunishmentProbaThreshold, 'enable', 'off')
+        
+        % Check
+        set(handles.uiCheckFoodLevel, 'value', 0)
         
     case 'Long Term Spatial Memory'
         
@@ -1475,6 +1576,10 @@ switch scenarios{val}
         
         % Punishment
         set(handles.uiPunishmentDelay, 'value', 3)
+        set(handles.uiPunishmentProbaThreshold, 'enable', 'off')
+        
+        % Check
+        set(handles.uiCheckFoodLevel, 'value', 0)
         
     case 'Working Spatial Memory'
         
@@ -1542,6 +1647,10 @@ switch scenarios{val}
         
         % Punishment
         set(handles.uiPunishmentDelay, 'value', 3, 'enable', 'on')
+        set(handles.uiPunishmentProbaThreshold, 'enable', 'off')
+        
+        % Check
+        set(handles.uiCheckFoodLevel, 'value', 0)
         
     case 'Color Associative Learning'
         
@@ -1604,6 +1713,10 @@ switch scenarios{val}
         
         % Punishment
         set(handles.uiPunishmentDelay, 'value', 3, 'enable', 'on')
+        set(handles.uiPunishmentProbaThreshold, 'enable', 'off')
+        
+        % Check
+        set(handles.uiCheckFoodLevel, 'value', 0)
         
     case 'Risk Aversion'
         
@@ -1669,6 +1782,10 @@ switch scenarios{val}
         
         % Punishment
         set(handles.uiPunishmentDelay, 'value', 3, 'enable', 'on')
+        set(handles.uiPunishmentProbaThreshold, 'enable', 'off')
+        
+        % Check
+        set(handles.uiCheckFoodLevel, 'value', 0)
         
     case 'Patch Probability'
         
@@ -1730,11 +1847,14 @@ switch scenarios{val}
         % Reward
         set(handles.uiRewardEnable, 'value', 1);
         set(handles.uiRewardTimeout, 'value', 6)
-        set(handles.uiRewardProbability, 'enable', 'on')
+        set(handles.uiRewardProbability, 'enable', 'off', 'value', 1)
         
         % Punishment
         set(handles.uiPunishmentDelay, 'value', 3, 'enable', 'on')
+        set(handles.uiPunishmentProbaThreshold, 'enable', 'on')
         
+        % Check
+        set(handles.uiCheckFoodLevel, 'value', 0)
         
     otherwise
         
@@ -2334,7 +2454,7 @@ if handles.config.reward.enable
 else
     set(handles.uiRewardTimeout, 'enable', 'off')
 end
-if handles.config.scenario.num>2
+if handles.config.scenario.num>2 && handles.config.scenario.num<8
     str = get(handles.uiRewardProbability, 'string');
     val = get(handles.uiRewardProbability, 'value');
     handles.config.reward.probability = int32(str2double(str{val}));
@@ -2356,6 +2476,15 @@ if handles.config.scenario.num>2
     val = get(handles.uiPunishmentDelay, 'value');
     handles.config.punishment.delay = int32(str2double(str{val}));
 end
+
+if handles.config.scenario.num==8
+    str = get(handles.uiPunishmentProbaThreshold, 'string');
+    val = get(handles.uiPunishmentProbaThreshold, 'value');
+    handles.config.punishment.proba_threshold = int32(str2double(str{val}));    
+end
+
+%Check
+handles.config.check.food_level = int32(get(handles.uiCheckFoodLevel, 'value'));
 
 %Version
 handles.config.iniversion.major = int32(handles.version.major);
@@ -2585,16 +2714,20 @@ end
 
 %% Door
 str = get(handles.uiDoorOpenHour, 'string');
+str = strtrim(str);
 idx = find(strcmp(str, num2str(handles.config.door.open_hour, '%02d')));
 set(handles.uiDoorOpenHour, 'value', idx, 'enable', 'off')
 str = get(handles.uiDoorOpenMinute, 'string');
+str = strtrim(str);
 idx = find(strcmp(str, num2str(handles.config.door.open_minute, '%02d')));
 set(handles.uiDoorOpenMinute, 'value', idx, 'enable', 'off')
 
 str = get(handles.uiDoorCloseHour, 'string');
+str = strtrim(str);
 idx = find(strcmp(str, num2str(handles.config.door.close_hour, '%02d')));
 set(handles.uiDoorCloseHour, 'value', idx, 'enable', 'off')
 str = get(handles.uiDoorCloseMinute, 'string');
+str = strtrim(str);
 idx = find(strcmp(str, num2str(handles.config.door.close_minute, '%02d')));
 set(handles.uiDoorCloseMinute, 'value', idx, 'enable', 'off')
 
@@ -2604,9 +2737,11 @@ if handles.config.door.remain_open==0
 end
 
 str = get(handles.uiDoorDelaysOpen, 'string');
+str = strtrim(str);
 idx = find(strcmp(str, num2str(handles.config.door.open_delay)));
 set(handles.uiDoorDelaysOpen, 'value', idx)
 str = get(handles.uiDoorDelaysClose, 'string');
+str = strtrim(str);
 idx = find(strcmp(str, num2str(handles.config.door.close_delay)));
 set(handles.uiDoorDelaysClose, 'value', idx)
 
@@ -2619,6 +2754,7 @@ set(handles.uiServoOpeningSpeed, 'string', num2str(handles.config.door.opening_s
 %% Door habituation
 if handles.config.door.habituation~=-1
     str = get(handles.uiDoorHabitPercent, 'string');
+    str = strtrim(str);
     idx = find(strcmp(str, num2str(handles.config.door.habituation)));
     set(handles.uiDoorHabitPercent, 'value', idx, 'enable', 'on')
 else
@@ -2629,6 +2765,7 @@ end
 set(handles.uiRewardEnable, 'value', handles.config.reward.enable)
 if handles.config.reward.enable
     str = get(handles.uiRewardTimeout, 'string');
+    str = strtrim(str);
     idx = find(strcmp(str, num2str(handles.config.reward.timeout)));
     set(handles.uiRewardTimeout, 'value', idx, 'enable', 'on')
 else
@@ -2636,7 +2773,9 @@ else
 end
 
 if handles.config.reward.probability~=-1
-    [~, idx] = min(abs(cellfun(@str2num, handles.uiRewardProbability.String)-handles.config.reward.probability));
+    str = get(handles.uiRewardProbability, 'string');
+    str = strtrim(str);
+    idx = find(strcmp(str, num2str(handles.config.reward.probability)));
     set(handles.uiRewardProbability, 'value', idx, 'enable', 'on')
 else
     set(handles.uiRewardProbability, 'value', 1, 'enable', 'off')
@@ -2645,6 +2784,7 @@ end
 %% Timeouts
 if handles.config.timeouts.sleep~=-1
     str = get(handles.uiSleepTimeout, 'string');
+    str = strtrim(str);
     idx = find(strcmp(str, num2str(handles.config.timeouts.sleep)));
     set(handles.uiSleepTimeout, 'value', idx)
 else
@@ -2652,6 +2792,7 @@ else
 end
 if handles.config.timeouts.pir~=-1
     str = get(handles.uiPIRTimeout, 'string');
+    str = strtrim(str);
     idx = find(strcmp(str, num2str(handles.config.timeouts.pir)));
     set(handles.uiPIRTimeout, 'value', idx)
 else
@@ -2661,10 +2802,28 @@ end
 %% Punishment
 if handles.config.punishment.delay~=-1
     str = get(handles.uiPunishmentDelay, 'string');
+    str = strtrim(str);
     idx = find(strcmp(str, num2str(handles.config.punishment.delay)));
     set(handles.uiPunishmentDelay, 'value', idx, 'enable', 'on')
 else
     set(handles.uiPunishmentDelay, 'value', 1, 'enable', 'off')
+end
+
+if handles.config.punishment.proba_threshold~=-1
+    str = get(handles.uiPunishmentProbaThreshold, 'string');
+    str = strtrim(str);
+    idx = find(strcmp(str, num2str(handles.config.punishment.proba_threshold)));
+    set(handles.uiPunishmentProbaThreshold, 'value', idx, 'enable', 'on')
+else
+    set(handles.uiPunishmentProbaThreshold, 'value', 1, 'enable', 'off')
+end
+
+
+%Check
+if handles.config.check.food_level==-1
+    set(handles.uiCheckFoodLevel, 'value', 0)
+else
+    set(handles.uiCheckFoodLevel, 'value', handles.config.check.food_level)
 end
 
 function updateServoMoveTime(~, ~)
@@ -2838,7 +2997,7 @@ config.door.habituation = ini_getl('door', 'habituation', -1, filename);
 
 %%Reward
 config.reward.enable = ini_getl('reward', 'enable', -1, filename);
-config.reward.probability = ini_getf('reward', 'probability', -1.0, filename);
+config.reward.probability = ini_getl('reward', 'probability', -1, filename);
 config.reward.timeout = ini_getl('reward', 'timeout', -1, filename);
 
 %%Timeouts
@@ -2847,6 +3006,10 @@ config.timeouts.pir = ini_getl('timeouts', 'pir', -1, filename);
 
 %%Punishment
 config.punishment.delay = ini_getl('punishment', 'delay', -1, filename);
+config.punishment.proba_threshold = ini_getl('punishment', 'proba_threshold', -1, filename); 
+
+%Check
+config.check.food_level = ini_getl('check', 'food_level', -1, filename); 
 
 function OF_writeIni(config, pathname, filename)
 
