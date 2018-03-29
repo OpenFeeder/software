@@ -351,11 +351,9 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
     function setDate(obj, event)
         
         if echoCommands
-            str = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', 's');
+            str = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', 'S');
             populateCommunicationWindow(str)
         end
-        fprintf(s, 's', 'async');
-        pause(5*delay)
         
         val = get(uiPopYear, 'value');
         str = get(uiPopYear, 'string');
@@ -365,8 +363,7 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
         V(2) = str2double(str{val});
         val = get(uiPopDay, 'value');
         str = get(uiPopDay, 'string');
-        V(3) = str2double(str{val});
-        
+        V(3) = str2double(str{val});        
         val = get(uiPopHour, 'value');
         str = get(uiPopHour, 'string');
         V(4) = str2double(str{val});
@@ -376,11 +373,8 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
         val = get(uiPopSecond, 'value');
         str = get(uiPopSecond, 'string');
         V(6) = str2double(str{val});
-        
-        fprintf(s, '%d\r', V([3 2 1]), 'async');
-        pause(5*delay)
-        fprintf(s, '%d\r', V([4 5 6]), 'async');
-        pause(5*delay)
+
+        fwrite(s, uint8(['S' V]), 'async')
         
     end
 
