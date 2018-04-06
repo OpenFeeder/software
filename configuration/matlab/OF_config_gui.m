@@ -1013,44 +1013,44 @@ uicontrol(fig, ...
     'string', 'Timeouts', ...
     'horizontalalignment', 'left', ...
     'fontweight', 'bold');
+% xPos = uiTimeoutsGroupPos(1)+uiTimeoutsGroupPos(5);
+% yPos = uiTimeoutsGroupPos(2)-uiTimeoutsGroupPos(6);
+% uicontrol(fig, ...
+%     'style', 'text', ...
+%     'units', 'pixels', ...
+%     'position', [xPos yPos 20 5]*uiSketchfactor, ...
+%     'string', 'Standby (s)', ...
+%     'hor', 'left');
+% xPos = xPos+20;
+% uicontrol(fig, ...
+%     'style', 'popup', ...
+%     'units', 'pixels', ...
+%     'position', [xPos yPos 12+8*ismac 5]*uiSketchfactor, ...
+%     'tag', 'uiSleepTimeout', ...
+%     'string', strtrim(cellstr(num2str(([0:5 10:10:30 60]).'))), ...
+%     'fontweight', 'bold', ...
+%     'callback', @previewIniFile, ...
+%     'enable', 'off');
+% xPos = uiTimeoutsGroupPos(1)+uiTimeoutsGroupPos(5);
+% yPos = uiTimeoutsGroupPos(2)-2.5*uiTimeoutsGroupPos(6);
+% uicontrol(fig, ...
+%     'style', 'text', ...
+%     'units', 'pixels', ...
+%     'position', [xPos yPos 20 5]*uiSketchfactor, ...
+%     'string', 'PIR (s)', ...
+%     'hor', 'left');
+% xPos = xPos+20;
+% uicontrol(fig, ...
+%     'style', 'popup', ...
+%     'units', 'pixels', ...
+%     'position', [xPos yPos 12+8*ismac 5]*uiSketchfactor, ...
+%     'tag', 'uiPIRTimeout', ...
+%     'string', strtrim(cellstr(num2str(([0:5 10:10:30 60]).'))), ...
+%     'fontweight', 'bold', ...
+%     'callback', @previewIniFile, ...
+%     'enable', 'off');
 xPos = uiTimeoutsGroupPos(1)+uiTimeoutsGroupPos(5);
 yPos = uiTimeoutsGroupPos(2)-uiTimeoutsGroupPos(6);
-uicontrol(fig, ...
-    'style', 'text', ...
-    'units', 'pixels', ...
-    'position', [xPos yPos 20 5]*uiSketchfactor, ...
-    'string', 'Standby (s)', ...
-    'hor', 'left');
-xPos = xPos+20;
-uicontrol(fig, ...
-    'style', 'popup', ...
-    'units', 'pixels', ...
-    'position', [xPos yPos 12+8*ismac 5]*uiSketchfactor, ...
-    'tag', 'uiSleepTimeout', ...
-    'string', strtrim(cellstr(num2str(([0:5 10:10:30 60]).'))), ...
-    'fontweight', 'bold', ...
-    'callback', @previewIniFile, ...
-    'enable', 'off');
-xPos = uiTimeoutsGroupPos(1)+uiTimeoutsGroupPos(5);
-yPos = uiTimeoutsGroupPos(2)-2.5*uiTimeoutsGroupPos(6);
-uicontrol(fig, ...
-    'style', 'text', ...
-    'units', 'pixels', ...
-    'position', [xPos yPos 20 5]*uiSketchfactor, ...
-    'string', 'PIR (s)', ...
-    'hor', 'left');
-xPos = xPos+20;
-uicontrol(fig, ...
-    'style', 'popup', ...
-    'units', 'pixels', ...
-    'position', [xPos yPos 12+8*ismac 5]*uiSketchfactor, ...
-    'tag', 'uiPIRTimeout', ...
-    'string', strtrim(cellstr(num2str(([0:5 10:10:30 60]).'))), ...
-    'fontweight', 'bold', ...
-    'callback', @previewIniFile, ...
-    'enable', 'off');
-xPos = uiTimeoutsGroupPos(1)+uiTimeoutsGroupPos(5);
-yPos = uiTimeoutsGroupPos(2)-4*uiTimeoutsGroupPos(6);
 uicontrol(fig, ...
     'style', 'text', ...
     'units', 'pixels', ...
@@ -1066,6 +1066,24 @@ uicontrol(fig, ...
     'string', sprintf('%.3f',(default.ServoOpenPosition-default.ServoClosePosition)/default.ServoClosingSpeed*default.ServoMsStep/1000+0.5), ...
     'fontweight', 'bold', ...
     'callback', @previewIniFile);
+xPos = uiTimeoutsGroupPos(1)+uiTimeoutsGroupPos(5);
+yPos = uiTimeoutsGroupPos(2)-2*uiTimeoutsGroupPos(6);
+uicontrol(fig, ...
+    'style', 'text', ...
+    'units', 'pixels', ...
+    'position', [xPos yPos 20 5]*uiSketchfactor, ...
+    'string', 'Unique visit (s)', ...
+    'hor', 'left');
+xPos = xPos+20;
+uicontrol(fig, ...
+    'style', 'popup', ...
+    'units', 'pixels', ...
+    'position', [xPos yPos 12+8*ismac 5]*uiSketchfactor, ...
+    'tag', 'uiUniqueVisitTimeout', ...
+    'string', strtrim(cellstr(num2str(([0:5 10:10:30 60]).'))), ...
+    'fontweight', 'bold', ...
+    'callback', @previewIniFile, ...
+    'enable', 'on');
 
 %% Punishment
 uicontrol(fig, ...
@@ -1299,9 +1317,12 @@ switch scenarios{val}
             handles.uiRadioPitTags4], 'value', 0, 'enable', 'off', 'string', '')
         set(handles.uiPitTagsButtonLoad, 'enable', 'off')
         
+        % Timeouts
+        set(handles.uiUniqueVisitTimeout, 'enable', 'on', 'value', 1)
+        
         % Check
         set(handles.uiCheckFoodLevel, 'value', 0)
-        
+                
     case 'Open Bar'
         
         % Time
@@ -1355,6 +1376,9 @@ switch scenarios{val}
         % Door habituation
         set(handles.uiDoorHabitPercent, 'enable', 'off', 'value', 1);
         
+        % Timeouts
+        set(handles.uiUniqueVisitTimeout, 'enable', 'off', 'value', 1)
+        
         % Reward
         set(handles.uiRewardEnable, 'value', 1);
         set(handles.uiRewardTimeout, 'value', 6)
@@ -1366,7 +1390,7 @@ switch scenarios{val}
         
         % Check
         set(handles.uiCheckFoodLevel, 'value', 0)
-        
+
     case 'Door Habituation'
         
         % Time
@@ -1426,6 +1450,9 @@ switch scenarios{val}
         
         % Door habituation
         set(handles.uiDoorHabitPercent, 'enable', 'on');
+
+        % Timeouts
+        set(handles.uiUniqueVisitTimeout, 'enable', 'off', 'value', 1)
         
         % Reward
         set(handles.uiRewardEnable, 'value', 1);
@@ -1503,6 +1530,9 @@ switch scenarios{val}
         set(handles.uiRewardTimeout, 'value', 6)
         set(handles.uiRewardProbability, 'enable', 'on')
         
+        % Timeouts
+        set(handles.uiUniqueVisitTimeout, 'enable', 'off', 'value', 1)
+        
         % Punishment
         set(handles.uiPunishmentDelay, 'value', 3, 'enable', 'on')
         set(handles.uiPunishmentProbaThreshold, 'enable', 'off')
@@ -1573,6 +1603,9 @@ switch scenarios{val}
         set(handles.uiRewardEnable, 'value', 1);
         set(handles.uiRewardTimeout, 'value', 6)
         set(handles.uiRewardProbability, 'enable', 'on')
+        
+        % Timeouts
+        set(handles.uiUniqueVisitTimeout, 'enable', 'off', 'value', 1)
         
         % Punishment
         set(handles.uiPunishmentDelay, 'value', 3)
@@ -1645,6 +1678,9 @@ switch scenarios{val}
         set(handles.uiRewardTimeout, 'value', 6)
         set(handles.uiRewardProbability, 'enable', 'on')
         
+        % Timeouts
+        set(handles.uiUniqueVisitTimeout, 'enable', 'off', 'value', 1)
+        
         % Punishment
         set(handles.uiPunishmentDelay, 'value', 3, 'enable', 'on')
         set(handles.uiPunishmentProbaThreshold, 'enable', 'off')
@@ -1710,6 +1746,9 @@ switch scenarios{val}
         % Reward
         set(handles.uiRewardEnable, 'value', 1);
         set(handles.uiRewardTimeout, 'value', 6)
+        
+        % Timeouts
+        set(handles.uiUniqueVisitTimeout, 'enable', 'off', 'value', 1)
         
         % Punishment
         set(handles.uiPunishmentDelay, 'value', 3, 'enable', 'on')
@@ -1780,6 +1819,9 @@ switch scenarios{val}
         set(handles.uiRewardTimeout, 'value', 6)
         set(handles.uiRewardProbability, 'enable', 'on')
         
+        % Timeouts
+        set(handles.uiUniqueVisitTimeout, 'enable', 'off', 'value', 1)
+        
         % Punishment
         set(handles.uiPunishmentDelay, 'value', 3, 'enable', 'on')
         set(handles.uiPunishmentProbaThreshold, 'enable', 'off')
@@ -1848,6 +1890,9 @@ switch scenarios{val}
         set(handles.uiRewardEnable, 'value', 1);
         set(handles.uiRewardTimeout, 'value', 6)
         set(handles.uiRewardProbability, 'enable', 'off', 'value', 1)
+        
+        % Timeouts
+        set(handles.uiUniqueVisitTimeout, 'enable', 'on', 'value', 6)
         
         % Punishment
         set(handles.uiPunishmentDelay, 'value', 3, 'enable', 'on')
@@ -2460,15 +2505,18 @@ if handles.config.scenario.num>2 && handles.config.scenario.num<8
     handles.config.reward.probability = int32(str2double(str{val}));
 end
 
-
-% % Timeouts
+% Timeouts
+if handles.config.scenario.num==8
+    str = get(handles.uiUniqueVisitTimeout, 'string');
+    val = get(handles.uiUniqueVisitTimeout, 'value');
+    handles.config.timeouts.unique_visit = int32(str2double(str{val}));
+end
 % str = get(handles.uiSleepTimeout, 'string');
 % val = get(handles.uiSleepTimeout, 'value');
 % handles.config.timeouts.sleep = int32(str2double(str{val}));
 % str = get(handles.uiPIRTimeout, 'string');
 % val = get(handles.uiPIRTimeout, 'value');
 % handles.config.timeouts.pir = int32(str2double(str{val}));
-
 
 % Punishment
 if handles.config.scenario.num>2
@@ -2782,22 +2830,30 @@ else
 end
 
 %% Timeouts
-if handles.config.timeouts.sleep~=-1
-    str = get(handles.uiSleepTimeout, 'string');
+if handles.config.timeouts.unique_visit~=-1
+    str = get(handles.uiUniqueVisitTimeout, 'string');
     str = strtrim(str);
-    idx = find(strcmp(str, num2str(handles.config.timeouts.sleep)));
-    set(handles.uiSleepTimeout, 'value', idx)
+    idx = find(strcmp(str, num2str(handles.config.timeouts.unique_visit)));
+    set(handles.uiUniqueVisitTimeout, 'value', idx, 'enable', 'on')
 else
-    set(handles.uiSleepTimeout, 'value', 1, 'enable', 'off')
+    set(handles.uiUniqueVisitTimeout, 'value', 1, 'enable', 'off')
 end
-if handles.config.timeouts.pir~=-1
-    str = get(handles.uiPIRTimeout, 'string');
-    str = strtrim(str);
-    idx = find(strcmp(str, num2str(handles.config.timeouts.pir)));
-    set(handles.uiPIRTimeout, 'value', idx)
-else
-    set(handles.uiPIRTimeout, 'value', 1, 'enable', 'off')
-end
+% if handles.config.timeouts.sleep~=-1
+%     str = get(handles.uiSleepTimeout, 'string');
+%     str = strtrim(str);
+%     idx = find(strcmp(str, num2str(handles.config.timeouts.sleep)));
+%     set(handles.uiSleepTimeout, 'value', idx)
+% else
+%     set(handles.uiSleepTimeout, 'value', 1, 'enable', 'off')
+% end
+% if handles.config.timeouts.pir~=-1
+%     str = get(handles.uiPIRTimeout, 'string');
+%     str = strtrim(str);
+%     idx = find(strcmp(str, num2str(handles.config.timeouts.pir)));
+%     set(handles.uiPIRTimeout, 'value', idx)
+% else
+%     set(handles.uiPIRTimeout, 'value', 1, 'enable', 'off')
+% end
 
 %% Punishment
 if handles.config.punishment.delay~=-1
@@ -3003,6 +3059,7 @@ config.reward.timeout = ini_getl('reward', 'timeout', -1, filename);
 %%Timeouts
 config.timeouts.sleep = ini_getl('timeouts', 'sleep', -1, filename);
 config.timeouts.pir = ini_getl('timeouts', 'pir', -1, filename);
+config.timeouts.unique_visit = ini_getl('timeouts', 'unique_visit', -1, filename);
 
 %%Punishment
 config.punishment.delay = ini_getl('punishment', 'delay', -1, filename);
