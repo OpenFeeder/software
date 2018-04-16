@@ -12,6 +12,9 @@ echoCommands = true;
 delay = 0.03;
 s = [];
 
+text_color.state = [0 128 0];
+text_color.command = [255 24 230];
+
 fig = figure(1);
 clf
 
@@ -259,6 +262,17 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
 
     function populateCommunicationWindow(substr)
         
+        
+        if ~isempty(substr) && substr(1) == '>'
+            
+             substr = sprintf('<html><font color="#%02X%02X%02X"><b>%s</b></font></html>', ...
+                text_color.state(1), ...
+                text_color.state(2), ...
+                text_color.state(3), ...
+                substr);
+            
+        end
+        
         str = get(uiCommunicationWindow, 'string');
         str = cellstr(str);
         n = numel(str);
@@ -308,8 +322,21 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
             str = str(idx);
         end
 
-        str = sprintf('%s', str{:});
+        str = removeTextDecoration(str);
+        str = sprintf('%s\n', str{:});
         clipboard('copy', str)
+        
+    end
+
+    function str = removeTextDecoration(str)
+        
+        fn = fieldnames(text_color);
+        
+        for n = 1:numel(fn)           
+            html = sprintf('<html><font color="#%02X%02X%02X"><b>', text_color.(fn{n})(1), text_color.(fn{n})(2), text_color.(fn{n})(3));
+            str = strrep(str, html, '');
+        end
+        str = strrep(str, '</b></font></html>', '');
         
     end
 
@@ -326,8 +353,15 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
     function sendCommand(arg)
         
         if echoCommands
-            str = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', arg);
+            
+            str = sprintf('<html><font color="#%02X%02X%02X"><b>=> %s</b></font></html>', ...
+                text_color.command(1), ...
+                text_color.command(2), ...
+                text_color.command(3), ...
+                arg);
+            
             populateCommunicationWindow(str)
+            
         end
         fprintf(s, arg, 'async');
         pause(delay)
