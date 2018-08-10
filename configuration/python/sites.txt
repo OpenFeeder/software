@@ -1,0 +1,7 @@
+M1,Moulis,France
+G1,Gajan
+C1,Cescau bas
+C4,Cescau haut
+L1,Lab
+H1,Castera bas
+H4,Arrech

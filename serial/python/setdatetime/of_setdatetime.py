@@ -14,7 +14,7 @@ import datetime
 
 delay = 0.15
 
-serialPort = "COM6"
+serialPort = "COM36"
 
 ser = serial.Serial(port=None, baudrate=9600, timeout=1, writeTimeout=1)
 
@@ -53,14 +53,14 @@ print("\nPC : {:02d}/{:02d}/20{:02d} {:02d}:{:02d}:{:02d}".format(current_time.d
 print("{}\n{}".format(pic_date_str, rtc_ext_str))
 
 pic_datetime = datetime.datetime(int(pic_date_str[11:15]), int(pic_date_str[8:10]), int(pic_date_str[5:7]), int(pic_date_str[16:18]), int(pic_date_str[19:21]), int(pic_date_str[22:24]))
-        
-if current_time > pic_datetime:    
+
+if current_time > pic_datetime:
     delta = current_time-pic_datetime
     sign = '+'
 else:
     delta = pic_datetime-current_time
     sign = '-'
-    
+
 if delta.days < 1:
 
     h = math.floor(delta.seconds/(60*60))
@@ -78,7 +78,7 @@ if ext_rtc_available:
 
     rtc_ext_datetime = datetime.datetime(int(rtc_ext_str[11:15]), int(rtc_ext_str[8:10]), int(rtc_ext_str[5:7]), int(rtc_ext_str[16:18]), int(rtc_ext_str[19:21]), int(rtc_ext_str[22:24]))
 
-    if current_time > rtc_ext_datetime:    
+    if current_time > rtc_ext_datetime:
         delta = current_time-rtc_ext_datetime
         sign = '+'
     else:
