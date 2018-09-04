@@ -27,12 +27,66 @@ default = {'ServoClosingSpeedFactor': 4, 'ServoOpeningSpeedFactor': 10,
            'RGBColorB': [35, 0, 0]}
 
 
-def attractive_led_pattern():
+def set_default_time():
 
-    pass
+    idx = hours.index('{:02d}'.format(default['WakeUpHour']))
+    popupmenu_var_wake_up_hour.set(hours[idx])
+    idx = minutes.index('{:02d}'.format(default['WakeUpMinute']))
+    popupmenu_var_wake_up_minute.set(minutes[idx])
+    idx = hours.index('{:02d}'.format(default['SleepHour']))
+    popupmenu_var_sleep_hour.set(hours[idx])
+    idx = minutes.index('{:02d}'.format(default['SleepMinute']))
+    popupmenu_var_sleep_minute.set(minutes[idx])
 
 
-def preview_file(event):
+def set_scenario(event):
+
+    scenario = popupmenu_var_scenario.get()
+    idx = scenario.index(' - ')
+
+    scenario = scenario[idx+3:]
+
+    if scenario == 'None':
+
+        pass
+
+    elif scenario == 'OpenBar':
+
+        # Time
+        set_default_time()
+
+        # Logs
+        check_var_log_birds.set('1')
+        check_var_log_events.set('1')
+        check_var_log_errors.set('1')
+
+        # PIT tags
+        check_button_pit_tags_1.config(text='')
+        check_button_pit_tags_2.config(text='')
+        check_button_pit_tags_3.config(text='')
+        check_button_pit_tags_4.config(text='')
+        check_value_pit_tags_1.set(0)
+        check_value_pit_tags_2.set(0)
+        check_value_pit_tags_3.set(0)
+        check_value_pit_tags_4.set(0)
+
+    elif scenario == 'DoorHabituation':
+        pass
+    elif scenario == 'Go-NoGo':
+        pass
+    elif scenario == 'LongTermSpatialMemory':
+        pass
+    elif scenario == 'WorkingSpatialMemory':
+        pass
+    elif scenario == 'ColorAssociativeLearning':
+        pass
+    elif scenario == 'RiskAversion':
+        pass
+    elif scenario == 'PatchProbability':
+        pass
+
+
+def preview_ini_file(event):
 
     tempdir = tempfile.TemporaryDirectory()
 
@@ -62,8 +116,8 @@ def preview_file(event):
 
     tempdir.cleanup()
 
-def load_ini_file():
 
+def load_ini_file():
 
     filename = filedialog.askopenfilename(initialdir="/",
                                           title="Select file",
@@ -79,163 +133,32 @@ def load_ini_file():
         update_servoMove_time()
 
 
-def populate_ui(config):
+def export_ini_file():
+
+    filename = filedialog.asksaveasfilename(initialdir="/",
+                                            title="Select file",
+                                            initialfile='CONFIG.INI',
+                                            filetypes=[("INI files", "*.INI")])
+
+    if filename:
+        filename = filename.upper()
+
+        pathname = os.path.dirname(filename)
+        filename = os.path.basename(filename)
+
+        of_write_ini(pathname, filename)
+
+        export_pit_tags(pathname)
 
 
-    # Site ID
-    popupmenu_var_site_name.set(config['siteid']['zone'][0:2])
-    popupmenu_var_site_number.set(config['siteid']['zone'][2:])
+def export_pit_tags(pathname):
 
-    # WakeUp
-    popupmenu_var_wake_up_hour.set(config['time']['wakeup_hour'])
-    popupmenu_var_wake_up_minute.set(config['time']['wakeup_minute'])
-    # Sleep
-    popupmenu_var_sleep_hour.set(config['time']['sleep_hour'])
-    popupmenu_var_sleep_minute.set(config['time']['sleep_minute'])
-
-    # Scenario
-    popupmenu_var_scenario.set(config['scenario']['num'] + ' - ' + config['scenario']['title'])
-
-    scenario = int(config['scenario']['num'])
-
-    # Logs
-    popupmenu_var_log_file_separator.set(config['logs']['separator'])
-    check_var_log_birds.set(config['logs']['birds'])
-    check_var_log_udid.set(config['logs']['udid'])
-    check_var_log_events.set(config['logs']['events'])
-    check_var_log_errors.set(config['logs']['errors'])
-    check_var_log_battery.set(config['logs']['battery'])
-    check_var_log_rfid.set(config['logs']['rfid'])
-
-    # Pit tags
-    if 'pittags' in config:
-        pass
-
-    # Attractive LEDs
-    if 'attractiveleds' in config:
-
-        label_var_colorA.set('[{} {} {}]'.format(config['attractiveleds']['red_a'],
-                                                 config['attractiveleds']['green_a'],
-                                                 config['attractiveleds']['blue_a']))
-
-        canvas_color_A.config(background='#{:02X}{:02X}{:02X}'.format(int(config['attractiveleds']['red_a']),
-                                                                      int(config['attractiveleds']['green_a']),
-                                                                      int(config['attractiveleds']['blue_a'])))
-
-        if 'red_b' in config['attractiveleds']:
-            label_var_colorB.set('[{} {} {}]'.format(config['attractiveleds']['red_b'],
-                                                     config['attractiveleds']['green_b'],
-                                                     config['attractiveleds']['blue_b']))
-
-            canvas_color_B.config(background='#{:02X}{:02X}{:02X}'.format(int(config['attractiveleds']['red_b']),
-                                                                          int(config['attractiveleds']['green_b']),
-                                                                          int(config['attractiveleds']['blue_b'])))
-        else:
-            label_var_colorB.set('[0 0 0]')
-            canvas_color_B.config(background='black')
+    pass
 
 
-        if 'alt_delay' in config['attractiveleds']:
-            popupmenu_var_leds_alt_delay.set(int(config['attractiveleds']['alt_delay']))
+def import_pit_tags():
 
-        popupmenu_var_leds_on_hour.set(config['attractiveleds']['on_hour'])
-        popupmenu_var_leds_on_minute.set(config['attractiveleds']['on_minute'])
-
-        popupmenu_var_leds_off_hour.set(config['attractiveleds']['off_hour'])
-        popupmenu_var_leds_off_minute.set(config['attractiveleds']['off_minute'])
-
-        radio_var_leds_pattern.set(None)
-
-        if scenario == 3:
-            if config['attractiveleds']['pattern'] == '0':
-                radio_var_leds_pattern.set('a')
-            elif config['attractiveleds']['pattern'] == '1':
-                radio_var_leds_pattern.set('lr')
-            elif config['attractiveleds']['pattern'] == '2':
-                radio_var_leds_pattern.set('tb')
-            elif config['attractiveleds']['pattern'] == '3':
-                radio_var_leds_pattern.set('o')
-
-            if 'pattern_percent' in config['attractiveleds']:
-                popupmenu_var_pattern_all_percent.set(int(config['attractiveleds']['pattern_percent']))
-            else:
-                popupmenu_var_pattern_all_percent.set('0')
-
-    else:
-
-        radio_var_leds_pattern.set(None)
-        popupmenu_var_pattern_all_percent.set('0')
-        popupmenu_var_leds_alt_delay.set(1)
-
-    # Door
-    popupmenu_var_door_open_hour.set(config['door']['open_hour'])
-    popupmenu_var_door_open_minute.set(config['door']['open_minute'])
-
-    popupmenu_var_door_close_hour.set(config['door']['close_hour'])
-    popupmenu_var_door_close_minute.set(config['door']['close_minute'])
-
-    check_var_door_remain_open.set(config['door']['remain_open'])
-
-    popupmenu_var_door_open_delay.set(int(config['door']['open_delay']))
-    popupmenu_var_door_close_delay.set(int(config['door']['close_delay']))
-
-    # Servomotor
-    entry_var_servo_close_position.set(config['door']['close_position'])
-    entry_var_servo_open_position.set(config['door']['open_position'])
-
-    entry_var_servo_close_speed.set(config['door']['closing_speed'])
-    entry_var_servo_open_speed.set(config['door']['opening_speed'])
-
-    # Door habituation
-    if 'habituation' in config['door']:
-        popupmenu_var_door_habit_percent.set(int(config['door']['habituation']))
-    else:
-        popupmenu_var_door_habit_percent.set(0)
-
-    # Reward
-    if 'reward' in config:
-        check_var_reward_enable.set(config['reward']['enable'])
-        if config['reward']['enable'] == '1':
-            popupmenu_var_reward_timeout.set(int(config['reward']['timeout']))
-
-        if 'probability' in config['reward']:
-            popupmenu_var_reward_probability.set(int(config['reward']['probability']))
-        else:
-            popupmenu_var_reward_probability.set(100)
-
-    # Timeouts
-    if 'timeouts' in config:
-        if 'unique_visit' in config['timeouts']:
-            popupmenu_var_unique_visit_timeout.set(int(config['timeouts']['unique_visit']))
-        else:
-            popupmenu_var_unique_visit_timeout.set(0)
-
-    # Punishment
-    if 'punishment' in config:
-        if 'delay' in config['punishment']:
-            popupmenu_var_punishment_delay.set(int(config['punishment']['delay']))
-        else:
-            popupmenu_var_punishment_delay.set(0)
-
-        if 'proba_threshold' in config['punishment']:
-            popupmenu_var_probability_threshold.set(int(config['punishment']['proba_threshold']))
-        else:
-            popupmenu_var_probability_threshold.set(0)
-
-    # Check
-    if 'food_level' in config['check']:
-        check_var_food_level.set(config['check']['food_level'])
-    else:
-        check_var_food_level.set('0')
-
-
-def update_servoMove_time():
-
-    label_closing_time.config(text='{:.3f}'.format((int(entry_var_servo_open_position.get())-int(entry_var_servo_close_position.get()))/int(entry_var_servo_close_speed.get())*default['ServoMsStep']/1000))
-    label_opening_time.config(text='{:.3f}'.format((int(entry_var_servo_open_position.get())-int(entry_var_servo_close_position.get()))/int(entry_var_servo_open_speed.get())*default['ServoMsStep']/1000))
-    label_guillotine_timeout.config(text='{:.3f}'.format((int(entry_var_servo_open_position.get())-int(entry_var_servo_close_position.get()))/int(entry_var_servo_close_speed.get())*default['ServoMsStep']/1000+0.5))
-
-    preview_file(None)
+    pass
 
 
 def get_data_from_ui():
@@ -416,37 +339,217 @@ def get_data_from_ui():
     return config
 
 
-def of_write_ini(pathname, filename):
+def populate_ui(config):
 
-    config = get_data_from_ui()
+    # Site ID
+    popupmenu_var_site_name.set(config['siteid']['zone'][0:2])
+    popupmenu_var_site_number.set(config['siteid']['zone'][2:])
 
-    filepath = os.path.join(pathname, filename)
+    # WakeUp
+    popupmenu_var_wake_up_hour.set(config['time']['wakeup_hour'])
+    popupmenu_var_wake_up_minute.set(config['time']['wakeup_minute'])
+    # Sleep
+    popupmenu_var_sleep_hour.set(config['time']['sleep_hour'])
+    popupmenu_var_sleep_minute.set(config['time']['sleep_minute'])
 
-    with open(filepath, 'w') as configfile:
-        config.write(configfile)
+    # Scenario
+    popupmenu_var_scenario.set(config['scenario']['num'] + ' - ' + config['scenario']['title'])
+
+    scenario = int(config['scenario']['num'])
+
+    # Logs
+    popupmenu_var_log_file_separator.set(config['logs']['separator'])
+    check_var_log_birds.set(config['logs']['birds'])
+    check_var_log_udid.set(config['logs']['udid'])
+    check_var_log_events.set(config['logs']['events'])
+    check_var_log_errors.set(config['logs']['errors'])
+    check_var_log_battery.set(config['logs']['battery'])
+    check_var_log_rfid.set(config['logs']['rfid'])
+
+    # Pit tags
+    if 'pittags' in config:
+        pass
+
+    # Attractive LEDs
+    if 'attractiveleds' in config:
+
+        label_var_colorA.set('[{} {} {}]'.format(config['attractiveleds']['red_a'],
+                                                 config['attractiveleds']['green_a'],
+                                                 config['attractiveleds']['blue_a']))
+
+        canvas_color_A.config(background='#{:02X}{:02X}{:02X}'.format(int(config['attractiveleds']['red_a']),
+                                                                      int(config['attractiveleds']['green_a']),
+                                                                      int(config['attractiveleds']['blue_a'])))
+
+        if 'red_b' in config['attractiveleds']:
+            label_var_colorB.set('[{} {} {}]'.format(config['attractiveleds']['red_b'],
+                                                     config['attractiveleds']['green_b'],
+                                                     config['attractiveleds']['blue_b']))
+
+            canvas_color_B.config(background='#{:02X}{:02X}{:02X}'.format(int(config['attractiveleds']['red_b']),
+                                                                          int(config['attractiveleds']['green_b']),
+                                                                          int(config['attractiveleds']['blue_b'])))
+        else:
+            label_var_colorB.set('[0 0 0]')
+            canvas_color_B.config(background='black')
 
 
-def export_ini_file():
+        if 'alt_delay' in config['attractiveleds']:
+            popupmenu_var_leds_alt_delay.set(int(config['attractiveleds']['alt_delay']))
 
-    filename = filedialog.asksaveasfilename(initialdir="/",
-                                            title="Select file",
-                                            initialfile='CONFIG.INI',
-                                            filetypes=[("INI files", "*.INI")])
+        popupmenu_var_leds_on_hour.set(config['attractiveleds']['on_hour'])
+        popupmenu_var_leds_on_minute.set(config['attractiveleds']['on_minute'])
 
-    if filename:
-        filename = filename.upper()
+        popupmenu_var_leds_off_hour.set(config['attractiveleds']['off_hour'])
+        popupmenu_var_leds_off_minute.set(config['attractiveleds']['off_minute'])
 
-        pathname = os.path.dirname(filename)
-        filename = os.path.basename(filename)
+        radio_var_leds_pattern.set(None)
 
-        of_write_ini(pathname, filename)
+        if scenario == 3:
+            if config['attractiveleds']['pattern'] == '0':
+                radio_var_leds_pattern.set('a')
+            elif config['attractiveleds']['pattern'] == '1':
+                radio_var_leds_pattern.set('lr')
+            elif config['attractiveleds']['pattern'] == '2':
+                radio_var_leds_pattern.set('tb')
+            elif config['attractiveleds']['pattern'] == '3':
+                radio_var_leds_pattern.set('o')
 
-        export_pit_tags(pathname)
+            if 'pattern_percent' in config['attractiveleds']:
+                popupmenu_var_pattern_all_percent.set(int(config['attractiveleds']['pattern_percent']))
+            else:
+                popupmenu_var_pattern_all_percent.set('0')
+
+    else:
+
+        radio_var_leds_pattern.set(None)
+        popupmenu_var_pattern_all_percent.set('0')
+        popupmenu_var_leds_alt_delay.set(1)
+
+    # Door
+    popupmenu_var_door_open_hour.set(config['door']['open_hour'])
+    popupmenu_var_door_open_minute.set(config['door']['open_minute'])
+
+    popupmenu_var_door_close_hour.set(config['door']['close_hour'])
+    popupmenu_var_door_close_minute.set(config['door']['close_minute'])
+
+    check_var_door_remain_open.set(config['door']['remain_open'])
+
+    popupmenu_var_door_open_delay.set(int(config['door']['open_delay']))
+    popupmenu_var_door_close_delay.set(int(config['door']['close_delay']))
+
+    # Servomotor
+    entry_var_servo_close_position.set(config['door']['close_position'])
+    entry_var_servo_open_position.set(config['door']['open_position'])
+
+    entry_var_servo_close_speed.set(config['door']['closing_speed'])
+    entry_var_servo_open_speed.set(config['door']['opening_speed'])
+
+    # Door habituation
+    if 'habituation' in config['door']:
+        popupmenu_var_door_habit_percent.set(int(config['door']['habituation']))
+    else:
+        popupmenu_var_door_habit_percent.set(0)
+
+    # Reward
+    if 'reward' in config:
+        check_var_reward_enable.set(config['reward']['enable'])
+        if config['reward']['enable'] == '1':
+            popupmenu_var_reward_timeout.set(int(config['reward']['timeout']))
+
+        if 'probability' in config['reward']:
+            popupmenu_var_reward_probability.set(int(config['reward']['probability']))
+        else:
+            popupmenu_var_reward_probability.set(100)
+
+    # Timeouts
+    if 'timeouts' in config:
+        if 'unique_visit' in config['timeouts']:
+            popupmenu_var_unique_visit_timeout.set(int(config['timeouts']['unique_visit']))
+        else:
+            popupmenu_var_unique_visit_timeout.set(0)
+
+    # Punishment
+    if 'punishment' in config:
+        if 'delay' in config['punishment']:
+            popupmenu_var_punishment_delay.set(int(config['punishment']['delay']))
+        else:
+            popupmenu_var_punishment_delay.set(0)
+
+        if 'proba_threshold' in config['punishment']:
+            popupmenu_var_probability_threshold.set(int(config['punishment']['proba_threshold']))
+        else:
+            popupmenu_var_probability_threshold.set(0)
+
+    # Check
+    if 'food_level' in config['check']:
+        check_var_food_level.set(config['check']['food_level'])
+    else:
+        check_var_food_level.set('0')
 
 
-def export_pit_tags(pathname):
+def update_servoMove_time():
 
-    pass
+    label_closing_time.config(text='{:.3f}'.format((int(entry_var_servo_open_position.get())-int(entry_var_servo_close_position.get()))/int(entry_var_servo_close_speed.get())*default['ServoMsStep']/1000))
+    label_opening_time.config(text='{:.3f}'.format((int(entry_var_servo_open_position.get())-int(entry_var_servo_close_position.get()))/int(entry_var_servo_open_speed.get())*default['ServoMsStep']/1000))
+    label_guillotine_timeout.config(text='{:.3f}'.format((int(entry_var_servo_open_position.get())-int(entry_var_servo_close_position.get()))/int(entry_var_servo_close_speed.get())*default['ServoMsStep']/1000+0.5))
+
+    preview_ini_file(None)
+
+
+def set_attract_leds_color(a_or_b):
+
+    color = askcolor()
+
+    if a_or_b == 'A':
+        canvas_color_A.config(background=color[1])
+        label_var_colorA.set('[{} {} {}]'.format(int(color[0][0]), int(color[0][1]), int(color[0][2])))
+    else:
+        canvas_color_B.config(background=color[1])
+        label_var_colorB.set('[{} {} {}]'.format(int(color[0][0]), int(color[0][1]), int(color[0][2])))
+
+    preview_ini_file(None)
+
+
+def attractive_led_pattern(typ):
+
+    scenario = popupmenu_var_scenario.get()
+    idx = scenario.index(' - ')
+
+    scenario = int(scenario[0:idx])
+
+    if scenario != 3:
+        return
+
+    popupmenu_var_pattern_all_percent.set(0)
+
+    check_button_pit_tags_1.config(text='')
+    check_button_pit_tags_2.config(text='')
+    check_button_pit_tags_3.config(text='')
+    check_button_pit_tags_4.config(text='')
+
+    if typ == 'a':
+
+        popupmenu_var_pattern_all_percent.set(25)
+
+    elif typ == 'lr':
+
+        check_button_pit_tags_1.config(text='Left')
+        check_button_pit_tags_2.config(text='Right')
+
+    elif typ == 'tb':
+
+        check_button_pit_tags_1.config(text='Top')
+        check_button_pit_tags_2.config(text='Bottom')
+
+    elif typ == 'o':
+
+        check_button_pit_tags_1.config(text='LED 1')
+        check_button_pit_tags_2.config(text='LED 2')
+        check_button_pit_tags_3.config(text='LED 3')
+        check_button_pit_tags_4.config(text='LED 4')
+
+    preview_ini_file(None)
 
 
 def of_read_ini(filename):
@@ -458,30 +561,14 @@ def of_read_ini(filename):
     return config
 
 
-def set_default_time():
+def of_write_ini(pathname, filename):
 
-    idx = hours.index('{:02d}'.format(default['WakeUpHour']))
-    popupmenu_var_wake_up_hour.set(hours[idx])
-    idx = minutes.index('{:02d}'.format(default['WakeUpMinute']))
-    popupmenu_var_wake_up_minute.set(minutes[idx])
-    idx = hours.index('{:02d}'.format(default['SleepHour']))
-    popupmenu_var_sleep_hour.set(hours[idx])
-    idx = minutes.index('{:02d}'.format(default['SleepMinute']))
-    popupmenu_var_sleep_minute.set(minutes[idx])
+    config = get_data_from_ui()
 
+    filepath = os.path.join(pathname, filename)
 
-def getColor(a_or_b):
-
-    color = askcolor()
-
-    if a_or_b == 'A':
-        canvas_color_A.config(background=color[1])
-        label_var_colorA.set('[{} {} {}]'.format(int(color[0][0]), int(color[0][1]), int(color[0][2])))
-    else:
-        canvas_color_B.config(background=color[1])
-        label_var_colorB.set('[{} {} {}]'.format(int(color[0][0]), int(color[0][1]), int(color[0][2])))
-
-    preview_file(None)
+    with open(filepath, 'w') as configfile:
+        config.write(configfile)
 
 
 # https://stackoverflow.com/questions/3352918/how-to-center-a-window-on-the-screen-in-tkinter#10018670
@@ -594,7 +681,7 @@ if __name__ == '__main__':
     popupmenu_var_site_number = StringVar(root)
     popupmenu_var_site_number.set(sites_number[0])
     popupMenu = OptionMenu(root, popupmenu_var_site_number, *sites_number,
-                           command=preview_file)
+                           command=preview_ini_file)
     popupMenu.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=(15+5*is_mac)*ui_sketch_factor, height=5*ui_sketch_factor)
 
     # Wake up time
@@ -605,7 +692,7 @@ if __name__ == '__main__':
 
     popupmenu_var_wake_up_hour = StringVar(root)
     popupmenu_var_wake_up_hour.set(hours[0])
-    popupMenu = OptionMenu(root, popupmenu_var_wake_up_hour, *hours, command=preview_file)
+    popupMenu = OptionMenu(root, popupmenu_var_wake_up_hour, *hours, command=preview_ini_file)
     popupMenu.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=(12+8*is_mac)*ui_sketch_factor, height=5*ui_sketch_factor)
 
     xPos += 12+8*is_mac
@@ -615,7 +702,7 @@ if __name__ == '__main__':
 
     popupmenu_var_wake_up_minute = StringVar(root)
     popupmenu_var_wake_up_minute.set(minutes[0])
-    popupMenu = OptionMenu(root, popupmenu_var_wake_up_minute, *minutes, command=preview_file)
+    popupMenu = OptionMenu(root, popupmenu_var_wake_up_minute, *minutes, command=preview_ini_file)
     popupMenu.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=(12+8*is_mac)*ui_sketch_factor, height=5*ui_sketch_factor)
 
     # Sleep time
@@ -626,7 +713,7 @@ if __name__ == '__main__':
 
     popupmenu_var_sleep_hour = StringVar(root)
     popupmenu_var_sleep_hour.set(hours[0])
-    popupMenu = OptionMenu(root, popupmenu_var_sleep_hour, *hours, command=preview_file)
+    popupMenu = OptionMenu(root, popupmenu_var_sleep_hour, *hours, command=preview_ini_file)
     popupMenu.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=(12+8*is_mac)*ui_sketch_factor, height=5*ui_sketch_factor)
 
     xPos += 12+8*is_mac
@@ -636,7 +723,7 @@ if __name__ == '__main__':
 
     popupmenu_var_sleep_minute = StringVar(root)
     popupmenu_var_sleep_minute.set(minutes[0])
-    popupMenu = OptionMenu(root, popupmenu_var_sleep_minute, *minutes, command=preview_file)
+    popupMenu = OptionMenu(root, popupmenu_var_sleep_minute, *minutes, command=preview_ini_file)
     popupMenu.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=(12+8*is_mac)*ui_sketch_factor, height=5*ui_sketch_factor)
 
     # Scenario
@@ -657,7 +744,7 @@ if __name__ == '__main__':
                '8 - PatchProbability'}
     popupmenu_var_scenario.set('0 - None')
     popupMenu = OptionMenu(root, popupmenu_var_scenario, *sorted(choices),
-                           command=preview_file)
+                           command=set_scenario)
     popupMenu.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=(ui_scenario_group_pos[2]+8)*ui_sketch_factor, height=5*ui_sketch_factor)
 
     # Log File
@@ -672,7 +759,7 @@ if __name__ == '__main__':
     popupmenu_var_log_file_separator = StringVar(root)
     separators = [',', ';']
     popupmenu_var_log_file_separator.set(separators[0])
-    popupMenu = OptionMenu(root, popupmenu_var_log_file_separator, *separators, command=preview_file)
+    popupMenu = OptionMenu(root, popupmenu_var_log_file_separator, *separators, command=preview_ini_file)
     popupMenu.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=10*ui_sketch_factor, height=5*ui_sketch_factor)
 
     xPos = ui_log_group_pos[0]+ui_log_group_pos[4]
@@ -686,38 +773,38 @@ if __name__ == '__main__':
 
     check_button_log_birds = Checkbutton(root, text='Birds', anchor='w', \
                                          variable=check_var_log_birds, \
-                                         onvalue='1', offvalue='0', command=partial(preview_file, None))
+                                         onvalue='1', offvalue='0', command=partial(preview_ini_file, None))
     check_button_log_birds.deselect()
     check_button_log_birds.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=30*ui_sketch_factor, height=5*ui_sketch_factor)
     xPos += 13
     check_button_log_udid = Checkbutton(root, text='UDID', anchor='w', \
                                          variable=check_var_log_udid, \
-                                         onvalue='1', offvalue='0', command=partial(preview_file, None))
+                                         onvalue='1', offvalue='0', command=partial(preview_ini_file, None))
     check_button_log_udid.deselect()
     check_button_log_udid.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=30*ui_sketch_factor, height=5*ui_sketch_factor)
     xPos += 13
     check_button_log_events = Checkbutton(root, text='Events', anchor='w', \
                                          variable=check_var_log_events, \
-                                         onvalue='1', offvalue='0', command=partial(preview_file, None))
+                                         onvalue='1', offvalue='0', command=partial(preview_ini_file, None))
     check_button_log_events.deselect()
     check_button_log_events.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=30*ui_sketch_factor, height=5*ui_sketch_factor)
     xPos = ui_log_group_pos[0]+ui_log_group_pos[4]
     yPos += 6
     check_button_log_errors = Checkbutton(root, text='Errors', anchor='w', \
                                          variable=check_var_log_errors, \
-                                         onvalue='1', offvalue='0', command=partial(preview_file, None))
+                                         onvalue='1', offvalue='0', command=partial(preview_ini_file, None))
     check_button_log_errors.deselect()
     check_button_log_errors.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=30*ui_sketch_factor, height=5*ui_sketch_factor)
     xPos += 13
     check_button_log_battery = Checkbutton(root, text='Battery', anchor='w', \
                                          variable=check_var_log_battery, \
-                                         onvalue='1', offvalue='0', command=partial(preview_file, None))
+                                         onvalue='1', offvalue='0', command=partial(preview_ini_file, None))
     check_button_log_battery.deselect()
     check_button_log_battery.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=30*ui_sketch_factor, height=5*ui_sketch_factor)
     xPos += 13
     check_button_log_rfid = Checkbutton(root, text='RFID', anchor='w', \
                                          variable=check_var_log_rfid, \
-                                         onvalue='1', offvalue='0', command=partial(preview_file, None))
+                                         onvalue='1', offvalue='0', command=partial(preview_ini_file, None))
     check_button_log_rfid.deselect()
     check_button_log_rfid.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=30*ui_sketch_factor, height=5*ui_sketch_factor)
 
@@ -735,7 +822,7 @@ if __name__ == '__main__':
 
     check_button_pit_tags_1 = Checkbutton(root, text='', anchor='w', onvalue=1,
                                           offvalue=0,
-                                          variable=check_value_pit_tags_1, command=partial(preview_file, None))
+                                          variable=check_value_pit_tags_1, command=partial(preview_ini_file, None))
     check_button_pit_tags_1.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=40*ui_sketch_factor, height=5*ui_sketch_factor)
     xPos += 2
     yPos += 5
@@ -746,7 +833,7 @@ if __name__ == '__main__':
     yPos = ui_pit_tag_group_pos[1]+ui_pit_tag_group_pos[5]/2+4
     check_button_pit_tags_3 = Checkbutton(root, text='', anchor='w', onvalue=1,
                                           offvalue=0,
-                                          variable=check_value_pit_tags_3, command=partial(preview_file, None))
+                                          variable=check_value_pit_tags_3, command=partial(preview_ini_file, None))
     check_button_pit_tags_3.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=40*ui_sketch_factor, height=5*ui_sketch_factor)
     xPos += 2
     yPos += 5
@@ -757,7 +844,7 @@ if __name__ == '__main__':
     yPos = ui_pit_tag_group_pos[1]
     check_button_pit_tags_2 = Checkbutton(root, text='', anchor='w', onvalue=1,
                                           offvalue=0,
-                                          variable=check_value_pit_tags_2, command=partial(preview_file, None))
+                                          variable=check_value_pit_tags_2, command=partial(preview_ini_file, None))
     check_button_pit_tags_2.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=15*ui_sketch_factor, height=5*ui_sketch_factor)
     xPos += 2
     yPos += 5
@@ -768,7 +855,7 @@ if __name__ == '__main__':
     yPos = ui_pit_tag_group_pos[1]+ui_pit_tag_group_pos[5]/2+4
     check_button_pit_tags_4 = Checkbutton(root, text='', anchor='w', onvalue=1,
                                           offvalue=0,
-                                          variable=check_value_pit_tags_4, command=partial(preview_file, None))
+                                          variable=check_value_pit_tags_4, command=partial(preview_ini_file, None))
     check_button_pit_tags_4.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=40*ui_sketch_factor, height=5*ui_sketch_factor)
     xPos += 2
     yPos += 5
@@ -787,7 +874,7 @@ if __name__ == '__main__':
 
     xPos = uiLedsGroupPos[0]+uiLedsGroupPos[4]
     yPos = uiLedsGroupPos[1]+uiLedsGroupPos[5]
-    button_leds_color_A = Button(root, text='Set color A', command=partial(getColor, 'A'))
+    button_leds_color_A = Button(root, text='Set color A', command=partial(set_attract_leds_color, 'A'))
     button_leds_color_A.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=25*ui_sketch_factor, height=5*ui_sketch_factor)
     yPos += 5
     label_var_colorA = StringVar()
@@ -802,7 +889,7 @@ if __name__ == '__main__':
     xPos = uiLedsGroupPos[0]+uiLedsGroupPos[4]
     yPos += 6
 
-    button_leds_color_B = Button(root, text='Set color B', command=partial(getColor, 'B'))
+    button_leds_color_B = Button(root, text='Set color B', command=partial(set_attract_leds_color, 'B'))
     button_leds_color_B.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=25*ui_sketch_factor, height=5*ui_sketch_factor)
     yPos += 5
     label_var_colorB = StringVar()
@@ -826,7 +913,7 @@ if __name__ == '__main__':
     radio_var_leds_pattern.set(None)
 
     radio_button_pattern_all = Radiobutton(root, text='All', anchor='w',
-                                           command=attractive_led_pattern,
+                                           command=partial(attractive_led_pattern, 'a'),
                                            variable=radio_var_leds_pattern,
                                            value='a')
     radio_button_pattern_all.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=30*ui_sketch_factor, height=5*ui_sketch_factor)
@@ -841,28 +928,28 @@ if __name__ == '__main__':
     for n in range(0, 105, 5):
         percents.append(n)
     popupmenu_var_pattern_all_percent.set(percents[0])
-    popupMenu = OptionMenu(root, popupmenu_var_pattern_all_percent, *percents, command=preview_file)
+    popupMenu = OptionMenu(root, popupmenu_var_pattern_all_percent, *percents, command=preview_ini_file)
     popupMenu.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=15*ui_sketch_factor, height=5*ui_sketch_factor)
 
     xPos = uiLedsGroupPos[0]+uiLedsGroupPos[4]
     xPos += 2
     yPos += 6
     radio_button_pattern_lr = Radiobutton(root, text='L/R', anchor='w',
-                                          command=attractive_led_pattern,
+                                          command=partial(attractive_led_pattern, 'lr'),
                                           variable=radio_var_leds_pattern,
                                           value='lr')
     radio_button_pattern_lr.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=30*ui_sketch_factor, height=5*ui_sketch_factor)
 
     xPos += 12
     radio_button_pattern_tb = Radiobutton(root, text='T/B', anchor='w',
-                                          command=attractive_led_pattern,
+                                          command=partial(attractive_led_pattern, 'tb'),
                                           variable=radio_var_leds_pattern,
                                           value='tb')
     radio_button_pattern_tb.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=30*ui_sketch_factor, height=5*ui_sketch_factor)
 
     xPos += 12
     radio_button_pattern_one = Radiobutton(root, text='One', anchor='w',
-                                           command=attractive_led_pattern,
+                                           command=partial(attractive_led_pattern, 'o'),
                                            variable=radio_var_leds_pattern,
                                            value='o')
     radio_button_pattern_one.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=30*ui_sketch_factor, height=5*ui_sketch_factor)
@@ -881,7 +968,7 @@ if __name__ == '__main__':
         delay.append(n)
     delay.append(60)
     popupmenu_var_leds_alt_delay.set(delay[0])
-    popupMenu = OptionMenu(root, popupmenu_var_leds_alt_delay, *delay, command=preview_file)
+    popupMenu = OptionMenu(root, popupmenu_var_leds_alt_delay, *delay, command=preview_ini_file)
     popupMenu.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=15*ui_sketch_factor, height=5*ui_sketch_factor)
 
     xPos = uiLedsGroupPos[0]+uiLedsGroupPos[4]
@@ -893,7 +980,7 @@ if __name__ == '__main__':
 
     popupmenu_var_leds_on_hour = StringVar(root)
     popupmenu_var_leds_on_hour.set(hours[0])
-    popupMenu = OptionMenu(root, popupmenu_var_leds_on_hour, *hours, command=preview_file)
+    popupMenu = OptionMenu(root, popupmenu_var_leds_on_hour, *hours, command=preview_ini_file)
     popupMenu.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=(12+8*is_mac)*ui_sketch_factor, height=5*ui_sketch_factor)
 
     xPos += 12+8*is_mac
@@ -903,7 +990,7 @@ if __name__ == '__main__':
 
     popupmenu_var_leds_on_minute = StringVar(root)
     popupmenu_var_leds_on_minute.set(minutes[0])
-    popupMenu = OptionMenu(root, popupmenu_var_leds_on_minute, *minutes, command=preview_file)
+    popupMenu = OptionMenu(root, popupmenu_var_leds_on_minute, *minutes, command=preview_ini_file)
     popupMenu.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=(12+8*is_mac)*ui_sketch_factor, height=5*ui_sketch_factor)
 
     xPos = uiLedsGroupPos[0]+uiLedsGroupPos[4]
@@ -915,7 +1002,7 @@ if __name__ == '__main__':
 
     popupmenu_var_leds_off_hour = StringVar(root)
     popupmenu_var_leds_off_hour.set(hours[0])
-    popupMenu = OptionMenu(root, popupmenu_var_leds_off_hour, *hours, command=preview_file)
+    popupMenu = OptionMenu(root, popupmenu_var_leds_off_hour, *hours, command=preview_ini_file)
     popupMenu.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=(12+8*is_mac)*ui_sketch_factor, height=5*ui_sketch_factor)
 
     xPos += 12+8*is_mac
@@ -925,7 +1012,7 @@ if __name__ == '__main__':
 
     popupmenu_var_leds_off_minute = StringVar(root)
     popupmenu_var_leds_off_minute.set(minutes[0])
-    popupMenu = OptionMenu(root, popupmenu_var_leds_off_minute, *minutes, command=preview_file)
+    popupMenu = OptionMenu(root, popupmenu_var_leds_off_minute, *minutes, command=preview_ini_file)
     popupMenu.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=(12+8*is_mac)*ui_sketch_factor, height=5*ui_sketch_factor)
 
     # Door
@@ -942,7 +1029,7 @@ if __name__ == '__main__':
 
     popupmenu_var_door_open_hour = StringVar(root)
     popupmenu_var_door_open_hour.set(hours[0])
-    popupMenu = OptionMenu(root, popupmenu_var_door_open_hour, *hours, command=preview_file)
+    popupMenu = OptionMenu(root, popupmenu_var_door_open_hour, *hours, command=preview_ini_file)
     popupMenu.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=(12+8*is_mac)*ui_sketch_factor, height=5*ui_sketch_factor)
 
     xPos += 12+8*is_mac
@@ -952,7 +1039,7 @@ if __name__ == '__main__':
 
     popupmenu_var_door_open_minute = StringVar(root)
     popupmenu_var_door_open_minute.set(minutes[0])
-    popupMenu = OptionMenu(root, popupmenu_var_door_open_minute, *minutes, command=preview_file)
+    popupMenu = OptionMenu(root, popupmenu_var_door_open_minute, *minutes, command=preview_ini_file)
     popupMenu.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=(12+8*is_mac)*ui_sketch_factor, height=5*ui_sketch_factor)
 
     xPos = uiDoorGroupPos[0]+uiDoorGroupPos[4]
@@ -964,7 +1051,7 @@ if __name__ == '__main__':
 
     popupmenu_var_door_close_hour = StringVar(root)
     popupmenu_var_door_close_hour.set(hours[0])
-    popupMenu = OptionMenu(root, popupmenu_var_door_close_hour, *hours, command=preview_file)
+    popupMenu = OptionMenu(root, popupmenu_var_door_close_hour, *hours, command=preview_ini_file)
     popupMenu.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=(12+8*is_mac)*ui_sketch_factor, height=5*ui_sketch_factor)
 
     xPos += 12+8*is_mac
@@ -974,7 +1061,7 @@ if __name__ == '__main__':
 
     popupmenu_var_door_close_minute = StringVar(root)
     popupmenu_var_door_close_minute.set(minutes[0])
-    popupMenu = OptionMenu(root, popupmenu_var_door_close_minute, *minutes, command=preview_file)
+    popupMenu = OptionMenu(root, popupmenu_var_door_close_minute, *minutes, command=preview_ini_file)
     popupMenu.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=(12+8*is_mac)*ui_sketch_factor, height=5*ui_sketch_factor)
 
     xPos = uiDoorGroupPos[0]+uiDoorGroupPos[4]
@@ -983,7 +1070,7 @@ if __name__ == '__main__':
     check_var_door_remain_open = StringVar()
     check_door_remain_open = Checkbutton(root, text='Remain open', anchor='w',
                                          variable=check_var_door_remain_open,
-                                         onvalue='1', offvalue='0', command=partial(preview_file, None))
+                                         onvalue='1', offvalue='0', command=partial(preview_ini_file, None))
     check_door_remain_open.deselect()
     check_door_remain_open.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=30*ui_sketch_factor, height=5*ui_sketch_factor)
 
@@ -1001,7 +1088,7 @@ if __name__ == '__main__':
         delay.append(n)
     delay.append(60)
     popupmenu_var_door_open_delay.set(delay[0])
-    popupMenu = OptionMenu(root, popupmenu_var_door_open_delay, *delay, command=preview_file)
+    popupMenu = OptionMenu(root, popupmenu_var_door_open_delay, *delay, command=preview_ini_file)
     popupMenu.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=(12+8*is_mac)*ui_sketch_factor, height=5*ui_sketch_factor)
 
     xPos = uiDoorGroupPos[0]+uiDoorGroupPos[4]
@@ -1018,7 +1105,7 @@ if __name__ == '__main__':
         delay.append(n)
     delay.append(60)
     popupmenu_var_door_close_delay.set(delay[0])
-    popupMenu = OptionMenu(root, popupmenu_var_door_close_delay, *delay, command=preview_file)
+    popupMenu = OptionMenu(root, popupmenu_var_door_close_delay, *delay, command=preview_ini_file)
     popupMenu.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=(12+8*is_mac)*ui_sketch_factor, height=5*ui_sketch_factor)
 
     # Servomotor
@@ -1095,7 +1182,7 @@ if __name__ == '__main__':
     percent.append(90)
     percent.append(100)
     popupmenu_var_door_habit_percent.set(percent[0])
-    popupMenu = OptionMenu(root, popupmenu_var_door_habit_percent, *percent, command=preview_file)
+    popupMenu = OptionMenu(root, popupmenu_var_door_habit_percent, *percent, command=preview_ini_file)
     popupMenu.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=(12+8*is_mac)*ui_sketch_factor, height=5*ui_sketch_factor)
 
     # Reward
@@ -1108,7 +1195,7 @@ if __name__ == '__main__':
     check_var_reward_enable = StringVar()
     check_reward_enable = Checkbutton(root, text='Enable', anchor='w',
                                       variable=check_var_reward_enable,
-                                      onvalue='1', offvalue='0', command=partial(preview_file, None))
+                                      onvalue='1', offvalue='0', command=partial(preview_ini_file, None))
     check_reward_enable.deselect()
     check_reward_enable.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=30*ui_sketch_factor, height=5*ui_sketch_factor)
 
@@ -1125,7 +1212,7 @@ if __name__ == '__main__':
         timeout.append(n)
     timeout.append(60)
     popupmenu_var_reward_timeout.set(timeout[0])
-    popupMenu = OptionMenu(root, popupmenu_var_reward_timeout, *timeout, command=preview_file)
+    popupMenu = OptionMenu(root, popupmenu_var_reward_timeout, *timeout, command=preview_ini_file)
     popupMenu.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=(12+8*is_mac)*ui_sketch_factor, height=5*ui_sketch_factor)
 
     xPos -= 20
@@ -1137,7 +1224,7 @@ if __name__ == '__main__':
     popupmenu_var_reward_probability = IntVar(root)
     probability = [100, 90, 80, 75, 70, 66, 60, 50, 40, 33, 30, 20, 10, 0]
     popupmenu_var_reward_probability.set(probability[0])
-    popupMenu = OptionMenu(root, popupmenu_var_reward_probability, *probability, command=preview_file)
+    popupMenu = OptionMenu(root, popupmenu_var_reward_probability, *probability, command=preview_ini_file)
     popupMenu.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=(12+8*is_mac)*ui_sketch_factor, height=5*ui_sketch_factor)
 
     # Timeouts
@@ -1168,7 +1255,7 @@ if __name__ == '__main__':
         timeout.append(n)
     timeout.append(60)
     popupmenu_var_unique_visit_timeout.set(timeout[0])
-    popupMenu = OptionMenu(root, popupmenu_var_unique_visit_timeout, *timeout, command=preview_file)
+    popupMenu = OptionMenu(root, popupmenu_var_unique_visit_timeout, *timeout, command=preview_ini_file)
     popupMenu.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=(12+8*is_mac)*ui_sketch_factor, height=5*ui_sketch_factor)
 
     # Punishment
@@ -1187,7 +1274,7 @@ if __name__ == '__main__':
     for n in range(0, 35, 5):
         delay.append(n)
     popupmenu_var_punishment_delay.set(timeout[0])
-    popupMenu = OptionMenu(root, popupmenu_var_punishment_delay, *delay, command=preview_file)
+    popupMenu = OptionMenu(root, popupmenu_var_punishment_delay, *delay, command=preview_ini_file)
     popupMenu.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=(12+8*is_mac)*ui_sketch_factor, height=5*ui_sketch_factor)
 
     xPos = uiPunishmentGroupPos[0]+uiPunishmentGroupPos[4]
@@ -1200,7 +1287,7 @@ if __name__ == '__main__':
     popupmenu_var_probability_threshold = IntVar(root)
     threshold = [0, 10, 20, 30, 33, 40, 50, 60, 66, 70, 75, 80, 90, 100]
     popupmenu_var_probability_threshold.set(threshold[0])
-    popupMenu = OptionMenu(root, popupmenu_var_probability_threshold, *threshold, command=preview_file)
+    popupMenu = OptionMenu(root, popupmenu_var_probability_threshold, *threshold, command=preview_ini_file)
     popupMenu.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=(12+8*is_mac)*ui_sketch_factor, height=5*ui_sketch_factor)
 
     # Check
@@ -1213,7 +1300,7 @@ if __name__ == '__main__':
     check_var_food_level = StringVar()
     check_food_level = Checkbutton(root, text='Food level', anchor='w', \
                                          variable=check_var_food_level, \
-                                         onvalue='1', offvalue='0', command=partial(preview_file, None))
+                                         onvalue='1', offvalue='0', command=partial(preview_ini_file, None))
     check_food_level.deselect()
     check_food_level.place(x=xPos*ui_sketch_factor, y=yPos*ui_sketch_factor, width=30*ui_sketch_factor, height=5*ui_sketch_factor)
 
