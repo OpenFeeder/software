@@ -1,6 +1,6 @@
-function OF_events_bin_to_txt(binFile, eventFile, textFile)
+function OF_events_bin_to_txt(binFile, eventFile, textFile, separator)
 
-narginchk(0,3)
+narginchk(0,4)
 
 if nargin==0
     
@@ -19,6 +19,8 @@ if nargin==0
     end
     
     eventFile = fullfile(pathname, filename);
+    
+    separator = ' ';
     
 end
 
@@ -42,6 +44,6 @@ end
 
 fid = fopen(textFile, 'wt');
 for n = 1:size(ev,1)
-    fprintf(fid, '%02d:%02d:%02d %s\n', ev(n,1), ev(n,2), ev(n,3), X{ev(n,4)});
+    fprintf(fid, '%02d:%02d:%02d%s%s\n', ev(n,1), ev(n,2), ev(n,3), separator, X{ev(n,4)});
 end
 fclose(fid);
