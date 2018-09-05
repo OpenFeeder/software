@@ -1,9 +1,35 @@
-function OF_events_bin_to_usf(binFile, eventFile, usfFile, videoBeginTime, separator)
+function OF_events_to_usf(binFile, eventsFile, usfFile, videoBeginTime, separator)
+% Convert binary events file to Universal Subtitle Format (USF).
+%
+%   OF_events_to_usf(BINFILE, EVENTSFILE, USFFILE) reads the events from
+%   the files BINFILE and EVENTSFILE, converts them to the Universal
+%   Subtitle Format (USF) and store them in the file USFFILE.
+%
+%   OF_events_to_usf(___, ___, ___, VIDEOBEGINTIME) uses VIDEOBEGINTIME to
+%   synchronize the begin time of the subtitles. VIDEOBEGINTIME is a Nx3
+%   numercial array that contains time in the form [HH MM SS]. It can be
+%   passed as an empty array if no synchronization needed.
+%
+%   OF_events_to_usf(___, ___, ___, ___, SEPARATOR) uses SEPARATOR as a
+%   string separator in case of multiple events at the same time.
+%
+%   See also OF_events_read, OF_events_to_sub, OF_events_to_txt, OF_events_to_srt
+%
+%   More information on the Openfeeder project at:
+%   https://openfeeder.github.io/
+%
+
+% Author:  Jerome Briot
+% Contact: jbtechlab@gmail.com
+% Version: 1.0.0 - Sept. 04, 2018 - First release
+%
 
 stop_or_duration = 1;
 
+% Check number of input arguments
 narginchk(0,5)
 
+% If no input argument, select files via dialog
 if nargin==0
     
     [filename, pathname] = uigetfile('*.BIN', 'Get BIN file');
@@ -20,18 +46,26 @@ if nargin==0
         return
     end
     
-    eventFile = fullfile(pathname, filename);
+    eventsFile = fullfile(pathname, filename);
     
+end
+
+if nargin<4
     videoBeginTime = [];
+end
+
+if nargin<5
     separator = ',';
-    
 end
 
 if exist(binFile, 'file')~=2
     error('File "%s" not found', binFile)
 end
+if exist(eventsFile, 'file')~=2
+    error('File "%s" not found', eventsFile)
+end
 
-[ev, X] = OF_events_read_bin(binFile, eventFile);
+[ev, X] = OF_events_read(binFile, eventsFile);
 
 if nargin<3
     
@@ -93,7 +127,7 @@ for n = 2:size(ev,1)-1
         else
             fprintf(fid, '    <subtitle start="%02d:%02d:%02d.000" stop="%02d:%02d:%02d.000">\n      <text>%s</text>\n    </subtitle>\n',beginSubtitle(4:end), endSubtitle(4:end), subtitle);
         end
-          
+        
         dn_beginSubtitle = datenum([2000 1 1 ev(n,1:3)])-dn_videoBeginTime;
         
         beginSubtitle = datevec(dn_beginSubtitle);
@@ -101,6 +135,5 @@ for n = 2:size(ev,1)-1
     end
 end
 
-fprintf(fid, '  </subtitles>\n');
-fprintf(fid, '</USFSubtitles>\n');
+fprintf(fid, '  </subtitles>\n</USFSubtitles>\n');
 fclose(fid);

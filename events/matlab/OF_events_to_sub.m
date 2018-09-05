@@ -1,7 +1,33 @@
-function OF_events_bin_to_sub(binFile, eventFile, subFile, videoBeginTime, separator)
+function OF_events_to_sub(binFile, eventsFile, subFile, videoBeginTime, separator)
+% Convert binary events file to SubViewer subtitle format.
+%
+%   OF_events_to_srt(BINFILE, EVENTSFILE, SUBFILE) reads the events from
+%   the files BINFILE and EVENTSFILE, converts them to the SubRip subtitle
+%   format and store them in the file SUBFILE.
+%
+%   OF_events_to_srt(___, ___, ___, VIDEOBEGINTIME) uses VIDEOBEGINTIME to
+%   synchronize the begin time of the subtitles. VIDEOBEGINTIME is a Nx3
+%   numercial array that contains time in the form [HH MM SS]. It can be
+%   passed as an empty array if no synchronization needed.
+%
+%   OF_events_to_srt(___, ___, ___, ___, SEPARATOR) uses SEPARATOR as a
+%   string separator in case of multiple events at the same time.
+%
+%   See also OF_events_read, OF_events_to_srt, OF_events_to_txt, OF_events_to_usf
+%
+%   More information on the Openfeeder project at:
+%   https://openfeeder.github.io/
+%
 
+% Author:  Jerome Briot
+% Contact: jbtechlab@gmail.com
+% Version: 1.0.0 - Sept. 04, 2018 - First release
+%
+
+% Check number of input arguments
 narginchk(0,5)
 
+% If no input argument, select files via dialog
 if nargin==0
     
     [filename, pathname] = uigetfile('*.BIN', 'Get BIN file');
@@ -18,18 +44,26 @@ if nargin==0
         return
     end
     
-    eventFile = fullfile(pathname, filename);
+    eventsFile = fullfile(pathname, filename);
     
+end
+
+if nargin<4
     videoBeginTime = [];
+end
+
+if nargin<5
     separator = ',';
-    
 end
 
 if exist(binFile, 'file')~=2
     error('File "%s" not found', binFile)
 end
+if exist(eventsFile, 'file')~=2
+    error('File "%s" not found', eventsFile)
+end
 
-[ev, X] = OF_events_read_bin(binFile, eventFile);
+[ev, X] = OF_events_read(binFile, eventsFile);
 
 if nargin<3
     
@@ -77,15 +111,14 @@ for n = 2:size(ev,1)-1
         
         dn_endSubtitle = datenum([2000 1 1 ev(n,1:3)])-dn_videoBeginTime;
         endSubtitle = datevec(dn_endSubtitle);
-
+        
         fprintf(fid, '%02d:%02d:%02d.00,%02d:%02d:%02d.00\n%s\n\n',beginSubtitle(4:end), endSubtitle(4:end), subtitle);
-
+        
         dn_beginSubtitle = datenum([2000 1 1 ev(n,1:3)])-dn_videoBeginTime;
         
         beginSubtitle = datevec(dn_beginSubtitle);
         subtitle = strrep(X{ev(n,4)}, 'OF_', '');
     end
 end
-
 
 fclose(fid);
