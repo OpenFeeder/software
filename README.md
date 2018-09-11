@@ -1,11 +1,18 @@
-# ![Softwares](/img_softwares.gif?raw=true "Softwares")
+# Programs for the Openfeeder project
 
-Whether with MATLAB, Python or any other language or software, we provide the tools to use electronic devices and can study how to use the data collected to extract the result sets.
+This repo contains piece of software to interface with the electronic devices and to manage data collected.
+
+## Languages
+We provide codes in **MATLAB** and in **Python** which are extensively used in the scientific community.
 
 
-If you're interested in modifying or extending the OpenFeeder software or hardware, we strongly
-suggest discussing your ideas with the developers *before* starting to work on them.
-That way you can coordinate with the OpenFeeder Team and others, giving your work a higher chance
-of being integrated into the official release.
+## Acknowledgement
+Some programs from this repo contains codes from:
+- [minIni](https://github.com/compuphase/minIni) by CompuPhase 
 
-*Contact [Developer Team](mailto:arnauld.biganzoli@gmail.com,jbtechlab@gmail.com)*
+## License
+Codes are licensed under the terms of the BSD-2-Clause License. Please see the License.txt file for full details.
+
+## Contact
+
+If you're interested in modifying or extending the OpenFeeder software, we strongly suggest discussing your ideas with the developers *before* starting to work on them. Contact: [Developer Team](mailto:arnauld.biganzoli@gmail.com,jbtechlab@gmail.com)
