@@ -10,6 +10,8 @@ import sys
 import platform
 import os
 
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
 from subtitles import OF_subtitles
 
 
