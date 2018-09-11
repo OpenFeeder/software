@@ -11,7 +11,7 @@ Some programs from this repo contains codes from:
 - [minIni](https://github.com/compuphase/minIni) by CompuPhase 
 
 ## License
-Codes are licensed under the terms of the BSD-2-Clause License. Please see the License.txt file for full details.
+Codes are licensed under the terms of the BSD-2-Clause License.
 
 ## Contact
 
