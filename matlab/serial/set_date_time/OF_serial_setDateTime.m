@@ -56,6 +56,8 @@ for n = 1:2
         fwrite(ser, uint8(['S' datevec(PC_time)-[2000 0 0 0 0 0]]))
     end
         
+    pause(delay)
+    
     % Query OF date and time
     fwrite(ser, uint8('T'))
     
