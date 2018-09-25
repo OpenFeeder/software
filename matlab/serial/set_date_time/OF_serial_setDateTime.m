@@ -44,6 +44,7 @@ if t>0.5
 end
 
 num = 12;
+maxTime = 5;
 
 for n = 1:2
     
@@ -57,8 +58,20 @@ for n = 1:2
         
     % Query OF date and time
     fwrite(ser, uint8('T'))
-    while(ser.BytesAvailable<num)
+    
+    tic;
+    while(ser.BytesAvailable<num)        
+        t = toc;
+        if t>maxTime
+            if ser.BytesAvailable==0
+                error('No reply from the OF after %ds (iteration %d).\nNo data received', maxTime, n);
+            else
+                c = fread(ser, [1 ser.BytesAvailable], '*char');
+                error('No reply from the OF after %ds (iteration %d).\n%d characters received: %s', maxTime, n, c);
+            end
+        end
     end
+    
     OF_time = fread(ser, [1 ser.BytesAvailable]);
     
     if ~any(OF_time(7:end))
