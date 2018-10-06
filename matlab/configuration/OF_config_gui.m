@@ -72,6 +72,7 @@ uiServoGroupPos      =   [95 127 50 5 2 5];
 uiDoorHabitGroupPos  =   [95 92 50 5 2 5];
 uiRewardGroupPos     =   [95 81 48 5 2 5];
 uiTimeoutsGroupPos   =   [95 56 48 5 2 5];
+uiSecurityGroupPos   =   [95 41 48 5 2 5];
 uiPunishmentGroupPos =   [95 30 50 5 2 5];
 uiCheckGroupPos      =   [95 11 50 5 2 5];
 uiPreviewGroupPos    =   [145+5*ismac 170 50 5 2 148];
@@ -1085,6 +1086,25 @@ uicontrol(fig, ...
     'callback', @previewIniFile, ...
     'enable', 'on');
 
+%% Security
+uicontrol(fig, ...
+    'style', 'text', ...
+    'units', 'pixels', ...
+    'position', uiSecurityGroupPos(1:4)*uiSketchfactor, ...
+    'string', 'Security', ...
+    'horizontalalignment', 'left', ...
+    'fontweight', 'bold');
+xPos = uiSecurityGroupPos(1)+uiSecurityGroupPos(5);
+yPos = uiSecurityGroupPos(2)-uiSecurityGroupPos(6);
+uicontrol(fig, ...
+    'style', 'checkbox', ...
+    'units', 'pixels', ...
+    'position', [xPos yPos 30 5]*uiSketchfactor, ...
+    'string', 'Bird reward reopen', ...
+    'value', 0, ...
+    'tag', 'uiSecurityBirdRewReopen', ...
+    'callback', @previewIniFile);
+
 %% Punishment
 uicontrol(fig, ...
     'style', 'text', ...
@@ -1317,12 +1337,15 @@ switch scenarios{val}
             handles.uiRadioPitTags4], 'value', 0, 'enable', 'off', 'string', '')
         set(handles.uiPitTagsButtonLoad, 'enable', 'off')
         
+        % Security
+        set(handles.uiSecurityBirdRewReopen, 'value', 0)
+        
         % Timeouts
         set(handles.uiUniqueVisitTimeout, 'enable', 'on', 'value', 1)
         
         % Check
         set(handles.uiCheckFoodLevel, 'value', 0)
-                
+        
     case 'Open Bar'
         
         % Time
@@ -1384,13 +1407,16 @@ switch scenarios{val}
         set(handles.uiRewardTimeout, 'value', 6)
         set(handles.uiRewardProbability, 'enable', 'off')
         
+        % Security
+        set(handles.uiSecurityBirdRewReopen, 'value', 0)
+        
         % Punishment
         set(handles.uiPunishmentDelay, 'enable', 'off')
         set(handles.uiPunishmentProbaThreshold, 'enable', 'off')
         
         % Check
         set(handles.uiCheckFoodLevel, 'value', 0)
-
+        
     case 'Door Habituation'
         
         % Time
@@ -1450,7 +1476,7 @@ switch scenarios{val}
         
         % Door habituation
         set(handles.uiDoorHabitPercent, 'enable', 'on');
-
+        
         % Timeouts
         set(handles.uiUniqueVisitTimeout, 'enable', 'off', 'value', 1)
         
@@ -1459,11 +1485,14 @@ switch scenarios{val}
         set(handles.uiRewardTimeout, 'value', 6)
         set(handles.uiRewardProbability, 'enable', 'off')
         
+        % Security
+        set(handles.uiSecurityBirdRewReopen, 'value', 1)
+        
         % Punishment
         set(handles.uiPunishmentDelay, 'enable', 'off')
         set(handles.uiPunishmentProbaThreshold, 'enable', 'off')
         
-         % Check
+        % Check
         set(handles.uiCheckFoodLevel, 'value', 0)
         
     case 'Go-No go'
@@ -1532,6 +1561,9 @@ switch scenarios{val}
         
         % Timeouts
         set(handles.uiUniqueVisitTimeout, 'enable', 'off', 'value', 1)
+        
+        % Security
+        set(handles.uiSecurityBirdRewReopen, 'value', 1)
         
         % Punishment
         set(handles.uiPunishmentDelay, 'value', 3, 'enable', 'on')
@@ -1607,6 +1639,9 @@ switch scenarios{val}
         % Timeouts
         set(handles.uiUniqueVisitTimeout, 'enable', 'off', 'value', 1)
         
+        % Security
+        set(handles.uiSecurityBirdRewReopen, 'value', 1)
+        
         % Punishment
         set(handles.uiPunishmentDelay, 'value', 3)
         set(handles.uiPunishmentProbaThreshold, 'enable', 'off')
@@ -1681,6 +1716,9 @@ switch scenarios{val}
         % Timeouts
         set(handles.uiUniqueVisitTimeout, 'enable', 'off', 'value', 1)
         
+        % Security
+        set(handles.uiSecurityBirdRewReopen, 'value', 1)
+        
         % Punishment
         set(handles.uiPunishmentDelay, 'value', 3, 'enable', 'on')
         set(handles.uiPunishmentProbaThreshold, 'enable', 'off')
@@ -1749,6 +1787,9 @@ switch scenarios{val}
         
         % Timeouts
         set(handles.uiUniqueVisitTimeout, 'enable', 'off', 'value', 1)
+        
+        % Security
+        set(handles.uiSecurityBirdRewReopen, 'value', 1)
         
         % Punishment
         set(handles.uiPunishmentDelay, 'value', 3, 'enable', 'on')
@@ -1822,6 +1863,9 @@ switch scenarios{val}
         % Timeouts
         set(handles.uiUniqueVisitTimeout, 'enable', 'off', 'value', 1)
         
+        % Security
+        set(handles.uiSecurityBirdRewReopen, 'value', 1)
+        
         % Punishment
         set(handles.uiPunishmentDelay, 'value', 3, 'enable', 'on')
         set(handles.uiPunishmentProbaThreshold, 'enable', 'off')
@@ -1893,6 +1937,9 @@ switch scenarios{val}
         
         % Timeouts
         set(handles.uiUniqueVisitTimeout, 'enable', 'on', 'value', 6)
+        
+        % Security
+        set(handles.uiSecurityBirdRewReopen, 'value', 1)
         
         % Punishment
         set(handles.uiPunishmentDelay, 'value', 3, 'enable', 'on')
@@ -2518,6 +2565,12 @@ end
 % val = get(handles.uiPIRTimeout, 'value');
 % handles.config.timeouts.pir = int32(str2double(str{val}));
 
+% Security
+if handles.config.scenario.num>1
+    val = get(handles.uiSecurityBirdRewReopen, 'value');
+    handles.config.security.bird_reward_reopen = val==1;
+end
+
 % Punishment
 if handles.config.scenario.num>2
     str = get(handles.uiPunishmentDelay, 'string');
@@ -2528,7 +2581,7 @@ end
 if handles.config.scenario.num==8
     str = get(handles.uiPunishmentProbaThreshold, 'string');
     val = get(handles.uiPunishmentProbaThreshold, 'value');
-    handles.config.punishment.proba_threshold = int32(str2double(str{val}));    
+    handles.config.punishment.proba_threshold = int32(str2double(str{val}));
 end
 
 %Check
@@ -2855,6 +2908,13 @@ end
 %     set(handles.uiPIRTimeout, 'value', 1, 'enable', 'off')
 % end
 
+% Security
+if handles.config.security.bird_reward_reopen==-1
+    set(handles.uiSecurityBirdRewReopen, 'value', 1)
+else
+    set(handles.uiSecurityBirdRewReopen, 'value', handles.config.security.bird_reward_reopen)
+end
+
 %% Punishment
 if handles.config.punishment.delay~=-1
     str = get(handles.uiPunishmentDelay, 'string');
@@ -3061,12 +3121,15 @@ config.timeouts.sleep = ini_getl('timeouts', 'sleep', -1, filename);
 config.timeouts.pir = ini_getl('timeouts', 'pir', -1, filename);
 config.timeouts.unique_visit = ini_getl('timeouts', 'unique_visit', -1, filename);
 
+%%Security
+config.security.bird_reward_reopen = ini_getl('security', 'bird_reward_reopen', -1, filename);
+
 %%Punishment
 config.punishment.delay = ini_getl('punishment', 'delay', -1, filename);
-config.punishment.proba_threshold = ini_getl('punishment', 'proba_threshold', -1, filename); 
+config.punishment.proba_threshold = ini_getl('punishment', 'proba_threshold', -1, filename);
 
 %Check
-config.check.food_level = ini_getl('check', 'food_level', -1, filename); 
+config.check.food_level = ini_getl('check', 'food_level', -1, filename);
 
 function OF_writeIni(config, pathname, filename)
 
