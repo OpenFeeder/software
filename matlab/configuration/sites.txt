@@ -1,5 +1,8 @@
 M1,Moulis,France
-G1,Gajan
+G1,nord,noyer
+G2,ouest,maison
+G3,sud,poulailler
+G4,est,jacques
 C1,Cescau bas
 C4,Cescau haut
 L1,Lab
