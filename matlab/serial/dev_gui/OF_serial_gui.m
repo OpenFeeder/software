@@ -11,7 +11,7 @@ autoscroll = 1;
 
 echoCommands = true;
 delay = 0.03;
-s = [];
+ser = [];
 
 text_color.state = [0 128 0];
 text_color.command = [255 24 230];
@@ -126,9 +126,18 @@ uiPopSecond = uicontrol(fig, ...
     'fontweight', 'bold', ...
     'value', 1+str2double(datestr(now, 'SS')));
 
-uiButtonCloseDoor = uicontrol(fig, ...
+uiSynchroDoor = uicontrol(fig, ...
     'units', 'pixels', ...
     'position', [5 45 20 10]*uiSketchfactor, ...
+    'fontweight', 'bold', ...
+    'string', 'Synchro PC <=> OF', ...
+    'tag', 'uiSynchroDoor', ...
+    'enable', 'off', ...
+    'callback', @synchroTime);
+
+uiButtonCloseDoor = uicontrol(fig, ...
+    'units', 'pixels', ...
+    'position', [5 30 20 10]*uiSketchfactor, ...
     'fontweight', 'bold', ...
     'string', 'Close door', ...
     'tag', 'uiButtonCloseDoor', ...
@@ -136,7 +145,7 @@ uiButtonCloseDoor = uicontrol(fig, ...
     'callback', @closeDoor);
 uiButtonOpenDoor = uicontrol(fig, ...
     'units', 'pixels', ...
-    'position', [30 45 20 10]*uiSketchfactor, ...
+    'position', [30 30 20 10]*uiSketchfactor, ...
     'fontweight', 'bold', ...
     'string', 'Open door', ...
     'tag', 'uiButtonOpenDoor', ...
@@ -198,32 +207,32 @@ autoscrollmenu = uimenu(hcmenu, 'Label', 'Auto scroll', 'Callback', @toggleAutoS
     'checked', 'on');
 set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
 
-    function connectCOM(obj, event)
+    function connectCOM(~, ~)
         
-        s = instrfind('Port', comPort);
+        ser = instrfind('Port', comPort);
         
-        if isempty(s)
-            s = serial(comPort, ...
+        if isempty(ser)
+            ser = serial(comPort, ...
                 'Terminator', {'CR/LF', '' }, ...
                 'Timeout', 2, ...
                 'BytesAvailableFcnMode', 'terminator', ...
                 'BytesAvailableFcn', @readDataFromOF);
             pause(delay)
-            fopen(s);
+            fopen(ser);
         else
-            if ~strcmp(s.Status, 'open')
-                fopen(s);
+            if ~strcmp(ser.Status, 'open')
+                fopen(ser);
             end
             
-            set(s, 'Terminator', {'CR/LF', '' }, ...
+            set(ser, 'Terminator', {'CR/LF', '' }, ...
                 'Timeout', 2, ...
                 'BytesAvailableFcnMode', 'terminator', ...
                 'BytesAvailableFcn', @readDataFromOF);
         end
         
         % Purge input buffer
-        while(s.BytesAvailable>0)
-            fscanf(s);
+        while(ser.BytesAvailable>0)
+            fscanf(ser);
             pause(delay);
         end
         
@@ -232,6 +241,7 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
         set(uiButtonSetCurrentDate, 'enable', 'on')
         set(uiButtonGetCurrentDate, 'enable', 'on')
         set(uiButtonSetDate, 'enable', 'on')
+        set(uiSynchroDoor, 'enable', 'on')
         set(uiButtonOpenDoor, 'enable', 'on')
         set(uiButtonCloseDoor, 'enable', 'on')
         set(uiButtonEmptyBuffer, 'enable', 'on')
@@ -240,25 +250,26 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
         
     end
 
-    function disconnectCOM(obj, event)
+    function disconnectCOM(~, ~)
         
-        if strcmp(s.Status, 'open')
-            fclose(s);
+        if strcmp(ser.Status, 'open')
+            fclose(ser);
         end
         
-        delete(s)
+        delete(ser)
         
         set(uiButtonConnect, 'enable', 'on')
         set(uiButtonDisconnect, 'enable', 'off')
         set(uiButtonSetCurrentDate, 'enable', 'off')
         set(uiButtonGetCurrentDate, 'enable', 'off')
         set(uiButtonSetDate, 'enable', 'off')
+        set(uiSynchroDoor, 'enable', 'on')
         set(uiButtonOpenDoor, 'enable', 'off')
         set(uiButtonCloseDoor, 'enable', 'off')
         set(uiButtonEmptyBuffer, 'enable', 'off')
         
-         set(fig, 'name', 'OpenFeeder - Serial interface - Not connected')
-         
+        set(fig, 'name', 'OpenFeeder - Serial interface - Not connected')
+        
     end
 
     function populateCommunicationWindow(substr)
@@ -266,7 +277,7 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
         
         if ~isempty(substr) && substr(1) == '>'
             
-             substr = sprintf('<html><font color="#%02X%02X%02X"><b>%s</b></font></html>', ...
+            substr = sprintf('<html><font color="#%02X%02X%02X"><b>%s</b></font></html>', ...
                 text_color.state(1), ...
                 text_color.state(2), ...
                 text_color.state(3), ...
@@ -287,9 +298,9 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
         
     end
 
-    function readDataFromOF(obj, event)
-
-        tmp = fscanf(s);
+    function readDataFromOF(~, ~)
+        
+        tmp = fscanf(ser);
         tmp = strrep(tmp,[13 10], '');
         str = strrep(tmp, 9, [32 32 32]);
         
@@ -297,7 +308,7 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
         
     end
 
-    function clearComWindow(obj, event, flag)
+    function clearComWindow(~, ~, flag)
         
         if strcmpi(flag, 'all')
             set(uiCommunicationWindow, 'string', {}, 'value', 0)
@@ -308,12 +319,12 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
                 return
             end
             str(idx) = [];
-
+            
             set(uiCommunicationWindow, 'string', str, 'value', idx(1)-1)
         end
     end
 
-    function copyComWindow(obj, event, flag)
+    function copyComWindow(~, ~, flag)
         
         if strcmpi(flag, 'all')
             str = get(uiCommunicationWindow, 'string');
@@ -322,7 +333,7 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
             str = get(uiCommunicationWindow, 'string');
             str = str(idx);
         end
-
+        
         str = removeTextDecoration(str);
         str = sprintf('%s\n', str{:});
         clipboard('copy', str)
@@ -333,7 +344,7 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
         
         fn = fieldnames(text_color);
         
-        for n = 1:numel(fn)           
+        for n = 1:numel(fn)
             html = sprintf('<html><font color="#%02X%02X%02X"><b>', text_color.(fn{n})(1), text_color.(fn{n})(2), text_color.(fn{n})(3));
             str = strrep(str, html, '');
         end
@@ -341,8 +352,8 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
         
     end
 
-    function keyPressComWindow(obj, event)
-
+    function keyPressComWindow(~, event)
+        
         if strcmp(event.Key, 'shift') || strcmp(event.Key, 'alt') || strcmp(event.Key, 'control')
             return
         end
@@ -364,26 +375,26 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
             populateCommunicationWindow(str)
             
         end
-        fprintf(s, arg, 'async');
+        fprintf(ser, arg, 'async');
         pause(delay)
         
     end
 
-    function setCurrentDate(obj, event)
+    function setCurrentDate(~, ~)
         
         if echoCommands
             str = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', 'S');
             populateCommunicationWindow(str)
         end
-
+        
         v = datevec (now);
         v(1) = v(1)-2000;
-
-        fwrite(s, uint8(['S' v]), 'async')
-
+        
+        fwrite(ser, uint8(['S' v]), 'async')
+        
     end
 
-    function setDate(obj, event)
+    function setDate(~, ~)
         
         if echoCommands
             str = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', 'S');
@@ -398,7 +409,7 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
         V(2) = str2double(str{val});
         val = get(uiPopDay, 'value');
         str = get(uiPopDay, 'string');
-        V(3) = str2double(str{val});        
+        V(3) = str2double(str{val});
         val = get(uiPopHour, 'value');
         str = get(uiPopHour, 'string');
         V(4) = str2double(str{val});
@@ -408,48 +419,160 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
         val = get(uiPopSecond, 'value');
         str = get(uiPopSecond, 'string');
         V(6) = str2double(str{val});
-
-        fwrite(s, uint8(['S' V]), 'async')
+        
+        fwrite(ser, uint8(['S' V]), 'async')
         
     end
 
-    function getCurrentDate(obj, event)
+    function getCurrentDate(~, ~)
         
         if echoCommands
             str = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', 't');
             populateCommunicationWindow(str)
         end
         
-        fprintf(s, 't', 'async');
+        fprintf(ser, 't', 'async');
         
     end
 
-    function openDoor(obj, event)
+    function synchroTime(~, ~)
+        
+        num = 12;
+        maxTime = 5;
+        
+        for n = 1:2
+            
+            % Query PC date and time
+            PC_time = now;
+            
+            % Dont synchronize OF date and time during the first iteration to allow offsets computation
+            if n > 1
+                fwrite(ser, uint8(['S' datevec(PC_time)-[2000 0 0 0 0 0]]))
+            end
+            
+            %     pause(delay)
+            
+            % Query OF date and time
+            fwrite(ser, uint8('T'))
+            
+            tic;
+            while(ser.BytesAvailable<num)
+                t = toc;
+                if t>maxTime
+                    if ser.BytesAvailable==0
+                        error('No reply from the OF after %ds (iteration %d).\nNo data received', maxTime, n);
+                    else
+                        c = fread(ser, [1 ser.BytesAvailable], '*char');
+                        error('No reply from the OF after %ds (iteration %d).\n%d characters received: %s', maxTime, n, c);
+                    end
+                end
+            end
+            
+            OF_time = fread(ser, [1 ser.BytesAvailable]);
+            
+            if ~any(OF_time(7:end))
+                ext_rtc_available = false;
+            else
+                ext_rtc_available = true;
+            end
+            
+            % Print dates and times in the console
+            str = sprintf('\nPC : %s', datestr(PC_time, 'dd/mm/yyyy HH:MM:SS'));
+            populateCommunicationWindow(str)
+            str = sprintf('PIC: %02d/%02d/20%02d %02d:%02d:%02d', OF_time(3), OF_time(2), OF_time(1) , OF_time(4), OF_time(5), OF_time(6));
+            populateCommunicationWindow(str)
+            if ext_rtc_available
+                str = sprintf('EXT: %02d/%02d/20%02d %02d:%02d:%02d', OF_time(9), OF_time(8), OF_time(7), OF_time(10), OF_time(11), OF_time(12));
+            else
+                str = sprintf('EXT: --/--/---- --:--:--');
+            end
+            populateCommunicationWindow(str)
+            
+            % Compute offset between PC and PIC date and time
+            PIC_time = datenum(OF_time(1:6)+[2000 0 0 0 0 0]);
+            
+            if PC_time > PIC_time
+                delta = PC_time-PIC_time;
+                s = '+';
+            else
+                delta = PIC_time-PC_time;
+                s = '-';
+            end
+            
+            delta = datevec(delta);
+            
+            if delta(3) < 1                
+                if delta(6)>9
+                    str = sprintf('\nDiff PC-PIC: %c%02d:%02d:%.3f (%e)', s, delta(4:6) , datenum(delta));
+                else
+                    str = sprintf('\nDiff PC-PIC: %c%02d:%02d:0%.3f (%e)', s, delta(4:6) , datenum(delta));
+                end
+            else
+                str = sprintf('\nDiff PC-PIC: greater than one day (%e)', datenum(delta));
+            end
+            populateCommunicationWindow(str)
+            
+            % Compute offset between PC and external module date and time (if available)
+            if ext_rtc_available
+                
+                EXT_time = datenum(OF_time(7:end)+[2000 0 0 0 0 0]);
+                
+                if PC_time > EXT_time
+                    delta = PC_time-EXT_time;
+                    s = '+';
+                else
+                    delta = EXT_time-PC_time;
+                    s = '-';
+                end
+                
+                delta = datevec(delta);
+                
+                if delta(3) < 1                    
+                    if delta(6)>9
+                        str = sprintf('Diff PC-EXT: %c%02d:%02d:%.3f (%e)', s, delta(4:6) , datenum(delta));
+                    else
+                        str = sprintf('Diff PC-EXT: %c%02d:%02d:0%.3f (%e)', s, delta(4:6) , datenum(delta));
+                    end                    
+                else
+                    str = sprintf('Diff PC-EXT: greater than one day (%e)', datenum(delta));
+                end
+                populateCommunicationWindow(str)
+                
+            else
+                str = sprintf('Diff PC-EXT:  --:--:--.--- (0)');
+                populateCommunicationWindow(str)
+            end
+            
+        end
+        
+    end
+
+    function openDoor(~, ~)
         
         if echoCommands
             str = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', 'o');
             populateCommunicationWindow(str)
         end
         
-        fprintf(s, 'o', 'async');
-        pause(delay)        
+        fprintf(ser, 'o', 'async');
+        pause(delay)
         set(uiButtonSliderDoor, 'value', ton_max)
     end
 
 
-    function closeDoor(obj, event)
+    function closeDoor(~, ~)
         
         if echoCommands
             str = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', 'c');
             populateCommunicationWindow(str)
         end
         
-        fprintf(s, 'c', 'async');
+        fprintf(ser, 'c', 'async');
         pause(delay)
         set(uiButtonSliderDoor, 'value', ton_min)
     end
 
-    function setDoorPosition(obj, event)
+    function setDoorPosition(obj, ~)
         
         val = get(obj, 'value');
         val = uint16(round(val));
@@ -459,46 +582,46 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
             populateCommunicationWindow(str)
         end
         
-        fprintf(s, 'p', 'async');
+        fprintf(ser, 'p', 'async');
         pause(delay)
         strv = num2str(val, '%04d');
-        if echoCommands            
-            for n = 1:numel(strv)                
+        if echoCommands
+            for n = 1:numel(strv)
                 str = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', strv(n));
-                populateCommunicationWindow(str)                
-            end            
+                populateCommunicationWindow(str)
+            end
         end
         
-        fprintf(s, strv, 'async');
+        fprintf(ser, strv, 'async');
         pause(delay)
         
     end
 
-    function toggleAutoScroll(obj, event)
-       
+    function toggleAutoScroll(~, ~)
+        
         autoscroll = ~autoscroll;
         if autoscroll
-           set(autoscrollmenu, 'checked', 'on');
+            set(autoscrollmenu, 'checked', 'on');
         else
             set(autoscrollmenu, 'checked', 'off');
         end
         
     end
 
-    function empty_uart_buffer(obj, event)
+    function empty_uart_buffer(~, ~)
         
-        while(s.BytesAvailable>0)
-            fscanf(s);
+        while(ser.BytesAvailable>0)
+            fscanf(ser);
             pause(delay)
         end
         
     end
 
-    function closeCOMWindow(obj, event)
+    function closeCOMWindow(~, ~)
         
-        s = instrfind('Port', comPort);
+        ser = instrfind('Port', comPort);
         
-        if ~isempty(s)
+        if ~isempty(ser)
             
             disconnectCOM([],[])
             
