@@ -62,7 +62,6 @@ beginSubtitle = datevec(dn_beginSubtitle);
 
 subtitle = strrep(X{ev(1,4)}, 'OF_', '');
 
-
 for n = 2:size(ev,1)-1
     
     if all(ev(n,1:3)==ev(n-1,1:3))
@@ -74,13 +73,20 @@ for n = 2:size(ev,1)-1
         dn_endSubtitle = datenum([2000 1 1 ev(n,1:3)])-dn_videoBeginTime;
         endSubtitle = datevec(dn_endSubtitle);
         
-        fprintf(fid, '%d\n%02d:%02d:%02d,000 --> %02d:%02d:%02d,000\n%s\n\n', sectionNumber, beginSubtitle(4:end), endSubtitle(4:end), subtitle);
+        if dn_beginSubtitle>=0 && dn_endSubtitle>0
+            fprintf(fid, '%d\n%02d:%02d:%02d,000 --> %02d:%02d:%02d,000\n%s\n\n', sectionNumber, beginSubtitle(4:end), endSubtitle(4:end), subtitle);
+            sectionNumber = sectionNumber+1;
+        elseif dn_beginSubtitle<0 && dn_endSubtitle>0
+            fprintf(fid, '%d\n00:00:00,000 --> %02d:%02d:%02d,000\n%s\n\n', sectionNumber, endSubtitle(4:end), subtitle);
+            sectionNumber = sectionNumber+1;
+        else
+            sectionNumber = 1;
+        end
         
         dn_beginSubtitle = datenum([2000 1 1 ev(n,1:3)])-dn_videoBeginTime;
         
         beginSubtitle = datevec(dn_beginSubtitle);
-        
-        sectionNumber = sectionNumber+1;
+
         subtitle = strrep(X{ev(n,4)}, 'OF_', '');
     end
 end

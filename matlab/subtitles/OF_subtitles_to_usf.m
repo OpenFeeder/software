@@ -90,11 +90,19 @@ for n = 2:size(ev,1)-1
         
         dn_duration = dn_endSubtitle-dn_beginSubtitle;
         duration = datevec(dn_duration);
-        
-        if stop_or_duration
-            fprintf(fid, '    <subtitle start="%02d:%02d:%02d.000" duration="%02d:%02d:%02d.000">\n      <text>%s</text>\n    </subtitle>\n',beginSubtitle(4:end), duration(4:end), subtitle);
-        else
-            fprintf(fid, '    <subtitle start="%02d:%02d:%02d.000" stop="%02d:%02d:%02d.000">\n      <text>%s</text>\n    </subtitle>\n',beginSubtitle(4:end), endSubtitle(4:end), subtitle);
+
+        if dn_beginSubtitle>=0 && dn_endSubtitle>0
+            if stop_or_duration
+                fprintf(fid, '    <subtitle start="%02d:%02d:%02d.000" duration="%02d:%02d:%02d.000">\n      <text>%s</text>\n    </subtitle>\n',beginSubtitle(4:end), duration(4:end), subtitle);
+            else
+                fprintf(fid, '    <subtitle start="%02d:%02d:%02d.000" stop="%02d:%02d:%02d.000">\n      <text>%s</text>\n    </subtitle>\n',beginSubtitle(4:end), endSubtitle(4:end), subtitle);
+            end
+        elseif dn_beginSubtitle<0 && dn_endSubtitle>0
+            if stop_or_duration
+                fprintf(fid, '    <subtitle start="00:00:00.000" duration="%02d:%02d:%02d.000">\n      <text>%s</text>\n    </subtitle>\n', duration(4:end), subtitle);
+            else
+                fprintf(fid, '    <subtitle start="00:00:00.000" stop="%02d:%02d:%02d.000">\n      <text>%s</text>\n    </subtitle>\n', endSubtitle(4:end), subtitle);
+            end
         end
         
         dn_beginSubtitle = datenum([2000 1 1 ev(n,1:3)])-dn_videoBeginTime;

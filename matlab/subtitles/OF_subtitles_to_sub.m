@@ -81,7 +81,11 @@ for n = 2:size(ev,1)-1
         dn_endSubtitle = datenum([2000 1 1 ev(n,1:3)])-dn_videoBeginTime;
         endSubtitle = datevec(dn_endSubtitle);
         
-        fprintf(fid, '%02d:%02d:%02d.00,%02d:%02d:%02d.00\n%s\n\n',beginSubtitle(4:end), endSubtitle(4:end), subtitle);
+        if dn_beginSubtitle>=0 && dn_endSubtitle>0
+            fprintf(fid, '%02d:%02d:%02d.00,%02d:%02d:%02d.00\n%s\n\n',beginSubtitle(4:end), endSubtitle(4:end), subtitle);
+        elseif dn_beginSubtitle<0 && dn_endSubtitle>0
+            fprintf(fid, '00:00:00.00,%02d:%02d:%02d.00\n%s\n\n', endSubtitle(4:end), subtitle);
+        end
         
         dn_beginSubtitle = datenum([2000 1 1 ev(n,1:3)])-dn_videoBeginTime;
         
