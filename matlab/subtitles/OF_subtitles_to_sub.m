@@ -21,6 +21,7 @@ function OF_subtitles_to_sub(ev, X, subFile, videoBeginTime, separator)
 % Author:  Jerome Briot
 % Contact: jbtechlab@gmail.com
 % Version: 1.0.0 - Sept. 04, 2018 - First release
+%          1.1.0 -  Oct. 04, 2018 - Improve robustness (videoBeginTime)
 %
 
 % Check number of input arguments
