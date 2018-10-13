@@ -44,7 +44,7 @@ if nargin==0
 end
 
 if nargin<4
-    separator = ';';
+    separator = ',';
 end
 
 if exist(binFile, 'file')~=2
@@ -54,7 +54,7 @@ if exist(eventsFile, 'file')~=2
     error('File "%s" not found', eventsFile)
 end
 
-[ev, X] = OF_events_read(binFile, eventsFile);
+[ev, X] = OF_events_readable_read(binFile, eventsFile);
 
 if nargin<3
     
