@@ -1,0 +1,408 @@
+VERSION
+8
+
+COMMSETTINGS
+0
+COM17
+COM1
+9600
+2
+63
+4
+0
+0
+
+COMMDISPLAY
+0
+
+SEND
+2
+Commands
+
+0
+5
+
+SEND
+2
+    Display commands
+3F
+0
+5
+
+SEND
+2
+Attractive LEDs
+
+0
+5
+
+SEND
+2
+    Set blue component
+61 62
+0
+5
+
+SEND
+2
+    Set green component
+61 67
+0
+5
+
+SEND
+2
+    Initialize
+61 69
+0
+5
+
+SEND
+2
+    Set red component
+61 72
+0
+5
+
+SEND
+2
+    Test LEDs
+61 74
+0
+5
+
+SEND
+2
+Data buffers
+
+0
+5
+
+SEND
+2
+    Display buffers
+62
+0
+5
+
+SEND
+2
+Configuration
+
+0
+5
+
+SEND
+2
+    Display configuration parameters
+63 64
+0
+5
+
+SEND
+2
+    Reconfigure the system
+63 72
+0
+5
+
+SEND
+2
+Door
+
+0
+5
+
+SEND
+2
+    Open
+64 6F
+0
+5
+
+SEND
+2
+    Close
+64 63
+0
+5
+
+SEND
+2
+    Set position
+64 70
+0
+5
+
+SEND
+2
+    Toggle remain open
+64 72
+0
+5
+
+SEND
+2
+Firmware
+
+0
+5
+
+SEND
+2
+    Display firmware version
+66
+0
+5
+
+SEND
+2
+Hardware
+
+0
+5
+
+SEND
+2
+    Display hardware information
+68
+0
+5
+
+SEND
+2
+IR barriers
+
+0
+5
+
+SEND
+2
+    Toggle IR barriers power
+69 70
+0
+5
+
+SEND
+2
+    Get IR barriers status
+69 73
+0
+5
+
+SEND
+2
+File I/O
+
+0
+5
+
+SEND
+2
+    Display CSV files
+6A 63
+0
+5
+
+SEND
+2
+    Display errors file
+6A 65
+0
+5
+
+SEND
+2
+    Display CONFIG.INI
+6A 69
+0
+5
+
+SEND
+2
+    List files
+6A 6C
+0
+5
+
+SEND
+2
+USB device
+
+0
+5
+
+SEND
+2
+    Get USB device properties
+6B
+0
+5
+
+SEND
+2
+I2C
+
+0
+5
+
+SEND
+2
+    I2C scanner
+6C
+0
+5
+
+SEND
+2
+Measures
+
+0
+5
+
+SEND
+2
+    Battery level
+6D 62
+0
+5
+
+SEND
+2
+    CTMU
+6D 63
+0
+5
+
+SEND
+2
+    Servo position
+6D 64
+0
+5
+
+SEND
+2
+    RFID frequency
+6D 72
+0
+5
+
+SEND
+2
+    VBat level
+6D 76
+0
+5
+
+SEND
+2
+Power
+
+0
+5
+
+SEND
+2
+    toggle servomotor power
+70 31
+0
+5
+
+SEND
+2
+    toggle CMD_ACC_PIR power
+70 32
+0
+5
+
+SEND
+2
+    toggle CMD_VDD_APP_V_USB power
+70 33
+0
+5
+
+SEND
+2
+    toggle IR barriers power
+70 34
+0
+5
+
+SEND
+2
+LEDs status
+
+0
+5
+
+SEND
+2
+    Check
+71
+0
+5
+
+SEND
+2
+Real-time clock
+
+0
+5
+
+SEND
+3
+    Get date and time
+74
+0
+5
+
+SEND
+3
+    Set date and time
+73
+0
+5
+
+SEND
+2
+Unique Device Id (UDID)
+
+0
+5
+
+SEND
+2
+    Get UDID
+75
+0
+5
+
+SEND
+2
+Registers
+
+0
+5
+
+SEND
+2
+    Display reset register
+79
+0
+5
+
+SEND
+2
+Test RFID
+
+0
+5
+
+SEND
+2
+    Start test
+7A
+0
+5
