@@ -34,7 +34,7 @@ clf
 figSize = [800 600];
 
 set(fig, ...
-    'units', 'pixels', ...     
+    'units', 'pixels', ...
     'position', [0 0 figSize], ...
     'resize', 'off', ...
     'menubar', 'none', ...
@@ -463,7 +463,7 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
         set(uiButtonDisconnect, 'enable', 'on')
         set(uiButtonEmptyBuffer, 'enable', 'on')
         set(uiButtonListCommand, 'enable', 'on')
-
+        
         set(uiButtonGetCurrentDate, 'enable', 'on')
         set(uiButtonSetDate, 'enable', 'on')
         set(uiSynchroTime, 'enable', 'on')
@@ -489,14 +489,14 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
         set(uiMeasureVBat, 'enable', 'on')
         set(uiMeasureDoor, 'enable', 'on')
         set(uiMeasureRfid, 'enable', 'on')
-
+        
         set(uiI2c, 'enable', 'on')
         set(uiStatusLeds, 'enable', 'on')
         set(uiTestRfid, 'enable', 'on')
         
         set(uiIRPower, 'enable', 'on')
         set(uiIRStatus, 'enable', 'on')
-
+        
         set(fig, 'name', sprintf('OpenFeeder - Serial interface - Connected to port %s', comPort))
         
     end
@@ -513,7 +513,7 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
         set(uiButtonDisconnect, 'enable', 'off')
         set(uiButtonEmptyBuffer, 'enable', 'off')
         set(uiButtonListCommand, 'enable', 'off')
-
+        
         set(uiButtonGetCurrentDate, 'enable', 'off')
         set(uiButtonSetDate, 'enable', 'off')
         set(uiSynchroTime, 'enable', 'off')
@@ -654,7 +654,7 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
             populateCommunicationWindow(str)
             
         end
-
+        
         fwrite(ser, uint8(arg));
         
     end
@@ -696,22 +696,32 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
         
         for n = 1:2
             
-            % Query PC date and time
-            PC_time = now;
-            
             % Dont synchronize OF date and time during the first iteration to allow offsets computation
             if n > 1
+                % Query PC date and time
+                tmp = now;
+                PC_time = now;
+                while (PC_time-tmp)<0.000011574074074 % 1/86400 => 1s
+                    PC_time = now;
+                end
                 fwrite(ser, uint8(['S' datevec(PC_time)-[2000 0 0 0 0 0]]))
+                pause(2);
             end
             
-            %     pause(delay)
+            % Query PC date and time
+            tmp = now;
+            PC_time = now;
+            while (PC_time-tmp)<0.000011574074074 % 1/86400 => 1s
+                PC_time = now;
+            end
             
+            T1 = tic;
             % Query OF date and time
             fwrite(ser, uint8('T'))
             
-            tic;
+            T2 = tic;
             while(ser.BytesAvailable<num)
-                t = toc;
+                t = toc(T2);
                 if t>maxTime
                     if ser.BytesAvailable==0
                         error('No reply from the OF after %ds (iteration %d).\nNo data received', maxTime, n);
@@ -729,6 +739,10 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
             else
                 ext_rtc_available = true;
             end
+            
+            t = toc(T1);
+            
+            PC_time = PC_time + t*0.000011574074074;
             
             % Print dates and times in the console
             str = sprintf('\nPC : %s', datestr(PC_time, 'dd/mm/yyyy HH:MM:SS'));
@@ -756,11 +770,12 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
             delta = datevec(delta);
             
             if delta(3) < 1
-                if delta(6)>9
-                    str = sprintf('\nDiff PC-PIC: %c%02d:%02d:%.3f (%e)', s, delta(4:6) , datenum(delta));
-                else
-                    str = sprintf('\nDiff PC-PIC: %c%02d:%02d:0%.3f (%e)', s, delta(4:6) , datenum(delta));
-                end
+                str = sprintf('\nDiff PC-PIC: %c%02d:%02d:%02d (%e)', s, floor(delta(4:6)) , datenum(delta));                
+                %                 if delta(6)>9
+                %                     str = sprintf('\nDiff PC-PIC: %c%02d:%02d:%.3f (%e)', s, delta(4:6) , datenum(delta));
+                %                 else
+                %                     str = sprintf('\nDiff PC-PIC: %c%02d:%02d:0%.3f (%e)', s, delta(4:6) , datenum(delta));
+                %                 end                
             else
                 str = sprintf('\nDiff PC-PIC: greater than one day (%e)', datenum(delta));
             end
@@ -782,11 +797,12 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
                 delta = datevec(delta);
                 
                 if delta(3) < 1
-                    if delta(6)>9
-                        str = sprintf('Diff PC-EXT: %c%02d:%02d:%.3f (%e)', s, delta(4:6) , datenum(delta));
-                    else
-                        str = sprintf('Diff PC-EXT: %c%02d:%02d:0%.3f (%e)', s, delta(4:6) , datenum(delta));
-                    end
+                    str = sprintf('Diff PC-EXT: %c%02d:%02d:%02d (%e)', s, floor(delta(4:6)) , datenum(delta));
+                    %                     if delta(6)>9
+                    %                         str = sprintf('Diff PC-EXT: %c%02d:%02d:%.3f (%e)', s, delta(4:6) , datenum(delta));
+                    %                     else
+                    %                         str = sprintf('Diff PC-EXT: %c%02d:%02d:0%.3f (%e)', s, delta(4:6) , datenum(delta));
+                    %                     end
                 else
                     str = sprintf('Diff PC-EXT: greater than one day (%e)', datenum(delta));
                 end
@@ -804,7 +820,7 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
     function fileio(~, ~, action)
         
         switch action
-                
+            
             case 'imp'
                 
                 fwrite(ser, uint8('jx'))
@@ -820,7 +836,7 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
                 
                 set(gcf, 'pointer', 'watch')
                 
-        end        
+        end
         
     end
 
@@ -935,7 +951,7 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
         
         val = str2double(answer{1});
         
-        if val < servoMinPosition || val > servoMaxPosition          
+        if val < servoMinPosition || val > servoMaxPosition
             errordlg(sprintf('Servo position must be in the range [%d %d]', servoMinPosition, servoMaxPosition));
             return
         end
@@ -946,18 +962,18 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
             str = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', 'p');
             populateCommunicationWindow(str)
         end
-
+        
         strv = num2str(val, '%04d');
-
+        
         if echoCommands
             for n = 1:numel(strv)
                 str = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', strv(n));
                 populateCommunicationWindow(str)
             end
         end
-
+        
         fwrite(ser, uint8(['dp' strv]));
-
+        
     end
 
     function toggleAutoScroll(~, ~)
