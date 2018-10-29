@@ -297,6 +297,13 @@ SEND
 
 SEND
 2
+    External temperature
+6D 74
+0
+5
+
+SEND
+2
 Power
 
 0
