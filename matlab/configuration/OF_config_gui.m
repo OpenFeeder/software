@@ -240,13 +240,13 @@ uicontrol(fig, ...
 xPos = uiLogGroupPos(1)+uiLogGroupPos(5);
 yPos = uiLogGroupPos(2)-uiLogGroupPos(6);
 
-uicontrol(fig, ...
-    'style', 'text', ...
-    'units', 'pixels', ...
-    'position', [xPos yPos 25 5]*uiSketchfactor, ...
-    'string', 'Data separator', ...
-    'hor', 'left');
-xPos = xPos+25;
+% uicontrol(fig, ...
+%     'style', 'text', ...
+%     'units', 'pixels', ...
+%     'position', [xPos yPos 25 5]*uiSketchfactor, ...
+%     'string', 'Data separator', ...
+%     'hor', 'left');
+% xPos = xPos+25;
 
 uicontrol(fig, ...
     'style', 'popup', ...
@@ -257,6 +257,16 @@ uicontrol(fig, ...
     'fontweight', 'bold', ...
     'callback', @previewIniFile);
 
+xPos = uiLogGroupPos(1)+uiLogGroupPos(5)+13;
+uicontrol(fig, ...
+    'style', 'checkbox', ...
+    'units', 'pixels', ...
+    'position', [xPos yPos 30 5]*uiSketchfactor, ...
+    'string', 'Temperature', ...
+    'value', 0, ...
+    'tag', 'uiLogTemperature', ...
+    'callback', @previewIniFile);
+
 xPos = uiLogGroupPos(1)+uiLogGroupPos(5);
 yPos = yPos-6;
 uicontrol(fig, ...
@@ -264,7 +274,7 @@ uicontrol(fig, ...
     'units', 'pixels', ...
     'position', [xPos yPos 30 5]*uiSketchfactor, ...
     'string', 'Birds', ...
-    'value', 0, ...
+    'value', 1, ...
     'tag', 'uiLogBirds', ...
     'callback', @previewIniFile);
 xPos = xPos+13;
@@ -1326,6 +1336,15 @@ switch scenarios{val}
         set([handles.uiAttractLedsFrameA handles.uiAttractLedsFrameB], 'backgroundcolor', [0 0 0]);
         set([handles.uiAttractLedsValueA handles.uiAttractLedsValueB], 'string', '[0 0 0]');
         
+        % Logs
+        set([handles.uiLogBirds
+            handles.uiLogUDID
+            handles.uiLogEvents
+            handles.uiLogErrors
+            handles.uiLogBattery
+            handles.uiLogTemperature], 'value', 0)
+        set(handles.uiLogBirds, 'enable', 'on', 'value', 1);
+        
         % PIT tags
         set([handles.uiPitTags1
             handles.uiPitTags2
@@ -1353,8 +1372,12 @@ switch scenarios{val}
         
         % Logs
         set([handles.uiLogBirds
+            handles.uiLogUDID
             handles.uiLogEvents
-            handles.uiLogErrors], 'value', 1)
+            handles.uiLogErrors
+            handles.uiLogBattery
+            handles.uiLogTemperature
+            handles.uiLogRFID], 'value', 1)
         set(handles.uiLogBirds, 'enable', 'off');
         
         % PIT tags
@@ -1424,8 +1447,12 @@ switch scenarios{val}
         
         % Logs
         set([handles.uiLogBirds
+            handles.uiLogUDID
             handles.uiLogEvents
-            handles.uiLogErrors], 'value', 1)
+            handles.uiLogErrors
+            handles.uiLogBattery
+            handles.uiLogTemperature
+            handles.uiLogRFID], 'value', 1)
         set(handles.uiLogBirds, 'enable', 'off');
         
         % PIT tags
@@ -1502,8 +1529,12 @@ switch scenarios{val}
         
         % Logs
         set([handles.uiLogBirds
+            handles.uiLogUDID
             handles.uiLogEvents
-            handles.uiLogErrors], 'value', 1)
+            handles.uiLogErrors
+            handles.uiLogBattery
+            handles.uiLogTemperature
+            handles.uiLogRFID], 'value', 1)
         set(handles.uiLogBirds, 'enable', 'off');
         
         % PIT tags
@@ -1579,8 +1610,12 @@ switch scenarios{val}
         
         % Logs
         set([handles.uiLogBirds
+            handles.uiLogUDID
             handles.uiLogEvents
-            handles.uiLogErrors], 'value', 1)
+            handles.uiLogErrors
+            handles.uiLogBattery
+            handles.uiLogTemperature
+            handles.uiLogRFID], 'value', 1)
         set(handles.uiLogBirds, 'enable', 'off');
         
         % PIT tags
@@ -1656,8 +1691,12 @@ switch scenarios{val}
         
         % Logs
         set([handles.uiLogBirds
+            handles.uiLogUDID
             handles.uiLogEvents
-            handles.uiLogErrors], 'value', 1)
+            handles.uiLogErrors
+            handles.uiLogBattery
+            handles.uiLogTemperature
+            handles.uiLogRFID], 'value', 1)
         set(handles.uiLogBirds, 'enable', 'off');
         
         % PIT tags
@@ -1733,8 +1772,12 @@ switch scenarios{val}
         
         % Logs
         set([handles.uiLogBirds
+            handles.uiLogUDID
             handles.uiLogEvents
-            handles.uiLogErrors], 'value', 1)
+            handles.uiLogErrors
+            handles.uiLogBattery
+            handles.uiLogTemperature
+            handles.uiLogRFID], 'value', 1)
         set(handles.uiLogBirds, 'enable', 'off');
         
         % PIT tags
@@ -1805,8 +1848,12 @@ switch scenarios{val}
         
         % Logs
         set([handles.uiLogBirds
+            handles.uiLogUDID
             handles.uiLogEvents
-            handles.uiLogErrors], 'value', 1)
+            handles.uiLogErrors
+            handles.uiLogBattery
+            handles.uiLogTemperature
+            handles.uiLogRFID], 'value', 1)
         set(handles.uiLogBirds, 'enable', 'off');
         
         % PIT tags
@@ -1880,8 +1927,12 @@ switch scenarios{val}
         
         % Logs
         set([handles.uiLogBirds
+            handles.uiLogUDID
             handles.uiLogEvents
-            handles.uiLogErrors], 'value', 1)
+            handles.uiLogErrors
+            handles.uiLogBattery
+            handles.uiLogTemperature
+            handles.uiLogRFID], 'value', 1)
         set(handles.uiLogBirds, 'enable', 'off');
         
         % PIT tags
@@ -2063,15 +2114,16 @@ for n = 1:numel(d)
     
 end
 
-fid = fopen(fullfile(pathname, filename), 'r');
-X = textscan(fid, '%s', 'delimiter', '\n');
-fclose(fid);
-
-X{1} = strrep(X{1}, '[', '<html><font color="#8000FF"><b>[');
-X{1} = strrep(X{1}, ']', ']</b></font></html>');
-X{1} = strrep(X{1}, '=', ' = ');
-
-set(handles.uiPreview, 'string', X{1}, 'value', 1)
+previewIniFile;
+% fid = fopen(fullfile(pathname, filename), 'r');
+% X = textscan(fid, '%s', 'delimiter', '\n');
+% fclose(fid);
+% 
+% X{1} = strrep(X{1}, '[', '<html><font color="#8000FF"><b>[');
+% X{1} = strrep(X{1}, ']', ']</b></font></html>');
+% X{1} = strrep(X{1}, '=', ' = ');
+% 
+% set(handles.uiPreview, 'string', X{1}, 'value', 1)
 
 set(handles.uiExportButton, 'enable', 'on')
 
@@ -2367,6 +2419,7 @@ handles.config.logs.events = int32(get(handles.uiLogEvents, 'value'));
 handles.config.logs.errors = int32(get(handles.uiLogErrors, 'value'));
 handles.config.logs.battery = int32(get(handles.uiLogBattery, 'value'));
 handles.config.logs.rfid = int32(get(handles.uiLogRFID, 'value'));
+handles.config.logs.temperature = int32(get(handles.uiLogTemperature, 'value'));
 
 % Attractive LEDs
 if handles.config.scenario.num==0 || handles.config.scenario.num>=2
@@ -2648,6 +2701,7 @@ set(handles.uiLogEvents, 'value', handles.config.logs.events);
 set(handles.uiLogErrors, 'value', handles.config.logs.errors);
 set(handles.uiLogBattery, 'value', handles.config.logs.battery);
 set(handles.uiLogRFID, 'value', handles.config.logs.rfid);
+set(handles.uiLogTemperature, 'value', handles.config.logs.temperature);
 
 %% Pit tag
 if isfield(handles.config, 'pittags')
@@ -3066,12 +3120,13 @@ config.time.sleep_minute = ini_getl('time', 'sleep_minute', -1, filename);
 
 %% Loggers
 config.logs.separator = ini_gets('logs', 'separator', '', filename);
-config.logs.birds = ini_getl('logs', 'birds', -1, filename);
-config.logs.udid = ini_getl('logs', 'udid', -1, filename);
-config.logs.events = ini_getl('logs', 'events', -1, filename);
-config.logs.errors = ini_getl('logs', 'errors', -1, filename);
-config.logs.battery = ini_getl('logs', 'battery', -1, filename);
-config.logs.rfid = ini_getl('logs', 'rfid', -1, filename);
+config.logs.birds = ini_getl('logs', 'birds', 0, filename);
+config.logs.udid = ini_getl('logs', 'udid', 0, filename);
+config.logs.events = ini_getl('logs', 'events', 0, filename);
+config.logs.errors = ini_getl('logs', 'errors', 0, filename);
+config.logs.battery = ini_getl('logs', 'battery', 0, filename);
+config.logs.rfid = ini_getl('logs', 'rfid', 0, filename);
+config.logs.temperature = ini_getl('logs', 'temperature', 0, filename);
 
 %% Attractive LEDs
 if ismember('attractiveleds', sections)
