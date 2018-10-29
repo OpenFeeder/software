@@ -1,7 +1,15 @@
 M1,Moulis,France
-G1,Gajan
+G1,nord,noyer
+G2,ouest,maison
+G3,sud,poulailler
+G4,est,jacques
 C1,Cescau bas
 C4,Cescau haut
 L1,Lab
 H1,Castera bas
 H4,Arrech
+LS,Lab 1feeder
+MS,Moulis 1 feeder
+SS,Sanson 1 feeder
+CS, Cescau 4 1 feeder
+HS, Castera 1 feeder
