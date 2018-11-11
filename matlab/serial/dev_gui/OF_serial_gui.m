@@ -3,24 +3,48 @@ function OF_serial_gui
 % URL: https://github.com/OpenFeeder/softwares/tree/master/serial/matlab/gui01
 % Author: Jerome Briot - https://github.com/JeromeBriot
 
-comPort = 'COM17';
+version.major = 1;
+version.minor = 0;
+version.patch = 0;
+about.author = 'Jerome Briot';
+about.contact = 'jbtechlab@gmail.com';
+
+% Default serial port
+comPort = 'COM21';
+
+% Serial communication parameters
+baudRate = 115200;
+parity = 'none';
+stopBits = 1;
+dataBits = 8;
 
 % Special characters for communication
-stx = hex2dec('02');
-etx = hex2dec('03');
-enq = hex2dec('05');
-ack = hex2dec('06');
-dc4 = hex2dec('14');
-nack = hex2dec('15');
+% stx = hex2dec('02');
+% etx = hex2dec('03');
+% enq = hex2dec('05');
+% ack = hex2dec('06');
+% dc4 = hex2dec('14');
+% nack = hex2dec('15');
+
+stx = hex2dec('FA');
+etx = hex2dec('FB');
+enq = hex2dec('FC');
+ack = hex2dec('FD');
+dc4 = hex2dec('FE');
+nack = hex2dec('FF');
+
+t_transfert = 0;
+transfert_time = 0;
 
 servoMinPosition = 600;
 servoMaxPosition = 2400;
 
 autoscroll = 1;
+linebreak = false;
 
 echoCommands = true;
 delay = 0.03;
-ser = [];
+serialObj = [];
 
 buffer = [];
 files = [];
@@ -39,13 +63,11 @@ set(fig, ...
     'resize', 'off', ...
     'menubar', 'none', ...
     'numbertitle', 'off', ...
-    'name', 'OpenFeeder - Serial interface - Not connected', ...
+    'name', sprintf('OpenFeeder - Serial interface - v%d.%d.%d - Not connected', version.major, version.minor, version.patch), ...
     'visible', 'off', ...
     'CloseRequestFcn', @closeCOMWindow);
 
 movegui(fig, 'center')
-
-set(fig, 'visible', 'on');
 
 button_size = [20 5];
 button_size_2 = [15 5];
@@ -70,23 +92,31 @@ uiButtonDisconnect = uicontrol(fig, ...
     'tag', 'uiButtonDisconnect', ...
     'enable', 'off', ...
     'callback', @disconnectCOM);
-uiButtonEmptyBuffer = uicontrol(fig, ...
+uiButtonSelectPort = uicontrol(fig, ...
     'units', 'pixels', ...
     'position', [35 98 button_size_2]*uiSketchfactor, ...
     'fontweight', 'bold', ...
-    'string', 'Empty buffer', ...
-    'tag', 'uiButtonEmptyBuffer', ...
-    'enable', 'off', ...
-    'callback', @empty_uart_buffer);
+    'string', 'Select port', ...
+    'tag', 'uiButtonSelectPort', ...
+    'enable', 'on', ...
+    'callback', @select_port);
 
 uiButtonListCommand = uicontrol(fig, ...
     'units', 'pixels', ...
-    'position', [52 98 5 5]*uiSketchfactor, ...
+    'position', [52 99.5 5 5]*uiSketchfactor, ...
     'fontweight', 'bold', ...
     'string', '?', ...
     'tag', 'uiButtonListCommand', ...
     'enable', 'off', ...
     'callback', {@sendCommand, '?'});
+uiButtonEmptyBuffer = uicontrol(fig, ...
+    'units', 'pixels', ...
+    'position', [52 94.5 5 5]*uiSketchfactor, ...
+    'fontweight', 'bold', ...
+    'string', 'X', ...
+    'tag', 'uiButtonEmptyBuffer', ...
+    'enable', 'off', ...
+    'callback', @empty_uart_buffer);
 
 uicontrol('style', 'frame', ...
     'units', 'pixels', ...
@@ -194,7 +224,7 @@ uiFileIOImport = uicontrol(fig, ...
     'units', 'pixels', ...
     'position', [30 73 button_size]*uiSketchfactor, ...
     'fontweight', 'bold', ...
-    'string', 'Import CSV files', ...
+    'string', 'Import files', ...
     'tag', 'uiFileIOImport', ...
     'enable', 'off', ...
     'callback', {@fileio, 'imp'});
@@ -462,37 +492,67 @@ autoscrollmenu = uimenu(hcmenu, 'Label', 'Auto scroll', 'Callback', @toggleAutoS
     'checked', 'on');
 set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
 
+set(fig, 'visible', 'on', 'pointer', 'arrow');
+
+% Timer to periodically read data sent by the Openfeeder
+t = timerfind('tag', 'OF_serial_timer');
+if ~isempty(t)
+    stop(t)
+    delete(t)
+end
+timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn', @readDataFromOF, 'tag', 'OF_serial_timer');
+
     function connectCOM(~, ~)
         
-        ser = instrfind('Port', comPort);
+        serialObj = instrfind('Port', comPort);
         
-        if isempty(ser)
-            ser = serial(comPort, ...
-                'Terminator', {'CR/LF', '' }, ...
+        if isempty(serialObj)
+            serialObj = serial(comPort, ...
+                'BaudRate', baudRate, ...
+                'DataBits', dataBits, ...
+                'Parity', parity, ...
+                'StopBits', stopBits, ...
                 'Timeout', 2, ...
-                'BytesAvailableFcnMode', 'terminator', ...
-                'BytesAvailableFcn', @readDataFromOF);
-            pause(delay)
-            fopen(ser);
-        else
-            if ~strcmp(ser.Status, 'open')
-                fopen(ser);
+                'InputBufferSize', 1024);
+            
+            try
+                fopen(serialObj);
+            catch ME
+                errordlg(ME.message);
+                return
             end
             
-            set(ser, 'Terminator', {'CR/LF', '' }, ...
+        else
+            
+            if ~strcmp(serialObj.Status, 'open')
+                try
+                    fopen(serialObj);
+                catch ME
+                    errordlg(ME.message);
+                    return
+                end
+            end
+            
+            set(serialObj, ...
+                'BaudRate', baudRate, ...
+                'DataBits', dataBits, ...
+                'Parity', parity, ...
+                'StopBits', stopBits, ...
                 'Timeout', 2, ...
-                'BytesAvailableFcnMode', 'terminator', ...
-                'BytesAvailableFcn', @readDataFromOF);
+                'InputBufferSize', 1024)
+            
         end
         
         % Purge input buffer
-        while(ser.BytesAvailable>0)
-            fread(ser, ser.BytesAvailable);
-            pause(delay);
+        while(serialObj.BytesAvailable>0)
+            fread(serialObj, serialObj.BytesAvailable);
         end
+        
+        start(timerReadData)
         
         set(uiButtonConnect, 'enable', 'off')
         set(uiButtonDisconnect, 'enable', 'on')
+        set(uiButtonSelectPort, 'enable', 'off')
         set(uiButtonEmptyBuffer, 'enable', 'on')
         set(uiButtonListCommand, 'enable', 'on')
         
@@ -532,21 +592,20 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
         
         set(uiDataBuffers, 'enable', 'on')
         set(uiUSBdevice, 'enable', 'on')
-
-        set(fig, 'name', sprintf('OpenFeeder - Serial interface - Connected to port %s', comPort))
         
+        set(fig, 'name', sprintf('OpenFeeder - Serial interface - v%d.%d.%d - Connected to port %s ', version.major, version.minor, version.patch, comPort))
     end
 
     function disconnectCOM(~, ~)
         
-        if strcmp(ser.Status, 'open')
-            fclose(ser);
+        if strcmp(serialObj.Status, 'open')
+            stop(timerReadData)
+            fclose(serialObj);
         end
-        
-        delete(ser)
         
         set(uiButtonConnect, 'enable', 'on')
         set(uiButtonDisconnect, 'enable', 'off')
+        set(uiButtonSelectPort, 'enable', 'on')
         set(uiButtonEmptyBuffer, 'enable', 'off')
         set(uiButtonListCommand, 'enable', 'off')
         
@@ -587,43 +646,138 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
         set(uiDataBuffers, 'enable', 'off')
         set(uiUSBdevice, 'enable', 'off')
         
-        set(fig, 'name', 'OpenFeeder - Serial interface - Not connected')
+        set(fig, 'name', sprintf('OpenFeeder - Serial interface - v%d.%d.%d - Not connected', version.major, version.minor, version.patch))
+        
+    end
+
+    function select_port(~, ~)
+        
+        prompt = {'Enter serial port:'};
+        dlg_title = 'Port selection';
+        num_lines = 1;
+        defaultans = {comPort};
+        answer = inputdlg(prompt,dlg_title,num_lines,defaultans);
+        
+        if isempty(answer)
+            return
+        end
+        
+        if ispc
+            if ~strncmpi(answer{1}, 'COM', 3)
+                errordlg('Port name must start with COM');
+            end
+        end
+        
+        comPort = answer{1};
         
     end
 
     function populateCommunicationWindow(substr)
         
-        
-        if ~isempty(substr) && substr(1) == '>'
+        try
+            C = {};
             
-            substr = sprintf('<html><font color="#%02X%02X%02X"><b>%s</b></font></html>', ...
-                text_color.state(1), ...
-                text_color.state(2), ...
-                text_color.state(3), ...
-                substr);
+            str = get(uiCommunicationWindow, 'string');
+            str = cellstr(str);
+            n = numel(str);
             
-        end
-        
-        str = get(uiCommunicationWindow, 'string');
-        str = cellstr(str);
-        n = numel(str);
-        str{n+1} = substr;
-        
-        if autoscroll
-            set(uiCommunicationWindow, 'string', str, 'value', numel(str));
-        else
-            set(uiCommunicationWindow, 'string', str);
+            substr = char(substr);
+            substr = strrep(substr, char(9), '   ');
+
+            if isempty(substr)
+                return
+            end
+            
+            if any(substr==13)
+                
+                idx = substr==10;
+                if any(idx)
+                    substr(idx) = [];
+                end
+                
+                C = strsplit(substr, char(13)).';
+                if isempty(C{end})
+                    C(end) = [];
+                end
+                
+            elseif any(substr==10)
+                
+                C = strsplit(substr, char(10)).';
+                if isempty(C{end})
+                    C(end) = [];
+                end
+                
+            else
+                
+                C = {substr};
+                
+            end
+            
+            if isempty(C)
+                return
+            end
+            
+            for k = 1:numel(C)
+                if ~isempty(C{k}) && C{k}(1)=='>'
+                    C{k} = sprintf('<html><font color="#%02X%02X%02X"><b>%s</b></font></html>', ...
+                        text_color.state(1), ...
+                        text_color.state(2), ...
+                        text_color.state(3), ...
+                        C{k});
+                end
+            end
+            
+            if isempty(str)
+                str = C;
+            else
+                if linebreak
+                    str = [str ; C];
+                else
+                    str{n} = [str{n} C{1}];
+                    if numel(C)>1
+                        str = [str ; C(2:end)];
+                    end
+                end
+            end
+            
+            if substr(end)==13
+                linebreak = true;
+            else
+                linebreak = false;
+            end
+            
+            if autoscroll
+                set(uiCommunicationWindow, 'string', str, 'value', numel(str));
+            else
+                set(uiCommunicationWindow, 'string', str);
+            end
+            
+        catch ME
+            
+            disp(ME.identifier)
+            disp(ME.message)
+            disp(ME.cause)
+            for u = 1 :numel(ME.stack)
+                disp(ME.stack(u).file)
+                disp(ME.stack(u).name)
+                disp(ME.stack(u).line)
+            end
+            
         end
         
     end
 
     function readDataFromOF(~, ~)
         
-        tmp = fscanf(ser);
-        tmp = strrep(tmp,[13 10], '');
-        str = strrep(tmp, 9, [32 32 32]);
+        bytesAvailable = serialObj.BytesAvailable;
         
-        populateCommunicationWindow(str)
+        if bytesAvailable==0
+            return
+        end
+        
+        buf = fread(serialObj, [1,bytesAvailable], 'char');
+        
+        populateCommunicationWindow(buf)
         
     end
 
@@ -693,9 +847,11 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
             
             populateCommunicationWindow(str)
             
+            linebreak = true;
+            
         end
         
-        fwrite(ser, uint8(arg));
+        fwrite(serialObj, uint8(arg));
         
     end
 
@@ -725,14 +881,16 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
         str = get(uiPopSecond, 'string');
         V(6) = str2double(str{val});
         
-        fwrite(ser, uint8(['S' V]))
+        fwrite(serialObj, uint8(['S' V]))
         
     end
 
     function synchroTime(~, ~)
         
+        stop(timerReadData)
+        
         num = 12;
-        maxTime = 5;
+        maxTime = 7;
         
         for n = 1:2
             
@@ -744,7 +902,7 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
                 while (PC_time-tmp)<0.000011574074074 % 1/86400 => 1s
                     PC_time = now;
                 end
-                fwrite(ser, uint8(['S' datevec(PC_time)-[2000 0 0 0 0 0]]))
+                fwrite(serialObj, uint8(['S' datevec(PC_time)-[2000 0 0 0 0 0]]))
                 pause(2);
             end
             
@@ -757,22 +915,22 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
             
             T1 = tic;
             % Query OF date and time
-            fwrite(ser, uint8('T'))
+            fwrite(serialObj, uint8('T'))
             
             T2 = tic;
-            while(ser.BytesAvailable<num)
+            while(serialObj.BytesAvailable<num)
                 t = toc(T2);
                 if t>maxTime
-                    if ser.BytesAvailable==0
+                    if serialObj.BytesAvailable==0
                         error('No reply from the OF after %ds (iteration %d).\nNo data received', maxTime, n);
                     else
-                        c = fread(ser, [1 ser.BytesAvailable], '*char');
+                        c = fread(serialObj, [1 serialObj.BytesAvailable], '*char');
                         error('No reply from the OF after %ds (iteration %d).\n%d characters received: %s', maxTime, n, c);
                     end
                 end
             end
             
-            OF_time = fread(ser, [1 ser.BytesAvailable]);
+            OF_time = fread(serialObj, [1 serialObj.BytesAvailable]);
             
             if ~any(OF_time(7:end))
                 ext_rtc_available = false;
@@ -785,14 +943,14 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
             PC_time = PC_time + t*0.000011574074074;
             
             % Print dates and times in the console
-            str = sprintf('\nPC : %s', datestr(PC_time, 'dd/mm/yyyy HH:MM:SS'));
+            str = sprintf('\r\nPC : %s\r\n', datestr(PC_time, 'dd/mm/yyyy HH:MM:SS'));
             populateCommunicationWindow(str)
-            str = sprintf('PIC: %02d/%02d/20%02d %02d:%02d:%02d', OF_time(3), OF_time(2), OF_time(1) , OF_time(4), OF_time(5), OF_time(6));
+            str = sprintf('PIC: %02d/%02d/20%02d %02d:%02d:%02d\r\n', OF_time(3), OF_time(2), OF_time(1) , OF_time(4), OF_time(5), OF_time(6));
             populateCommunicationWindow(str)
             if ext_rtc_available
-                str = sprintf('EXT: %02d/%02d/20%02d %02d:%02d:%02d', OF_time(9), OF_time(8), OF_time(7), OF_time(10), OF_time(11), OF_time(12));
+                str = sprintf('EXT: %02d/%02d/20%02d %02d:%02d:%02d\r\n', OF_time(9), OF_time(8), OF_time(7), OF_time(10), OF_time(11), OF_time(12));
             else
-                str = sprintf('EXT: --/--/---- --:--:--');
+                str = sprintf('EXT: --/--/---- --:--:--\r\n');
             end
             populateCommunicationWindow(str)
             
@@ -810,14 +968,14 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
             delta = datevec(delta);
             
             if delta(3) < 1
-                str = sprintf('\nDiff PC-PIC: %c%02d:%02d:%02d (%e)', s, floor(delta(4:6)) , datenum(delta));                
+                str = sprintf('\r\nDiff PC-PIC: %c%02d:%02d:%02d (%e)\r\n', s, floor(delta(4:6)) , datenum(delta));
                 %                 if delta(6)>9
                 %                     str = sprintf('\nDiff PC-PIC: %c%02d:%02d:%.3f (%e)', s, delta(4:6) , datenum(delta));
                 %                 else
                 %                     str = sprintf('\nDiff PC-PIC: %c%02d:%02d:0%.3f (%e)', s, delta(4:6) , datenum(delta));
-                %                 end                
+                %                 end
             else
-                str = sprintf('\nDiff PC-PIC: greater than one day (%e)', datenum(delta));
+                str = sprintf('\r\nDiff PC-PIC: greater than one day (%e)\r\n', datenum(delta));
             end
             populateCommunicationWindow(str)
             
@@ -837,23 +995,25 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
                 delta = datevec(delta);
                 
                 if delta(3) < 1
-                    str = sprintf('Diff PC-EXT: %c%02d:%02d:%02d (%e)', s, floor(delta(4:6)) , datenum(delta));
+                    str = sprintf('Diff PC-EXT: %c%02d:%02d:%02d (%e)\r\n', s, floor(delta(4:6)) , datenum(delta));
                     %                     if delta(6)>9
                     %                         str = sprintf('Diff PC-EXT: %c%02d:%02d:%.3f (%e)', s, delta(4:6) , datenum(delta));
                     %                     else
                     %                         str = sprintf('Diff PC-EXT: %c%02d:%02d:0%.3f (%e)', s, delta(4:6) , datenum(delta));
                     %                     end
                 else
-                    str = sprintf('Diff PC-EXT: greater than one day (%e)', datenum(delta));
+                    str = sprintf('Diff PC-EXT: greater than one day (%e)\r\n', datenum(delta));
                 end
                 populateCommunicationWindow(str)
                 
             else
-                str = sprintf('Diff PC-EXT:  --:--:--.--- (0)');
+                str = sprintf('Diff PC-EXT:  --:--:-- (0)\r\n');
                 populateCommunicationWindow(str)
             end
             
         end
+        
+        start(timerReadData)
         
     end
 
@@ -863,18 +1023,20 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
             
             case 'imp'
                 
-                fwrite(ser, uint8('jx'))
-                
-                set(ser, 'BytesAvailableFcn', @readDataFromOFToBuffer, ...
-                    'BytesAvailableFcnMode', 'terminator', ...
-                    'Terminator', {dc4, '' });
+                fwrite(serialObj, uint8('jx'))
                 
                 if echoCommands
-                    str = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', 'X');
+                    str = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>\r\n', 'X');
                     populateCommunicationWindow(str)
                 end
                 
+                populateCommunicationWindow(sprintf('   Import in progress. Please wait...\r\n'))
+                
                 set(gcf, 'pointer', 'watch')
+                
+                t_transfert = tic();
+                
+                set(timerReadData, 'TimerFcn', @readDataFromOFToBuffer)
                 
         end
         
@@ -882,16 +1044,17 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
 
     function readDataFromOFToBuffer(~, ~)
         
-        if ser.BytesAvailable==0
+        if serialObj.BytesAvailable==0
             return
         end
         
-        tmp = fread(ser, [1, ser.BytesAvailable]);
+        tmp = fread(serialObj, [1, serialObj.BytesAvailable], 'char');
         
-        if isempty(tmp)
-            return
-        end
+%         if isempty(tmp)
+%             return
+%         end
         
+        % Detect start of transmitted frame [STX]
         if any(tmp==stx)
             idx_stx = strfind(tmp, stx);
             if idx_stx>1
@@ -900,6 +1063,7 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
             buffer = [];
         end
         
+        % Detect end of transmitted frame [ETX]
         if any(tmp==etx)
             
             idx_etx = strfind(tmp, etx);
@@ -907,11 +1071,13 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
                 tmp(idx_etx+1:end) = [];
             end
             
-            set(ser,'BytesAvailableFcn', @readDataFromOF, ...
-                'BytesAvailableFcnMode', 'terminator', ...
-                'Terminator', {'CR/LF', '' });
+            set(timerReadData, 'TimerFcn', @readDataFromOF)
             
             buffer = [buffer tmp];
+            
+            transfert_time = toc(t_transfert);
+            
+            assignin('base', 'buffer', buffer);
             
             parseBuffer();
             
@@ -923,35 +1089,64 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
 
     function parseBuffer()
         
-        if buffer(1)==stx
-            buffer(1) = [];
+        populateCommunicationWindow(sprintf('   Transfert total: %d bytes\r\n', numel(buffer)));
+        populateCommunicationWindow(sprintf('   Transfert time: %d s\r\n', round(transfert_time)));
+        populateCommunicationWindow(sprintf('   Transfert rate: %d bytes/s\r\n', round(numel(buffer)/transfert_time)));
+        
+        idx_ck = buffer==stx | buffer==etx;
+        
+        if ~isempty(idx_ck)
+            buffer(idx_ck) = [];
         end
         
-        if buffer(end)==etx
-            buffer(end) = [];
+        idx_ck = find(buffer==ack | buffer==nack);
+        idx_enq = find(buffer==enq);
+        idx_dc4 = find(buffer==dc4);
+        
+        if numel(idx_enq)~=numel(idx_ck)-1
+            %TODO
         end
         
-        if buffer(1)==ack
-            buffer(1) = [];
-        elseif buffer(1)==nack
-            buffer(1) = [];
-            parseError()
+        if numel(idx_enq)~=numel(idx_dc4)
+            %TODO
         end
         
-        buffer(buffer==dc4) = [];
+        idx_data = 1;
         
-        idx = strfind(buffer, enq);
+        k_file = 0;
+        k_error = 0;
         
-        k = 1;
-        for n = 1:3:numel(idx)-1
+        for n = 1:numel(idx_enq)
             
-            files.name{k} = char(buffer(idx(n)+1:idx(n+1)-1));
-            files.size(k) = str2double(char(buffer(idx(n+1)+1:idx(n+2)-1)));
-            files.content{k} = buffer(idx(n+2)+1:idx(n+3)-1);
+            buf = buffer(idx_enq(n)+1:idx_dc4(n)-1);
             
-            k = k+1;
+            if buffer(idx_enq(n)-1)==ack
+                
+                if idx_data==1
+                    k_file = k_file+1;
+                    files.name{k_file} = char(buf);
+                    idx_data = idx_data+1;
+                elseif idx_data==2
+                    files.type(k_file) = char(buf);
+                    idx_data = idx_data+1;
+                elseif idx_data==3
+                    files.size(k_file) = str2double(char(buf));
+                    idx_data = idx_data+1;
+                else
+                    files.content{k_file} = buf;
+                    idx_data = 1;
+                end
+                
+            else
+                
+                k_error = k_error+1;
+                errors{k_error} = char(buf);
+                
+            end
             
         end
+        
+        buffer = [];
         
         set(gcf, 'pointer', 'arrow')
         
@@ -973,17 +1168,19 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
             fwrite(fid, files.content{n});
             fclose(fid);
             
-            populateCommunicationWindow([files.name{n} ' saved.'])
+            populateCommunicationWindow(sprintf('\t%s saved.\r\n', files.name{n}))
             
         end
         
+        files = [];
+    
     end
 
-    function parseError()
-        
-        populateCommunicationWindow(['Error: ' char(buffer)])
-        
-    end
+%     function parseError()
+%
+%         populateCommunicationWindow(sprintf('\tError: %s\r\n', char(buffer)))
+%
+%     end
 
     function setDoorPosition(~, ~)
         
@@ -999,7 +1196,7 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
         val = uint16(round(val));
         
         if echoCommands
-            str = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', 'p');
+            str = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>\r\n', 'p');
             populateCommunicationWindow(str)
         end
         
@@ -1007,12 +1204,12 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
         
         if echoCommands
             for n = 1:numel(strv)
-                str = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', strv(n));
+                str = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>\r\n', strv(n));
                 populateCommunicationWindow(str)
             end
         end
         
-        fwrite(ser, uint8(['dp' strv]));
+        fwrite(serialObj, uint8(['dp' strv]));
         
     end
 
@@ -1029,8 +1226,8 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
 
     function empty_uart_buffer(~, ~)
         
-        while(ser.BytesAvailable>0)
-            fread(ser, ser.BytesAvailable);
+        while(serialObj.BytesAvailable>0)
+            fread(serialObj, serialObj.BytesAvailable);
             pause(delay)
         end
         
@@ -1038,12 +1235,12 @@ set(uiCommunicationWindow, 'uicontextmenu' ,hcmenu)
 
     function closeCOMWindow(~, ~)
         
-        ser = instrfind('Port', comPort);
+        serialObj = instrfind('Port', comPort);
         
-        if ~isempty(ser)
-            
+        if ~isempty(serialObj)
             disconnectCOM([],[])
-            
+            delete(serialObj);
+            delete(timerReadData)
         end
         
         closereq;
