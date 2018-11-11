@@ -9,8 +9,14 @@ version.patch = 0;
 about.author = 'Jerome Briot';
 about.contact = 'jbtechlab@gmail.com';
 
+if ispc
+    defaultPath = fullfile(getenv('USERPROFILE'), 'Desktop');    
+else
+    defaultPath = '~/Desktop';
+end
+
 % Default serial port
-comPort = 'COM21';
+comPort = 'COM17';
 
 % Serial communication parameters
 baudRate = 115200;
@@ -48,6 +54,13 @@ serialObj = [];
 
 buffer = [];
 files = [];
+
+udid = '';
+zone = '';
+
+timeCalib.PC_time = 0;
+timeCalib.deltaPic = 0;
+timeCalib.deltaExt = 0;
 
 text_color.state = [0 128 0];
 text_color.command = [255 24 230];
@@ -942,6 +955,17 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
             
             PC_time = PC_time + t*0.000011574074074;
             
+            if n==1
+                timeCalib.PC_time = PC_time;
+            end
+            
+            if n==1
+                str = sprintf('\r\nBefore calibration:');
+            else
+                str = sprintf('\r\nAfter calibration:');
+            end
+            populateCommunicationWindow(str)
+            
             % Print dates and times in the console
             str = sprintf('\r\nPC : %s\r\n', datestr(PC_time, 'dd/mm/yyyy HH:MM:SS'));
             populateCommunicationWindow(str)
@@ -958,24 +982,23 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
             PIC_time = datenum(OF_time(1:6)+[2000 0 0 0 0 0]);
             
             if PC_time > PIC_time
-                delta = PC_time-PIC_time;
+                deltaPic = PC_time-PIC_time;
                 s = '+';
             else
-                delta = PIC_time-PC_time;
+                deltaPic = PIC_time-PC_time;
                 s = '-';
             end
             
-            delta = datevec(delta);
+            if n==1
+                timeCalib.deltaPic = deltaPic;
+            end
             
-            if delta(3) < 1
-                str = sprintf('\r\nDiff PC-PIC: %c%02d:%02d:%02d (%e)\r\n', s, floor(delta(4:6)) , datenum(delta));
-                %                 if delta(6)>9
-                %                     str = sprintf('\nDiff PC-PIC: %c%02d:%02d:%.3f (%e)', s, delta(4:6) , datenum(delta));
-                %                 else
-                %                     str = sprintf('\nDiff PC-PIC: %c%02d:%02d:0%.3f (%e)', s, delta(4:6) , datenum(delta));
-                %                 end
+            deltaPic = datevec(deltaPic);
+            
+            if deltaPic(3) < 1
+                str = sprintf('\r\nDiff PC-PIC: %c%02d:%02d:%02d (%e)\r\n', s, floor(deltaPic(4:6)) , datenum(deltaPic));
             else
-                str = sprintf('\r\nDiff PC-PIC: greater than one day (%e)\r\n', datenum(delta));
+                str = sprintf('\r\nDiff PC-PIC: greater than one day (%e)\r\n', datenum(deltaPic));
             end
             populateCommunicationWindow(str)
             
@@ -985,35 +1008,77 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
                 EXT_time = datenum(OF_time(7:end)+[2000 0 0 0 0 0]);
                 
                 if PC_time > EXT_time
-                    delta = PC_time-EXT_time;
+                    deltaExt = PC_time-EXT_time;
                     s = '+';
                 else
-                    delta = EXT_time-PC_time;
+                    deltaExt = EXT_time-PC_time;
                     s = '-';
                 end
                 
-                delta = datevec(delta);
+                if n==1
+                    timeCalib.deltaExt = deltaExt;
+                end
                 
-                if delta(3) < 1
-                    str = sprintf('Diff PC-EXT: %c%02d:%02d:%02d (%e)\r\n', s, floor(delta(4:6)) , datenum(delta));
-                    %                     if delta(6)>9
-                    %                         str = sprintf('Diff PC-EXT: %c%02d:%02d:%.3f (%e)', s, delta(4:6) , datenum(delta));
-                    %                     else
-                    %                         str = sprintf('Diff PC-EXT: %c%02d:%02d:0%.3f (%e)', s, delta(4:6) , datenum(delta));
-                    %                     end
+                deltaExt = datevec(deltaExt);
+                
+                if deltaExt(3) < 1
+                    str = sprintf('Diff PC-EXT: %c%02d:%02d:%02d (%e)\r\n', s, floor(deltaExt(4:6)) , datenum(deltaExt));
                 else
-                    str = sprintf('Diff PC-EXT: greater than one day (%e)\r\n', datenum(delta));
+                    str = sprintf('Diff PC-EXT: greater than one day (%e)\r\n', datenum(deltaExt));
                 end
                 populateCommunicationWindow(str)
                 
             else
+                timeCalib.deltaExt = NaN;
                 str = sprintf('Diff PC-EXT:  --:--:-- (0)\r\n');
                 populateCommunicationWindow(str)
             end
             
         end
         
+        saveCalibInfos();
+        
         start(timerReadData)
+        
+    end
+
+    function saveCalibInfos(~, ~)
+        
+        getUdid;
+        getZone;
+        
+        filename = fullfile(defaultPath, 'OF_calibrations.csv');
+            
+        fid = fopen(filename, 'at');
+
+            fprintf(fid, '%s,%s,%s,%.3f,%.3f\n', datestr(timeCalib.PC_time, 'dd/mm/yyyy,HH:MM:SS'), zone, udid([23 24 29 30]), timeCalib.deltaPic/0.000011574074074, timeCalib.deltaExt/0.000011574074074);
+        
+        fclose(fid);
+        
+    end
+
+    function getUdid(~, ~)
+        
+        fwrite(serialObj, uint8('u'))
+        pause(1)
+        tmp = fread(serialObj, [1, serialObj.BytesAvailable], 'char');
+        
+        tmp = strrep(tmp, 'UDID:', '');
+        idx = isstrprop(tmp, 'wspace');      
+        udid = char(tmp(~idx));
+        
+    end
+
+    function getZone(~, ~)
+        
+        fwrite(serialObj, uint8('ji'))
+        pause(1)
+        tmp = fread(serialObj, [1, serialObj.BytesAvailable], 'char');
+        
+        tmp = strsplit(char(tmp), char([13 10]));
+        idx = strncmp(tmp, 'zone=', 5);
+        
+        zone = strrep(tmp{idx}, 'zone=', '');
         
     end
 
@@ -1049,11 +1114,7 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
         end
         
         tmp = fread(serialObj, [1, serialObj.BytesAvailable], 'char');
-        
-%         if isempty(tmp)
-%             return
-%         end
-        
+
         % Detect start of transmitted frame [STX]
         if any(tmp==stx)
             idx_stx = strfind(tmp, stx);
@@ -1156,7 +1217,7 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
 
     function saveDataToFiles()
         
-        folder_name = uigetdir();
+        folder_name = uigetdir(defaultPath);
         
         if ~folder_name
             return
