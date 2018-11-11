@@ -66,7 +66,7 @@ uiSleepGroupPos      =   [5 148 50 5 2 5];
 uiScenarioGroupPos   =   [5 137 35 5 2 5];
 uiLogGroupPos        =   [5 126 50 5 2 5];
 uiPitTagGroupPos     =   [5 100 90 5 2 95];
-uiLedsGroupPos       =   [48 170 50 5 2 5];
+uiLedsGroupPos       =   [50 170 50 5 2 5];
 uiDoorGroupPos       =   [95 170 50 5 2 5];
 uiServoGroupPos      =   [95 127 50 5 2 5];
 uiDoorHabitGroupPos  =   [95 92 50 5 2 5];
@@ -240,14 +240,6 @@ uicontrol(fig, ...
 xPos = uiLogGroupPos(1)+uiLogGroupPos(5);
 yPos = uiLogGroupPos(2)-uiLogGroupPos(6);
 
-% uicontrol(fig, ...
-%     'style', 'text', ...
-%     'units', 'pixels', ...
-%     'position', [xPos yPos 25 5]*uiSketchfactor, ...
-%     'string', 'Data separator', ...
-%     'hor', 'left');
-% xPos = xPos+25;
-
 uicontrol(fig, ...
     'style', 'popup', ...
     'units', 'pixels', ...
@@ -262,9 +254,19 @@ uicontrol(fig, ...
     'style', 'checkbox', ...
     'units', 'pixels', ...
     'position', [xPos yPos 30 5]*uiSketchfactor, ...
-    'string', 'Temperature', ...
+    'string', 'Temp.', ...
     'value', 0, ...
     'tag', 'uiLogTemperature', ...
+    'callback', @previewIniFile);
+
+xPos = xPos+13;
+uicontrol(fig, ...
+    'style', 'checkbox', ...
+    'units', 'pixels', ...
+    'position', [xPos yPos 30 5]*uiSketchfactor, ...
+    'string', 'Calibration', ...
+    'value', 0, ...
+    'tag', 'uiLogCalibration', ...
     'callback', @previewIniFile);
 
 xPos = uiLogGroupPos(1)+uiLogGroupPos(5);
@@ -1342,7 +1344,8 @@ switch scenarios{val}
             handles.uiLogEvents
             handles.uiLogErrors
             handles.uiLogBattery
-            handles.uiLogTemperature], 'value', 0)
+            handles.uiLogTemperature
+            handles.uiLogCalibration], 'value', 0)
         set(handles.uiLogBirds, 'enable', 'on', 'value', 1);
         
         % PIT tags
@@ -1377,6 +1380,7 @@ switch scenarios{val}
             handles.uiLogErrors
             handles.uiLogBattery
             handles.uiLogTemperature
+            handles.uiLogCalibration
             handles.uiLogRFID], 'value', 1)
         set(handles.uiLogBirds, 'enable', 'off');
         
@@ -1452,6 +1456,7 @@ switch scenarios{val}
             handles.uiLogErrors
             handles.uiLogBattery
             handles.uiLogTemperature
+            handles.uiLogCalibration
             handles.uiLogRFID], 'value', 1)
         set(handles.uiLogBirds, 'enable', 'off');
         
@@ -1534,6 +1539,7 @@ switch scenarios{val}
             handles.uiLogErrors
             handles.uiLogBattery
             handles.uiLogTemperature
+            handles.uiLogCalibration
             handles.uiLogRFID], 'value', 1)
         set(handles.uiLogBirds, 'enable', 'off');
         
@@ -1615,6 +1621,7 @@ switch scenarios{val}
             handles.uiLogErrors
             handles.uiLogBattery
             handles.uiLogTemperature
+            handles.uiLogCalibration
             handles.uiLogRFID], 'value', 1)
         set(handles.uiLogBirds, 'enable', 'off');
         
@@ -1696,6 +1703,7 @@ switch scenarios{val}
             handles.uiLogErrors
             handles.uiLogBattery
             handles.uiLogTemperature
+            handles.uiLogCalibration
             handles.uiLogRFID], 'value', 1)
         set(handles.uiLogBirds, 'enable', 'off');
         
@@ -1777,6 +1785,7 @@ switch scenarios{val}
             handles.uiLogErrors
             handles.uiLogBattery
             handles.uiLogTemperature
+            handles.uiLogCalibration
             handles.uiLogRFID], 'value', 1)
         set(handles.uiLogBirds, 'enable', 'off');
         
@@ -1853,6 +1862,7 @@ switch scenarios{val}
             handles.uiLogErrors
             handles.uiLogBattery
             handles.uiLogTemperature
+            handles.uiLogCalibration
             handles.uiLogRFID], 'value', 1)
         set(handles.uiLogBirds, 'enable', 'off');
         
@@ -1932,6 +1942,7 @@ switch scenarios{val}
             handles.uiLogErrors
             handles.uiLogBattery
             handles.uiLogTemperature
+            handles.uiLogCalibration
             handles.uiLogRFID], 'value', 1)
         set(handles.uiLogBirds, 'enable', 'off');
         
@@ -2420,6 +2431,7 @@ handles.config.logs.errors = int32(get(handles.uiLogErrors, 'value'));
 handles.config.logs.battery = int32(get(handles.uiLogBattery, 'value'));
 handles.config.logs.rfid = int32(get(handles.uiLogRFID, 'value'));
 handles.config.logs.temperature = int32(get(handles.uiLogTemperature, 'value'));
+handles.config.logs.calibration = int32(get(handles.uiLogCalibration, 'value'));
 
 % Attractive LEDs
 if handles.config.scenario.num==0 || handles.config.scenario.num>=2
@@ -2702,6 +2714,7 @@ set(handles.uiLogErrors, 'value', handles.config.logs.errors);
 set(handles.uiLogBattery, 'value', handles.config.logs.battery);
 set(handles.uiLogRFID, 'value', handles.config.logs.rfid);
 set(handles.uiLogTemperature, 'value', handles.config.logs.temperature);
+set(handles.uiLogCalibration, 'value', handles.config.logs.calibration);
 
 %% Pit tag
 if isfield(handles.config, 'pittags')
