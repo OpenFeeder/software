@@ -123,7 +123,7 @@ uicontrol(fig, ...
     'string',  cellstr(num2str((0:23).', '%02d')), ...
     'fontweight', 'bold', ...
     'value', 7, ...
-    'callback', @previewIniFile);
+    'callback', @syncLedDoorTime);
 xPos = xPos+12+8*ismac;
 uicontrol(fig, ...
     'style', 'text', ...
@@ -138,7 +138,7 @@ uicontrol(fig, ...
     'tag', 'uiWakeUpMinute', ...
     'string', cellstr(num2str((0:5:55).', '%02d')), ...
     'fontweight', 'bold', ...
-    'callback', @previewIniFile);
+    'callback', @syncLedDoorTime);
 xPos = xPos+10;
 uicontrol(fig, ...
     'style', 'text', ...
@@ -155,7 +155,7 @@ uicontrol(fig, ...
     'string', '00', ...
     'fontweight', 'bold', ...
     'visible', 'off', ...
-    'callback', @previewIniFile);
+    'callback', @syncLedDoorTime);
 
 %% Sleep time
 uicontrol(fig, ...
@@ -175,7 +175,7 @@ uicontrol(fig, ...
     'string',  cellstr(num2str((0:23).', '%02d')), ...
     'fontweight', 'bold', ...
     'value', 24, ...
-    'callback', @previewIniFile);
+    'callback', @syncLedDoorTime);
 xPos = xPos+12+8*ismac;
 uicontrol(fig, ...
     'style', 'text', ...
@@ -190,7 +190,7 @@ uicontrol(fig, ...
     'tag', 'uiSleepMinute', ...
     'string', cellstr(num2str((0:5:55).', '%02d')), ...
     'fontweight', 'bold', ...
-    'callback', @previewIniFile);
+    'callback', @syncLedDoorTime);
 xPos = xPos+12;
 uicontrol(fig, ...
     'style', 'text', ...
@@ -207,7 +207,7 @@ uicontrol(fig, ...
     'string', '00', ...
     'fontweight', 'bold', ...
     'visible', 'off', ...
-    'callback', @previewIniFile);
+    'callback', @syncLedDoorTime);
 
 %% Scenario
 uicontrol(fig, ...
@@ -1279,6 +1279,8 @@ uicontrol(fig, ...
     'fontweight', 'bold', ...
     'tag', 'uiPreview');
 
+
+
 %%
 handles = guihandles(fig);
 
@@ -1290,9 +1292,14 @@ guidata(fig, handles);
 
 set(handles.uiSiteName, 'string', sites{1});
 
+syncLedDoorTime;
+
+
+
 function setDefaultTime
 
-handles = guidata(gcbf);
+fig = findobj('type', 'figure', 'tag', 'fig_OF_config');
+handles = guidata(fig);
 
 str = get(handles.uiWakeUpMinute, 'String');
 [~,idx] = min(abs(cellfun(@str2num, str)-handles.default.WakeUpMinute));
@@ -1312,7 +1319,8 @@ set(handles.uiSleepHour, 'Value', idx);
 
 function setScenario(obj, ~)
 
-handles = guidata(gcbf);
+fig = findobj('type', 'figure', 'tag', 'fig_OF_config');
+handles = guidata(fig);
 
 val = get(obj, 'value');
 
@@ -1413,7 +1421,7 @@ switch scenarios{val}
         set(handles.uiAttractLeds_pattern_all_percent, 'enable', 'off')
         
         % Door
-        set(handles.uiDoorremain_open, 'value', 1, 'enable', 'on');
+        set(handles.uiDoorremain_open, 'value', 1, 'enable', 'off');
         set([handles.uiDoorDelaysOpen
             handles.uiDoorDelaysClose], 'value', 1)
         set([handles.uiDoorOpenMinute
@@ -1422,6 +1430,8 @@ switch scenarios{val}
             handles.uiDoorCloseHour
             handles.uiDoorDelaysOpen
             handles.uiDoorDelaysClose], 'enable', 'off');
+        
+        syncLedDoorTime();
         
         % Door habituation
         set(handles.uiDoorHabitPercent, 'enable', 'off', 'value', 1);
@@ -1506,6 +1516,8 @@ switch scenarios{val}
             handles.uiDoorCloseMinute
             handles.uiDoorCloseHour], 'enable', 'off');
         
+        syncLedDoorTime();
+        
         % Door habituation
         set(handles.uiDoorHabitPercent, 'enable', 'on');
         
@@ -1588,6 +1600,8 @@ switch scenarios{val}
             handles.uiDoorCloseMinute
             handles.uiDoorCloseHour], 'enable', 'off');
         
+        syncLedDoorTime();
+        
         % Door habituation
         set(handles.uiDoorHabitPercent, 'value', 1, 'enable', 'off');
         
@@ -1669,6 +1683,8 @@ switch scenarios{val}
             handles.uiDoorOpenHour
             handles.uiDoorCloseMinute
             handles.uiDoorCloseHour], 'enable', 'off');
+        
+        syncLedDoorTime();
         
         % Door habituation
         set(handles.uiDoorHabitPercent, 'value', 1, 'enable', 'off');
@@ -1755,6 +1771,8 @@ switch scenarios{val}
         % Door habituation
         set(handles.uiDoorHabitPercent, 'value', 1, 'enable', 'off');
         
+        syncLedDoorTime();
+        
         % Reward
         set(handles.uiRewardEnable, 'value', 1);
         set(handles.uiRewardTimeout, 'value', 6)
@@ -1829,6 +1847,8 @@ switch scenarios{val}
             handles.uiDoorOpenHour
             handles.uiDoorCloseMinute
             handles.uiDoorCloseHour], 'enable', 'off');
+        
+        syncLedDoorTime();
         
         % Door habituation
         set(handles.uiDoorHabitPercent, 'value', 1, 'enable', 'off');
@@ -1908,6 +1928,8 @@ switch scenarios{val}
             handles.uiDoorOpenHour
             handles.uiDoorCloseMinute
             handles.uiDoorCloseHour], 'enable', 'off');
+        
+        syncLedDoorTime();
         
         % Door habituation
         set(handles.uiDoorHabitPercent, 'value', 1, 'enable', 'off');
@@ -1989,6 +2011,8 @@ switch scenarios{val}
             handles.uiDoorCloseMinute
             handles.uiDoorCloseHour], 'enable', 'off');
         
+        syncLedDoorTime();
+        
         % Door habituation
         set(handles.uiDoorHabitPercent, 'value', 1, 'enable', 'off');
         
@@ -2016,7 +2040,7 @@ switch scenarios{val}
         
 end
 
-guidata(gcbf, handles);
+guidata(fig, handles);
 
 previewIniFile
 
@@ -2024,7 +2048,8 @@ function previewIniFile(~, ~)
 
 getDataFromUi;
 
-handles = guidata(gcbf);
+fig = findobj('type', 'figure', 'tag', 'fig_OF_config');
+handles = guidata(fig);
 
 pathname = tempdir;
 filename = 'OF_temp.ini';
@@ -2050,12 +2075,14 @@ if ~filename
     return
 end
 
-handles = guidata(gcbf);
+fig = findobj('type', 'figure', 'tag', 'fig_OF_config');
+handles = guidata(fig);
 handles.config = OF_readIni(fullfile(pathname, filename));
-guidata(gcbf, handles);
+guidata(fig, handles);
 
 populateUi
 updateServoMoveTime
+syncLedDoorTime
 
 if handles.config.scenario.num>2 && ~(handles.config.scenario.num==3 && handles.config.attractiveleds.pattern==0)
     set(handles.uiPitTagsButtonLoad, 'enable', 'on')
@@ -2149,7 +2176,8 @@ filename = upper(filename);
 
 getDataFromUi
 
-handles = guidata(gcbf);
+fig = findobj('type', 'figure', 'tag', 'fig_OF_config');
+handles = guidata(fig);
 
 OF_writeIni(handles.config, pathname, filename)
 
@@ -2157,7 +2185,8 @@ exportPITtag(pathname);
 
 function exportPITtag(pathname)
 
-handles = guidata(gcbf);
+fig = findobj('type', 'figure', 'tag', 'fig_OF_config');
+handles = guidata(fig);
 
 pittagdeniedfile = fullfile(pathname, 'PTDENIED.TXT');
 if exist(pittagdeniedfile, 'file') == 2
@@ -2312,7 +2341,8 @@ if isnumeric(filename) && ~filename
     return
 end
 
-handles = guidata(gcbf);
+fig = findobj('type', 'figure', 'tag', 'fig_OF_config');
+handles = guidata(fig);
 
 filename = cellstr(filename);
 
@@ -2383,7 +2413,8 @@ previewIniFile
 
 function getDataFromUi
 
-handles = guidata(gcbf);
+fig = findobj('type', 'figure', 'tag', 'fig_OF_config');
+handles = guidata(fig);
 
 if isfield(handles, 'config')
     handles = rmfield(handles, 'config');
@@ -2666,11 +2697,12 @@ handles.config.gendate.hour = int32(dv(4));
 handles.config.gendate.minute = int32(dv(5));
 handles.config.gendate.second = int32(dv(6));
 
-guidata(gcbf, handles);
+guidata(fig, handles);
 
 function populateUi
 
-handles = guidata(gcbf);
+fig = findobj('type', 'figure', 'tag', 'fig_OF_config');
+handles = guidata(fig);
 
 assignin('base', 'config', handles.config)
 
@@ -2900,9 +2932,9 @@ idx = find(strcmp(str, num2str(handles.config.door.close_minute, '%02d')));
 set(handles.uiDoorCloseMinute, 'value', idx, 'enable', 'off')
 
 set(handles.uiDoorremain_open, 'value', handles.config.door.remain_open);
-if handles.config.door.remain_open==0
+% if handles.config.door.remain_open==0
     set(handles.uiDoorremain_open, 'enable', 'off');
-end
+% end
 
 str = get(handles.uiDoorDelaysOpen, 'string');
 str = strtrim(str);
@@ -3011,7 +3043,8 @@ end
 
 function updateServoMoveTime(~, ~)
 
-handles = guidata(gcbf);
+fig = findobj('type', 'figure', 'tag', 'fig_OF_config');
+handles = guidata(fig);
 
 servoOpenPosition = get(handles.uiServoMaxPos, 'string');
 servoOpenPosition = str2double(servoOpenPosition);
@@ -3031,9 +3064,36 @@ set(handles.uiGuillotineTimeout', 'string', sprintf('%.3f', (servoOpenPosition-s
 
 previewIniFile
 
+function syncLedDoorTime(~, ~)
+
+fig = findobj('type', 'figure', 'tag', 'fig_OF_config');
+handles = guidata(fig);
+
+% WakeUp
+val = get(handles.uiWakeUpHour, 'value');
+set(handles.uiAttractLedsOnHour, 'value', val);
+set(handles.uiDoorOpenHour, 'value', val);
+
+val = get(handles.uiWakeUpMinute, 'value');
+set(handles.uiAttractLedsOnMinute, 'value', val);
+set(handles.uiDoorOpenMinute, 'value', val);
+
+% Sleep
+
+val = get(handles.uiSleepHour, 'value');
+set(handles.uiAttractLedsOffHour, 'value', val);
+set(handles.uiDoorCloseHour, 'value', val);
+
+val = get(handles.uiSleepMinute, 'value');
+set(handles.uiAttractLedsOffMinute, 'value', val);
+set(handles.uiDoorCloseMinute, 'value', val);
+
+previewIniFile;
+
 function setAttractLEDsColor(obj, ~)
 
-handles = guidata(gcbf);
+fig = findobj('type', 'figure', 'tag', 'fig_OF_config');
+handles = guidata(fig);
 
 str = get(obj, 'string');
 
@@ -3050,7 +3110,8 @@ previewIniFile
 
 function attractiveledpattern(obj, ~, typ)
 
-handles = guidata(gcbf);
+fig = findobj('type', 'figure', 'tag', 'fig_OF_config');
+handles = guidata(fig);
 
 h = findobj('userdata', 'leds_pattern');
 set(h, 'value', 0);
@@ -3140,6 +3201,7 @@ config.logs.errors = ini_getl('logs', 'errors', 0, filename);
 config.logs.battery = ini_getl('logs', 'battery', 0, filename);
 config.logs.rfid = ini_getl('logs', 'rfid', 0, filename);
 config.logs.temperature = ini_getl('logs', 'temperature', 0, filename);
+config.logs.calibration = ini_getl('logs', 'calibration', 0, filename);
 
 %% Attractive LEDs
 if ismember('attractiveleds', sections)
