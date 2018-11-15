@@ -10,7 +10,7 @@ about.author = 'Jerome Briot';
 about.contact = 'jbtechlab@gmail.com';
 
 if ispc
-    defaultPath = fullfile(getenv('USERPROFILE'), 'Desktop');    
+    defaultPath = fullfile(getenv('USERPROFILE'), 'Desktop');
 else
     defaultPath = '~/Desktop';
 end
@@ -130,6 +130,12 @@ uiButtonEmptyBuffer = uicontrol(fig, ...
     'tag', 'uiButtonEmptyBuffer', ...
     'enable', 'off', ...
     'callback', @empty_uart_buffer);
+
+uiUartRxFrame = uicontrol('style', 'frame', ...
+    'units', 'pixels', ...
+    'position', [53 90.5 3 3]*uiSketchfactor, ...
+    'tag', 'uiUartRxFrame', ...
+    'backgroundcolor', frame_color);
 
 uicontrol('style', 'frame', ...
     'units', 'pixels', ...
@@ -659,6 +665,8 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
         set(uiDataBuffers, 'enable', 'off')
         set(uiUSBdevice, 'enable', 'off')
         
+        set(uiUartRxFrame, 'backgroundcolor', frame_color);
+        
         set(fig, 'name', sprintf('OpenFeeder - Serial interface - v%d.%d.%d - Not connected', version.major, version.minor, version.patch))
         
     end
@@ -696,7 +704,7 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
             
             substr = char(substr);
             substr = strrep(substr, char(9), '   ');
-
+            
             if isempty(substr)
                 return
             end
@@ -765,6 +773,8 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
                 set(uiCommunicationWindow, 'string', str);
             end
             
+            drawnow
+            
         catch ME
             
             disp(ME.identifier)
@@ -785,8 +795,13 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
         bytesAvailable = serialObj.BytesAvailable;
         
         if bytesAvailable==0
+            set(uiUartRxFrame, 'backgroundcolor', frame_color);
             return
         end
+        
+        set(uiUartRxFrame, 'backgroundcolor', 'g');
+        
+        drawnow
         
         buf = fread(serialObj, [1,bytesAvailable], 'char');
         
@@ -899,6 +914,13 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
     end
 
     function synchroTime(~, ~)
+        
+        pause(.5);
+        
+        if echoCommands
+            str = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', 'T');
+            populateCommunicationWindow(str)
+        end
         
         stop(timerReadData)
         
@@ -1048,12 +1070,15 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
         getZone;
         
         filename = fullfile(defaultPath, 'OF_calibrations.csv');
-            
+        
         fid = fopen(filename, 'at');
-
-            fprintf(fid, '%s,%s,%s,%.3f,%.3f\n', datestr(timeCalib.PC_time, 'dd/mm/yyyy,HH:MM:SS'), zone, udid([23 24 29 30]), timeCalib.deltaPic/0.000011574074074, timeCalib.deltaExt/0.000011574074074);
+        
+        fprintf(fid, '%s,%s,%s,%.3f,%.3f\n', datestr(timeCalib.PC_time, 'dd/mm/yyyy,HH:MM:SS'), zone, udid([23 24 29 30]), timeCalib.deltaPic/0.000011574074074, timeCalib.deltaExt/0.000011574074074);
         
         fclose(fid);
+        
+        str = sprintf('\r\nCalibration data appended to file:\r\n%s\r\n', filename);
+        populateCommunicationWindow(str)
         
     end
 
@@ -1064,7 +1089,7 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
         tmp = fread(serialObj, [1, serialObj.BytesAvailable], 'char');
         
         tmp = strrep(tmp, 'UDID:', '');
-        idx = isstrprop(tmp, 'wspace');      
+        idx = isstrprop(tmp, 'wspace');
         udid = char(tmp(~idx));
         
     end
@@ -1088,20 +1113,37 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
             
             case 'imp'
                 
-                fwrite(serialObj, uint8('jx'))
-                
-                if echoCommands
-                    str = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>\r\n', 'X');
-                    populateCommunicationWindow(str)
+                try
+                    
+                    stop(timerReadData)
+                    set(timerReadData, 'TimerFcn', @readDataFromOFToBuffer)
+                    start(timerReadData)
+                    
+                    fwrite(serialObj, uint8('jx'))
+                    
+                    if echoCommands
+                        str = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>\r\n', 'X');
+                        populateCommunicationWindow(str)
+                    end
+                    
+                    populateCommunicationWindow(sprintf('   Import in progress. Please wait...\r\n'))
+                    
+                    set(gcf, 'pointer', 'watch')
+                    
+                    t_transfert = tic();
+                    
+                catch ME
+                    
+                    disp(ME.identifier)
+                    disp(ME.message)
+                    disp(ME.cause)
+                    for u = 1 :numel(ME.stack)
+                        disp(ME.stack(u).file)
+                        disp(ME.stack(u).name)
+                        disp(ME.stack(u).line)
+                    end
+                    
                 end
-                
-                populateCommunicationWindow(sprintf('   Import in progress. Please wait...\r\n'))
-                
-                set(gcf, 'pointer', 'watch')
-                
-                t_transfert = tic();
-                
-                set(timerReadData, 'TimerFcn', @readDataFromOFToBuffer)
                 
         end
         
@@ -1109,42 +1151,59 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
 
     function readDataFromOFToBuffer(~, ~)
         
-        if serialObj.BytesAvailable==0
-            return
-        end
-        
-        tmp = fread(serialObj, [1, serialObj.BytesAvailable], 'char');
-
-        % Detect start of transmitted frame [STX]
-        if any(tmp==stx)
-            idx_stx = strfind(tmp, stx);
-            if idx_stx>1
-                tmp(1:idx_stx-1) = [];
-            end
-            buffer = [];
-        end
-        
-        % Detect end of transmitted frame [ETX]
-        if any(tmp==etx)
-            
-            idx_etx = strfind(tmp, etx);
-            if idx_etx > numel(tmp)
-                tmp(idx_etx+1:end) = [];
+        try
+            if serialObj.BytesAvailable==0
+                set(uiUartRxFrame, 'backgroundcolor', frame_color);
+                return
             end
             
-            set(timerReadData, 'TimerFcn', @readDataFromOF)
+            set(uiUartRxFrame, 'backgroundcolor', 'g');
+            
+            tmp = fread(serialObj, [1, serialObj.BytesAvailable], 'char');
+            
+            % Detect start of transmitted frame [STX]
+            if any(tmp==stx)
+                idx_stx = strfind(tmp, stx);
+                if idx_stx>1
+                    tmp(1:idx_stx-1) = [];
+                end
+                buffer = [];
+            end
+            
+            % Detect end of transmitted frame [ETX]
+            if any(tmp==etx)
+                
+                stop(timerReadData)
+                
+                idx_etx = strfind(tmp, etx);
+                if idx_etx > numel(tmp)
+                    tmp(idx_etx+1:end) = [];
+                end
+                
+                buffer = [buffer tmp];
+                
+                transfert_time = toc(t_transfert);
+                
+                assignin('base', 'buffer', buffer);
+                
+                parseBuffer();
+                
+            end
             
             buffer = [buffer tmp];
             
-            transfert_time = toc(t_transfert);
+        catch ME
             
-            assignin('base', 'buffer', buffer);
-            
-            parseBuffer();
+            disp(ME.identifier)
+            disp(ME.message)
+            disp(ME.cause)
+            for u = 1 :numel(ME.stack)
+                disp(ME.stack(u).file)
+                disp(ME.stack(u).name)
+                disp(ME.stack(u).line)
+            end
             
         end
-        
-        buffer = [buffer tmp];
         
     end
 
@@ -1213,6 +1272,9 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
         
         saveDataToFiles()
         
+        set(timerReadData, 'TimerFcn', @readDataFromOF)
+        start(timerReadData)
+        
     end
 
     function saveDataToFiles()
@@ -1220,6 +1282,7 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
         folder_name = uigetdir(defaultPath);
         
         if ~folder_name
+            populateCommunicationWindow(sprintf('\tImport aborted.\r\n'))
             return
         end
         
@@ -1234,7 +1297,7 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
         end
         
         files = [];
-    
+        
     end
 
 %     function parseError()
