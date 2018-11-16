@@ -915,7 +915,7 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
 
     function synchroTime(~, ~)
         
-        pause(.5);
+        pause(.2);
         
         if echoCommands
             str = sprintf('<html><font color="#FF18E6"><b> => %s</b></font></html>', 'T');
@@ -923,11 +923,13 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
         end
         
         stop(timerReadData)
-        
+    
         num = 12;
         maxTime = 7;
         
         for n = 1:2
+            
+            empty_uart_buffer;
             
             % Dont synchronize OF date and time during the first iteration to allow offsets computation
             if n > 1
@@ -965,7 +967,10 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
                 end
             end
             
-            OF_time = fread(serialObj, [1 serialObj.BytesAvailable]);
+            OF_time = fread(serialObj, [1 num]);
+            if numel(OF_time)~=num
+                error('Wrong number of bytes read.')
+            end
             
             if ~any(OF_time(7:end))
                 ext_rtc_available = false;
@@ -1067,7 +1072,18 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
     function saveCalibInfos(~, ~)
         
         getUdid;
+        
+        if strcmp(udid, 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX') 
+            str = sprintf('\r\nWarning UDID incorrect\r\n');
+            populateCommunicationWindow(str)
+        end
+        
         getZone;
+        
+        if strcmp(zone, 'XXXX') 
+            str = sprintf('\r\nWarning zone incorrect\r\n');
+            populateCommunicationWindow(str)
+        end
         
         filename = fullfile(defaultPath, 'OF_calibrations.csv');
         
@@ -1084,6 +1100,8 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
 
     function getUdid(~, ~)
         
+        empty_uart_buffer;
+        
         fwrite(serialObj, uint8('u'))
         pause(1)
         tmp = fread(serialObj, [1, serialObj.BytesAvailable], 'char');
@@ -1092,9 +1110,15 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
         idx = isstrprop(tmp, 'wspace');
         udid = char(tmp(~idx));
         
+        if numel(udid)~=30
+            udid = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
+        end
+        
     end
 
     function getZone(~, ~)
+        
+        empty_uart_buffer;
         
         fwrite(serialObj, uint8('ji'))
         pause(1)
@@ -1102,8 +1126,11 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
         
         tmp = strsplit(char(tmp), char([13 10]));
         idx = strncmp(tmp, 'zone=', 5);
-        
-        zone = strrep(tmp{idx}, 'zone=', '');
+        if any(idx)
+            zone = strrep(tmp{idx}, 'zone=', '');
+        else
+            zone = 'XXXX';
+        end
         
     end
 
