@@ -567,7 +567,9 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
             fread(serialObj, serialObj.BytesAvailable);
         end
         
-        start(timerReadData)
+        if strcmpi(timerReadData.Running, 'off')
+            start(timerReadData)
+        end
         
         set(uiButtonConnect, 'enable', 'off')
         set(uiButtonDisconnect, 'enable', 'on')
@@ -618,7 +620,9 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
     function disconnectCOM(~, ~)
         
         if strcmp(serialObj.Status, 'open')
-            stop(timerReadData)
+            if strcmpi(timerReadData.Running, 'on')
+                stop(timerReadData)
+            end
             fclose(serialObj);
         end
         
@@ -922,8 +926,10 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
             populateCommunicationWindow(str)
         end
         
-        stop(timerReadData)
-    
+        if strcmpi(timerReadData.Running, 'on')
+            stop(timerReadData)
+        end
+        
         num = 12;
         maxTime = 7;
         
@@ -1065,7 +1071,9 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
         
         saveCalibInfos();
         
-        start(timerReadData)
+        if strcmpi(timerReadData.Running, 'off')
+            start(timerReadData)
+        end
         
     end
 
@@ -1073,14 +1081,14 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
         
         getUdid;
         
-        if strcmp(udid, 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX') 
+        if strcmp(udid, 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
             str = sprintf('\r\nWarning UDID incorrect\r\n');
             populateCommunicationWindow(str)
         end
         
         getZone;
         
-        if strcmp(zone, 'XXXX') 
+        if strcmp(zone, 'XXXX')
             str = sprintf('\r\nWarning zone incorrect\r\n');
             populateCommunicationWindow(str)
         end
@@ -1142,9 +1150,13 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
                 
                 try
                     
-                    stop(timerReadData)
+                    if strcmpi(timerReadData.Running, 'on')
+                        stop(timerReadData)
+                    end
                     set(timerReadData, 'TimerFcn', @readDataFromOFToBuffer)
-                    start(timerReadData)
+                    if strcmpi(timerReadData.Running, 'off')
+                        start(timerReadData)
+                    end
                     
                     fwrite(serialObj, uint8('jx'))
                     
@@ -1200,7 +1212,9 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
             % Detect end of transmitted frame [ETX]
             if any(tmp==etx)
                 
-                stop(timerReadData)
+                if strcmpi(timerReadData.Running, 'on')
+                    stop(timerReadData)
+                end
                 
                 idx_etx = strfind(tmp, etx);
                 if idx_etx > numel(tmp)
@@ -1300,7 +1314,9 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
         saveDataToFiles()
         
         set(timerReadData, 'TimerFcn', @readDataFromOF)
-        start(timerReadData)
+        if strcmpi(timerReadData.Running, 'off')
+            start(timerReadData)
+        end
         
     end
 
