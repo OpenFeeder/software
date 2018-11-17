@@ -1294,8 +1294,6 @@ set(handles.uiSiteName, 'string', sites{1});
 
 syncLedDoorTime;
 
-
-
 function setDefaultTime
 
 fig = findobj('type', 'figure', 'tag', 'fig_OF_config');
@@ -1360,7 +1358,7 @@ switch scenarios{val}
         set([handles.uiPitTags1
             handles.uiPitTags2
             handles.uiPitTags3
-            handles.uiPitTags4], 'string', '', 'value', 1, 'enable', 'off');
+            handles.uiPitTags4], 'string', [], 'value', 1, 'enable', 'off', 'uicontextmenu', []);
         set([handles.uiRadioPitTags1
             handles.uiRadioPitTags2
             handles.uiRadioPitTags3
@@ -1368,7 +1366,7 @@ switch scenarios{val}
         set(handles.uiPitTagsButtonLoad, 'enable', 'off')
         
         % Security
-        set(handles.uiSecurityBirdRewReopen, 'value', 0)
+        set(handles.uiSecurityBirdRewReopen, 'value', 0, 'enable', 'on')
         
         % Timeouts
         set(handles.uiUniqueVisitTimeout, 'enable', 'on', 'value', 1)
@@ -1396,7 +1394,7 @@ switch scenarios{val}
         set([handles.uiPitTags1
             handles.uiPitTags2
             handles.uiPitTags3
-            handles.uiPitTags4], 'string', '', 'value', 1, 'enable', 'off');
+            handles.uiPitTags4], 'string', [], 'value', 1, 'enable', 'off', 'uicontextmenu', []);
         set([handles.uiRadioPitTags1
             handles.uiRadioPitTags2
             handles.uiRadioPitTags3
@@ -1445,7 +1443,7 @@ switch scenarios{val}
         set(handles.uiRewardProbability, 'enable', 'off')
         
         % Security
-        set(handles.uiSecurityBirdRewReopen, 'value', 0)
+        set(handles.uiSecurityBirdRewReopen, 'value', 0, 'enable', 'off')
         
         % Punishment
         set(handles.uiPunishmentDelay, 'enable', 'off')
@@ -1474,7 +1472,7 @@ switch scenarios{val}
         set([handles.uiPitTags1
             handles.uiPitTags2
             handles.uiPitTags3
-            handles.uiPitTags4], 'string', '', 'value', 1, 'enable', 'off');
+            handles.uiPitTags4], 'string', [], 'value', 1, 'enable', 'off', 'uicontextmenu', []);
         set([handles.uiRadioPitTags1
             handles.uiRadioPitTags2
             handles.uiRadioPitTags3
@@ -1530,7 +1528,7 @@ switch scenarios{val}
         set(handles.uiRewardProbability, 'enable', 'off')
         
         % Security
-        set(handles.uiSecurityBirdRewReopen, 'value', 1)
+        set(handles.uiSecurityBirdRewReopen, 'value', 1, 'enable', 'on')
         
         % Punishment
         set(handles.uiPunishmentDelay, 'enable', 'off')
@@ -1559,7 +1557,7 @@ switch scenarios{val}
         set([handles.uiPitTags1
             handles.uiPitTags2
             handles.uiPitTags3
-            handles.uiPitTags4], 'string', '', 'value', 1, 'enable', 'off');
+            handles.uiPitTags4], 'string', [], 'value', 1, 'enable', 'off');
         set([handles.uiRadioPitTags1
             handles.uiRadioPitTags2
             handles.uiRadioPitTags3
@@ -1614,7 +1612,7 @@ switch scenarios{val}
         set(handles.uiUniqueVisitTimeout, 'enable', 'off', 'value', 1)
         
         % Security
-        set(handles.uiSecurityBirdRewReopen, 'value', 1)
+        set(handles.uiSecurityBirdRewReopen, 'value', 1, 'enable', 'on')
         
         % Punishment
         set(handles.uiPunishmentDelay, 'value', 3, 'enable', 'on')
@@ -1640,8 +1638,8 @@ switch scenarios{val}
         set(handles.uiLogBirds, 'enable', 'off');
         
         % PIT tags
-        set([handles.uiPitTags1 handles.uiPitTags2], 'string', '', 'value', 1, 'enable', 'on');
-        set([handles.uiPitTags3 handles.uiPitTags4], 'string', '', 'value', 1, 'enable', 'off');
+        set([handles.uiPitTags1 handles.uiPitTags2], 'string', [], 'value', 1, 'enable', 'on', 'uicontextmenu', [])
+        set([handles.uiPitTags3 handles.uiPitTags4], 'string', [], 'value', 1, 'enable', 'off', 'uicontextmenu', [])
         
         set([handles.uiRadioPitTags1 handles.uiRadioPitTags2], 'value', 1, 'enable', 'on')
         set(handles.uiRadioPitTags1, 'String', 'Denied');
@@ -1698,7 +1696,7 @@ switch scenarios{val}
         set(handles.uiUniqueVisitTimeout, 'enable', 'off', 'value', 1)
         
         % Security
-        set(handles.uiSecurityBirdRewReopen, 'value', 1)
+        set(handles.uiSecurityBirdRewReopen, 'value', 1, 'enable', 'on')
         
         % Punishment
         set(handles.uiPunishmentDelay, 'value', 3)
@@ -1724,8 +1722,8 @@ switch scenarios{val}
         set(handles.uiLogBirds, 'enable', 'off');
         
         % PIT tags
-        set([handles.uiPitTags1 handles.uiPitTags2], 'string', '', 'value', 1, 'enable', 'on');
-        set([handles.uiPitTags3 handles.uiPitTags4], 'string', '', 'value', 1, 'enable', 'off');
+        set([handles.uiPitTags1 handles.uiPitTags2], 'string', [], 'value', 1, 'enable', 'on', 'uicontextmenu', []);
+        set([handles.uiPitTags3 handles.uiPitTags4], 'string', [], 'value', 1, 'enable', 'off', 'uicontextmenu', []);
         
         set([handles.uiRadioPitTags1 handles.uiRadioPitTags2], 'value', 1, 'enable', 'on')
         set(handles.uiRadioPitTags1, 'String', 'Denied');
@@ -1782,7 +1780,7 @@ switch scenarios{val}
         set(handles.uiUniqueVisitTimeout, 'enable', 'off', 'value', 1)
         
         % Security
-        set(handles.uiSecurityBirdRewReopen, 'value', 1)
+        set(handles.uiSecurityBirdRewReopen, 'value', 1, 'enable', 'on')
         
         % Punishment
         set(handles.uiPunishmentDelay, 'value', 3, 'enable', 'on')
@@ -1808,8 +1806,17 @@ switch scenarios{val}
         set(handles.uiLogBirds, 'enable', 'off');
         
         % PIT tags
+        for n = 1:2
+            hcmenu(n) = uicontextmenu;
+            uimenu(hcmenu(n), 'Label', 'Include all', 'callback', {@pitTagSelect, n, 'inc'});
+            uimenu(hcmenu(n), 'Label', 'Exclude all', 'callback', {@pitTagSelect, n, 'exc'});
+            uimenu(hcmenu(n), 'Label', 'Clear', 'separator', 'on', 'callback', {@pitTagSelect, n, 'cl'});
+        end
+        
         set([handles.uiPitTags1
-            handles.uiPitTags2], 'string', '', 'value', 1, 'enable', 'on');
+            handles.uiPitTags2], 'string', [], 'value', 1, 'enable', 'on');
+        set(handles.uiPitTags1, 'uicontextmenu', hcmenu(1));
+        set(handles.uiPitTags2, 'uicontextmenu', hcmenu(2));
         set(handles.uiRadioPitTags1, 'string', 'Color A', 'value', 1, 'enable', 'on');
         set(handles.uiRadioPitTags2, 'string', 'Color B', 'value', 1, 'enable', 'on');
         set(handles.uiPitTagsButtonLoad, 'enable', 'on')
@@ -1861,7 +1868,7 @@ switch scenarios{val}
         set(handles.uiUniqueVisitTimeout, 'enable', 'off', 'value', 1)
         
         % Security
-        set(handles.uiSecurityBirdRewReopen, 'value', 1)
+        set(handles.uiSecurityBirdRewReopen, 'value', 1, 'enable', 'on')
         
         % Punishment
         set(handles.uiPunishmentDelay, 'value', 3, 'enable', 'on')
@@ -1887,8 +1894,8 @@ switch scenarios{val}
         set(handles.uiLogBirds, 'enable', 'off');
         
         % PIT tags
-        set([handles.uiPitTags1 handles.uiPitTags2], 'string', '', 'value', 1, 'enable', 'on');
-        set([handles.uiPitTags3 handles.uiPitTags4], 'string', '', 'value', 1, 'enable', 'off');
+        set([handles.uiPitTags1 handles.uiPitTags2], 'string', [], 'value', 1, 'enable', 'on', 'uicontextmenu', []);
+        set([handles.uiPitTags3 handles.uiPitTags4], 'string', [], 'value', 1, 'enable', 'off', 'uicontextmenu', []);
         
         set([handles.uiRadioPitTags1 handles.uiRadioPitTags2], 'value', 1, 'enable', 'on')
         set(handles.uiRadioPitTags1, 'String', 'Denied');
@@ -1943,7 +1950,7 @@ switch scenarios{val}
         set(handles.uiUniqueVisitTimeout, 'enable', 'off', 'value', 1)
         
         % Security
-        set(handles.uiSecurityBirdRewReopen, 'value', 1)
+        set(handles.uiSecurityBirdRewReopen, 'value', 1, 'enable', 'on')
         
         % Punishment
         set(handles.uiPunishmentDelay, 'value', 3, 'enable', 'on')
@@ -1969,8 +1976,8 @@ switch scenarios{val}
         set(handles.uiLogBirds, 'enable', 'off');
         
         % PIT tags
-        set([handles.uiPitTags1 handles.uiPitTags2], 'string', '', 'value', 1, 'enable', 'on');
-        set([handles.uiPitTags3 handles.uiPitTags4], 'string', '', 'value', 1, 'enable', 'off');
+        set([handles.uiPitTags1 handles.uiPitTags2], 'string', [], 'value', 1, 'enable', 'on', 'uicontextmenu', []);
+        set([handles.uiPitTags3 handles.uiPitTags4], 'string', [], 'value', 1, 'enable', 'off', 'uicontextmenu', []);
         
         set([handles.uiRadioPitTags1 handles.uiRadioPitTags2], 'value', 1, 'enable', 'on')
         set(handles.uiRadioPitTags1, 'String', 'Denied');
@@ -2025,7 +2032,7 @@ switch scenarios{val}
         set(handles.uiUniqueVisitTimeout, 'enable', 'on', 'value', 6)
         
         % Security
-        set(handles.uiSecurityBirdRewReopen, 'value', 1)
+        set(handles.uiSecurityBirdRewReopen, 'value', 1, 'enable', 'on')
         
         % Punishment
         set(handles.uiPunishmentDelay, 'value', 3, 'enable', 'on')
@@ -2156,11 +2163,11 @@ previewIniFile;
 % fid = fopen(fullfile(pathname, filename), 'r');
 % X = textscan(fid, '%s', 'delimiter', '\n');
 % fclose(fid);
-% 
+%
 % X{1} = strrep(X{1}, '[', '<html><font color="#8000FF"><b>[');
 % X{1} = strrep(X{1}, ']', ']</b></font></html>');
 % X{1} = strrep(X{1}, '=', ' = ');
-% 
+%
 % set(handles.uiPreview, 'string', X{1}, 'value', 1)
 
 set(handles.uiExportButton, 'enable', 'on')
@@ -2249,68 +2256,147 @@ if handles.config.scenario.num<3
 elseif handles.config.scenario.num==3 % Go - No go
     
     if handles.config.attractiveleds.pattern==1
-        if handles.config.pittags.num_left>0
+        if handles.config.pittags.num_left==-1
+            str = {'XXXXXXXX'};
+        elseif handles.config.pittags.num_left==9999
+            str = {'????????'};
+        else
             str = get(handles.uiPitTags1, 'string');
+            str = cellstr(str);
+        end
+        if ~(numel(str)==1 && isempty(str{1}))
             fid = fopen(pittagleftfile, 'wt');
             fprintf(fid, '%s', str{:});
             fclose(fid);
         end
-        if handles.config.pittags.num_right>0
+        
+        if handles.config.pittags.num_right==-1
+            str = {'XXXXXXXX'};
+        elseif handles.config.pittags.num_right==9999
+            str = {'????????'};
+        else
             str = get(handles.uiPitTags2, 'string');
+            str = cellstr(str);
+        end
+        if ~(numel(str)==1 && isempty(str{1}))
             fid = fopen(pittagrightfile, 'wt');
             fprintf(fid, '%s', str{:});
             fclose(fid);
         end
+        
     elseif handles.config.attractiveleds.pattern==2
-        if handles.config.pittags.num_top>0
+        if handles.config.pittags.num_top==-1
+            str = {'XXXXXXXX'};
+        elseif handles.config.pittags.num_top==9999
+            str = {'????????'};
+        else
             str = get(handles.uiPitTags1, 'string');
+            str = cellstr(str);
+        end
+        if ~(numel(str)==1 && isempty(str{1}))
             fid = fopen(pittagtopfile, 'wt');
             fprintf(fid, '%s', str{:});
             fclose(fid);
         end
-        if handles.config.pittags.num_bottom>0
+        
+        if handles.config.pittags.num_bottom==-1
+            str = {'XXXXXXXX'};
+        elseif handles.config.pittags.num_bottom==9999
+            str = {'????????'};
+        else
             str = get(handles.uiPitTags2, 'string');
+            str = cellstr(str);
+        end
+        if ~(numel(str)==1 && isempty(str{1}))
             fid = fopen(pittagbottomfile, 'wt');
             fprintf(fid, '%s', str{:});
             fclose(fid);
         end
+        
     elseif handles.config.attractiveleds.pattern==3
-        if handles.config.pittags.num_led_1>0
+        if handles.config.pittags.num_led_1==-1
+            str = {'XXXXXXXX'};
+        elseif handles.config.pittags.num_led_1==9999
+            str = {'????????'};
+        else
             str = get(handles.uiPitTags1, 'string');
+            str = cellstr(str);
+        end
+        if ~(numel(str)==1 && isempty(str{1}))
             fid = fopen(pittagone1file, 'wt');
             fprintf(fid, '%s', str{:});
             fclose(fid);
         end
-        if handles.config.pittags.num_led_2>0
+        
+        if handles.config.pittags.num_led_2==-1
+            str = {'XXXXXXXX'};
+        elseif handles.config.pittags.num_led_2==9999
+            str = {'????????'};
+        else
             str = get(handles.uiPitTags2, 'string');
+            str = cellstr(str);
+        end
+        if ~(numel(str)==1 && isempty(str{1}))
             fid = fopen(pittagone2file, 'wt');
             fprintf(fid, '%s', str{:});
             fclose(fid);
         end
-        if handles.config.pittags.num_led_3>0
+        
+        if handles.config.pittags.num_led_3==-1
+            str = {'XXXXXXXX'};
+        elseif handles.config.pittags.num_led_3==9999
+            str = {'????????'};
+        else
             str = get(handles.uiPitTags3, 'string');
+            str = cellstr(str);
+        end
+        if ~(numel(str)==1 && isempty(str{1}))
             fid = fopen(pittagone3file, 'wt');
             fprintf(fid, '%s', str{:});
             fclose(fid);
         end
-        if handles.config.pittags.num_led_4>0
+        
+        if handles.config.pittags.num_led_4==-1
+            str = {'XXXXXXXX'};
+        elseif handles.config.pittags.num_led_4==9999
+            str = {'????????'};
+        else
             str = get(handles.uiPitTags4, 'string');
+            str = cellstr(str);
+        end
+        if ~(numel(str)==1 && isempty(str{1}))
             fid = fopen(pittagone4file, 'wt');
             fprintf(fid, '%s', str{:});
             fclose(fid);
         end
+        
     end
     
 elseif handles.config.scenario.num==6 % Color Associative Learning
     
-    if handles.config.pittags.num_color_A>0
+    if handles.config.pittags.num_color_A==-1
+        str = {'XXXXXXXX'};
+    elseif handles.config.pittags.num_color_A==9999
+        str = {'????????'};
+    else
         str = get(handles.uiPitTags1, 'string');
+        str = cellstr(str);
+    end
+    if ~(numel(str)==1 && isempty(str{1}))
         fid = fopen(pittagcolorAfile, 'wt');
         fprintf(fid, '%s', str{:});
         fclose(fid);
     end
-    if handles.config.pittags.num_color_B>0
+    
+    if handles.config.pittags.num_color_B==-1
+        str = {'XXXXXXXX'};
+    elseif handles.config.pittags.num_color_B==9999
+        str = {'????????'};
+    else
         str = get(handles.uiPitTags2, 'string');
+        str = cellstr(str);
+    end
+    if ~(numel(str)==1 && isempty(str{1}))
         fid = fopen(pittagcolorBfile, 'wt');
         fprintf(fid, '%s', str{:});
         fclose(fid);
@@ -2318,14 +2404,29 @@ elseif handles.config.scenario.num==6 % Color Associative Learning
     
 else
     
-    if handles.config.pittags.num_denied>0
+    if handles.config.pittags.num_denied==-1
+        str = {'XXXXXXXX'};
+    elseif handles.config.pittags.num_denied==9999
+        str = {'????????'};
+    else
         str = get(handles.uiPitTags1, 'string');
+        str = cellstr(str);
+    end
+    if ~(numel(str)==1 && isempty(str{1}))
         fid = fopen(pittagdeniedfile, 'wt');
         fprintf(fid, '%s', str{:});
         fclose(fid);
     end
-    if handles.config.pittags.num_accepted>0
+    
+    if handles.config.pittags.num_accepted==-1
+        str = {'XXXXXXXX'};
+    elseif handles.config.pittags.num_accepted==9999
+        str = {'????????'};
+    else
         str = get(handles.uiPitTags2, 'string');
+        str = cellstr(str);
+    end
+    if ~(numel(str)==1 && isempty(str{1}))
         fid = fopen(pittagacceptedfile, 'wt');
         fprintf(fid, '%s', str{:});
         fclose(fid);
@@ -2538,35 +2639,168 @@ if handles.config.scenario.num>2
         if isfield(handles.config.attractiveleds, 'pattern')
             if handles.config.attractiveleds.pattern==1
                 str = get(handles.uiPitTags1, 'string');
-                handles.config.pittags.num_left = uint32(numel(str));
+                if isempty(str)
+                    handles.config.pittags.num_left = uint32(0);
+                else
+                    str = cellstr(str);
+                    if numel(str)==1 && strcmp(str{1}, 'XXXXXXXX')
+                        handles.config.pittags.num_left = int32(-1);
+                    elseif numel(str)==1 && strcmp(str{1}, '????????')
+                        handles.config.pittags.num_left = int32(9999);
+                    else
+                        handles.config.pittags.num_left = uint32(numel(str));
+                    end
+                end
                 str = get(handles.uiPitTags2, 'string');
-                handles.config.pittags.num_right = uint32(numel(str));
+                if isempty(str)
+                    handles.config.pittags.num_right = uint32(0);
+                else
+                    str = cellstr(str);
+                    if numel(str)==1 && strcmp(str{1}, 'XXXXXXXX')
+                        handles.config.pittags.num_right = int32(-1);
+                    elseif numel(str)==1 && strcmp(str{1}, '????????')
+                        handles.config.pittags.num_right = int32(9999);
+                    else
+                        handles.config.pittags.num_right = uint32(numel(str));
+                    end
+                end
             elseif handles.config.attractiveleds.pattern==2
                 str = get(handles.uiPitTags1, 'string');
-                handles.config.pittags.num_top = uint32(numel(str));
+                if isempty(str)
+                    handles.config.pittags.num_top = uint32(0);
+                else
+                    str = cellstr(str);
+                    if numel(str)==1 && strcmp(str{1}, 'XXXXXXXX')
+                        handles.config.pittags.num_top = int32(-1);
+                    elseif numel(str)==1 && strcmp(str{1}, '????????')
+                        handles.config.pittags.num_top = int32(9999);
+                    else
+                        handles.config.pittags.num_top = uint32(numel(str));
+                    end
+                end
                 str = get(handles.uiPitTags2, 'string');
-                handles.config.pittags.num_bottom = uint32(numel(str));
+                if isempty(str)
+                    handles.config.pittags.num_bottom = uint32(0);
+                else
+                    str = cellstr(str);
+                    if numel(str)==1 && strcmp(str{1}, 'XXXXXXXX')
+                        handles.config.pittags.num_bottom = int32(-1);
+                    elseif numel(str)==1 && strcmp(str{1}, '????????')
+                        handles.config.pittags.num_bottom = int32(9999);
+                    else
+                        handles.config.pittags.num_bottom = uint32(numel(str));
+                    end
+                end
+                
             elseif handles.config.attractiveleds.pattern==3
                 str = get(handles.uiPitTags1, 'string');
-                handles.config.pittags.num_led_1 = uint32(numel(str));
+                if isempty(str)
+                    handles.config.pittags.num_led_1 = uint32(0);
+                else
+                    str = cellstr(str);
+                    if numel(str)==1 && strcmp(str{1}, 'XXXXXXXX')
+                        handles.config.pittags.num_led_1 = int32(-1);
+                    elseif numel(str)==1 && strcmp(str{1}, '????????')
+                        handles.config.pittags.num_led_1 = int32(9999);
+                    else
+                        handles.config.pittags.num_led_1 = uint32(numel(str));
+                    end
+                end
                 str = get(handles.uiPitTags2, 'string');
-                handles.config.pittags.num_led_2 = uint32(numel(str));
+                if isempty(str)
+                    handles.config.pittags.num_led_2 = uint32(0);
+                else
+                    str = cellstr(str);
+                    if numel(str)==1 && strcmp(str{1}, 'XXXXXXXX')
+                        handles.config.pittags.num_led_2 = int32(-1);
+                    elseif numel(str)==1 && strcmp(str{1}, '????????')
+                        handles.config.pittags.num_led_2 = int32(9999);
+                    else
+                        handles.config.pittags.num_led_2 = uint32(numel(str));
+                    end
+                end
                 str = get(handles.uiPitTags3, 'string');
-                handles.config.pittags.num_led_3 = uint32(numel(str));
+                if isempty(str)
+                    handles.config.pittags.num_led_3 = uint32(0);
+                else
+                    str = cellstr(str);
+                    if numel(str)==1 && strcmp(str{1}, 'XXXXXXXX')
+                        handles.config.pittags.num_led_3 = int32(-1);
+                    elseif numel(str)==1 && strcmp(str{1}, '????????')
+                        handles.config.pittags.num_led_3 = int32(9999);
+                    else
+                        handles.config.pittags.num_led_3 = uint32(numel(str));
+                    end
+                end
                 str = get(handles.uiPitTags4, 'string');
-                handles.config.pittags.num_led_4 = uint32(numel(str));
+                if isempty(str)
+                    handles.config.pittags.num_led_4 = uint32(0);
+                else
+                    str = cellstr(str);
+                    if numel(str)==1 && strcmp(str{1}, 'XXXXXXXX')
+                        handles.config.pittags.num_led_4 = int32(-1);
+                    elseif numel(str)==1 && strcmp(str{1}, '????????')
+                        handles.config.pittags.num_led_4 = int32(9999);
+                    else
+                        handles.config.pittags.num_led_4 = uint32(numel(str));
+                    end
+                end
             end
         end
     elseif handles.config.scenario.num == 6 % Color associative learning
         str = get(handles.uiPitTags1, 'string');
-        handles.config.pittags.num_color_A = uint32(numel(str));
+        if isempty(str)
+            handles.config.pittags.num_color_A = uint32(0);
+        else
+            str = cellstr(str);
+            if numel(str)==1 && strcmp(str{1}, 'XXXXXXXX')
+                handles.config.pittags.num_color_A = int32(-1);
+            elseif numel(str)==1 && strcmp(str{1}, '????????')
+                handles.config.pittags.num_color_A = int32(9999);
+            else
+                handles.config.pittags.num_color_A = uint32(numel(str));
+            end
+        end
         str = get(handles.uiPitTags2, 'string');
-        handles.config.pittags.num_color_B = uint32(numel(str));
+        if isempty(str)
+            handles.config.pittags.num_color_B = uint32(0);
+        else
+            str = cellstr(str);
+            if numel(str)==1 && strcmp(str{1}, 'XXXXXXXX')
+                handles.config.pittags.num_color_B = int32(-1);
+            elseif numel(str)==1 && strcmp(str{1}, '????????')
+                handles.config.pittags.num_color_B = int32(9999);
+            else
+                handles.config.pittags.num_color_B = uint32(numel(str));
+            end
+        end
     else
         str = get(handles.uiPitTags1, 'string');
-        handles.config.pittags.num_denied = uint32(numel(str));
+        if isempty(str)
+            handles.config.pittags.num_denied = uint32(0);
+        else
+            str = cellstr(str);
+            if numel(str)==1 && strcmp(str{1}, 'XXXXXXXX')
+                handles.config.pittags.num_denied = int32(-1);
+            elseif numel(str)==1 && strcmp(str{1}, '????????')
+                handles.config.pittags.num_denied = int32(9999);
+            else
+                handles.config.pittags.num_denied = uint32(numel(str));
+            end
+        end
         str = get(handles.uiPitTags2, 'string');
-        handles.config.pittags.num_accepted = uint32(numel(str));
+        if isempty(str)
+            handles.config.pittags.num_accepted = uint32(0);
+        else
+            str = cellstr(str);
+            if numel(str)==1 && strcmp(str{1}, 'XXXXXXXX')
+                handles.config.pittags.num_accepted = int32(-1);
+            elseif numel(str)==1 && strcmp(str{1}, '????????')
+                handles.config.pittags.num_accepted = int32(9999);
+            else
+                handles.config.pittags.num_accepted = uint32(numel(str));
+            end
+        end
     end
 end
 
@@ -2933,7 +3167,7 @@ set(handles.uiDoorCloseMinute, 'value', idx, 'enable', 'off')
 
 set(handles.uiDoorremain_open, 'value', handles.config.door.remain_open);
 % if handles.config.door.remain_open==0
-    set(handles.uiDoorremain_open, 'enable', 'off');
+set(handles.uiDoorremain_open, 'enable', 'off');
 % end
 
 str = get(handles.uiDoorDelaysOpen, 'string');
@@ -3127,11 +3361,18 @@ set(handles.uiPitTagsButtonLoad, 'enable', 'off')
 set([handles.uiPitTags1
     handles.uiPitTags2
     handles.uiPitTags3
-    handles.uiPitTags4], 'string', '', 'value', 1, 'enable', 'off');
+    handles.uiPitTags4], 'string', [], 'value', 1, 'enable', 'off', 'uicontextmenu', '')
 set([handles.uiRadioPitTags1
     handles.uiRadioPitTags2
     handles.uiRadioPitTags3
     handles.uiRadioPitTags4], 'value', 0, 'enable', 'off', 'string', '')
+
+for n = 1:4
+    hcmenu(n) = uicontextmenu;
+    uimenu(hcmenu(n), 'Label', 'Include all', 'callback', {@pitTagSelect, n, 'inc'});
+    uimenu(hcmenu(n), 'Label', 'Exclude all', 'callback', {@pitTagSelect, n, 'exc'});
+    uimenu(hcmenu(n), 'Label', 'Clear', 'separator', 'on', 'callback', {@pitTagSelect, n, 'cl'});
+end
 
 switch typ
     
@@ -3146,7 +3387,8 @@ switch typ
         handles.pattern = uint32(1);
         set(handles.uiRadioPitTags1, 'string', 'Left', 'value', 1, 'enable', 'on');
         set(handles.uiRadioPitTags2, 'string', 'Right', 'value', 1, 'enable', 'on');
-        set([handles.uiPitTags1 handles.uiPitTags2], 'enable', 'on')
+        set(handles.uiPitTags1, 'enable', 'on', 'uicontextmenu', hcmenu(1))
+        set(handles.uiPitTags2, 'enable', 'on', 'uicontextmenu', hcmenu(2))
         
     case 'tb'
         
@@ -3154,7 +3396,8 @@ switch typ
         handles.pattern = uint32(2);
         set(handles.uiRadioPitTags1, 'string', 'Top', 'value', 1, 'enable', 'on');
         set(handles.uiRadioPitTags2, 'string', 'Bottom', 'value', 1, 'enable', 'on');
-        set([handles.uiPitTags1 handles.uiPitTags2], 'enable', 'on')
+        set(handles.uiPitTags1, 'enable', 'on', 'uicontextmenu', hcmenu(1))
+        set(handles.uiPitTags2, 'enable', 'on', 'uicontextmenu', hcmenu(2))
         
     case 'o'
         
@@ -3169,6 +3412,28 @@ switch typ
             handles.uiPitTags2
             handles.uiPitTags3
             handles.uiPitTags4], 'enable', 'on')
+        set(handles.uiPitTags1, 'enable', 'on', 'uicontextmenu', hcmenu(1))
+        set(handles.uiPitTags2, 'enable', 'on', 'uicontextmenu', hcmenu(2))
+        set(handles.uiPitTags3, 'enable', 'on', 'uicontextmenu', hcmenu(3))
+        set(handles.uiPitTags4, 'enable', 'on', 'uicontextmenu', hcmenu(4))
+        
+end
+
+previewIniFile
+
+function pitTagSelect(~, ~, num, action)
+
+fig = findobj('type', 'figure', 'tag', 'fig_OF_config');
+handles = guidata(fig);
+
+switch action
+    
+    case 'exc'
+        set(handles.(['uiPitTags' num2str(num)]), 'string', 'XXXXXXXX')
+    case 'inc'
+        set(handles.(['uiPitTags' num2str(num)]), 'string', '????????')
+    case 'cl'
+        set(handles.(['uiPitTags' num2str(num)]), 'string', [])
         
 end
 
