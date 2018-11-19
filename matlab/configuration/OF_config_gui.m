@@ -1808,8 +1808,8 @@ switch scenarios{val}
         % PIT tags
         for n = 1:2
             hcmenu(n) = uicontextmenu;
-            uimenu(hcmenu(n), 'Label', 'Include all', 'callback', {@pitTagSelect, n, 'inc'});
-            uimenu(hcmenu(n), 'Label', 'Exclude all', 'callback', {@pitTagSelect, n, 'exc'});
+            uimenu(hcmenu(n), 'Label', 'All accepted', 'callback', {@pitTagSelect, n, 'inc'});
+            uimenu(hcmenu(n), 'Label', 'All denied', 'callback', {@pitTagSelect, n, 'exc'});
             uimenu(hcmenu(n), 'Label', 'Clear', 'separator', 'on', 'callback', {@pitTagSelect, n, 'cl'});
         end
         
@@ -2256,7 +2256,7 @@ if handles.config.scenario.num<3
 elseif handles.config.scenario.num==3 % Go - No go
     
     if handles.config.attractiveleds.pattern==1
-        if handles.config.pittags.num_left==-1
+        if handles.config.pittags.num_left==-9999
             str = {'XXXXXXXX'};
         elseif handles.config.pittags.num_left==9999
             str = {'????????'};
@@ -2270,7 +2270,7 @@ elseif handles.config.scenario.num==3 % Go - No go
             fclose(fid);
         end
         
-        if handles.config.pittags.num_right==-1
+        if handles.config.pittags.num_right==-9999
             str = {'XXXXXXXX'};
         elseif handles.config.pittags.num_right==9999
             str = {'????????'};
@@ -2285,7 +2285,7 @@ elseif handles.config.scenario.num==3 % Go - No go
         end
         
     elseif handles.config.attractiveleds.pattern==2
-        if handles.config.pittags.num_top==-1
+        if handles.config.pittags.num_top==-9999
             str = {'XXXXXXXX'};
         elseif handles.config.pittags.num_top==9999
             str = {'????????'};
@@ -2299,7 +2299,7 @@ elseif handles.config.scenario.num==3 % Go - No go
             fclose(fid);
         end
         
-        if handles.config.pittags.num_bottom==-1
+        if handles.config.pittags.num_bottom==-9999
             str = {'XXXXXXXX'};
         elseif handles.config.pittags.num_bottom==9999
             str = {'????????'};
@@ -2314,7 +2314,7 @@ elseif handles.config.scenario.num==3 % Go - No go
         end
         
     elseif handles.config.attractiveleds.pattern==3
-        if handles.config.pittags.num_led_1==-1
+        if handles.config.pittags.num_led_1==-9999
             str = {'XXXXXXXX'};
         elseif handles.config.pittags.num_led_1==9999
             str = {'????????'};
@@ -2328,7 +2328,7 @@ elseif handles.config.scenario.num==3 % Go - No go
             fclose(fid);
         end
         
-        if handles.config.pittags.num_led_2==-1
+        if handles.config.pittags.num_led_2==-9999
             str = {'XXXXXXXX'};
         elseif handles.config.pittags.num_led_2==9999
             str = {'????????'};
@@ -2342,7 +2342,7 @@ elseif handles.config.scenario.num==3 % Go - No go
             fclose(fid);
         end
         
-        if handles.config.pittags.num_led_3==-1
+        if handles.config.pittags.num_led_3==-9999
             str = {'XXXXXXXX'};
         elseif handles.config.pittags.num_led_3==9999
             str = {'????????'};
@@ -2356,7 +2356,7 @@ elseif handles.config.scenario.num==3 % Go - No go
             fclose(fid);
         end
         
-        if handles.config.pittags.num_led_4==-1
+        if handles.config.pittags.num_led_4==-9999
             str = {'XXXXXXXX'};
         elseif handles.config.pittags.num_led_4==9999
             str = {'????????'};
@@ -2374,7 +2374,7 @@ elseif handles.config.scenario.num==3 % Go - No go
     
 elseif handles.config.scenario.num==6 % Color Associative Learning
     
-    if handles.config.pittags.num_color_A==-1
+    if handles.config.pittags.num_color_A==-9999
         str = {'XXXXXXXX'};
     elseif handles.config.pittags.num_color_A==9999
         str = {'????????'};
@@ -2388,7 +2388,7 @@ elseif handles.config.scenario.num==6 % Color Associative Learning
         fclose(fid);
     end
     
-    if handles.config.pittags.num_color_B==-1
+    if handles.config.pittags.num_color_B==-9999
         str = {'XXXXXXXX'};
     elseif handles.config.pittags.num_color_B==9999
         str = {'????????'};
@@ -2404,7 +2404,7 @@ elseif handles.config.scenario.num==6 % Color Associative Learning
     
 else
     
-    if handles.config.pittags.num_denied==-1
+    if handles.config.pittags.num_denied==-9999
         str = {'XXXXXXXX'};
     elseif handles.config.pittags.num_denied==9999
         str = {'????????'};
@@ -2418,7 +2418,7 @@ else
         fclose(fid);
     end
     
-    if handles.config.pittags.num_accepted==-1
+    if handles.config.pittags.num_accepted==-9999
         str = {'XXXXXXXX'};
     elseif handles.config.pittags.num_accepted==9999
         str = {'????????'};
@@ -2644,7 +2644,7 @@ if handles.config.scenario.num>2
                 else
                     str = cellstr(str);
                     if numel(str)==1 && strcmp(str{1}, 'XXXXXXXX')
-                        handles.config.pittags.num_left = int32(-1);
+                        handles.config.pittags.num_left = int32(-9999);
                     elseif numel(str)==1 && strcmp(str{1}, '????????')
                         handles.config.pittags.num_left = int32(9999);
                     else
@@ -2657,7 +2657,7 @@ if handles.config.scenario.num>2
                 else
                     str = cellstr(str);
                     if numel(str)==1 && strcmp(str{1}, 'XXXXXXXX')
-                        handles.config.pittags.num_right = int32(-1);
+                        handles.config.pittags.num_right = int32(-9999);
                     elseif numel(str)==1 && strcmp(str{1}, '????????')
                         handles.config.pittags.num_right = int32(9999);
                     else
@@ -2671,7 +2671,7 @@ if handles.config.scenario.num>2
                 else
                     str = cellstr(str);
                     if numel(str)==1 && strcmp(str{1}, 'XXXXXXXX')
-                        handles.config.pittags.num_top = int32(-1);
+                        handles.config.pittags.num_top = int32(-9999);
                     elseif numel(str)==1 && strcmp(str{1}, '????????')
                         handles.config.pittags.num_top = int32(9999);
                     else
@@ -2684,7 +2684,7 @@ if handles.config.scenario.num>2
                 else
                     str = cellstr(str);
                     if numel(str)==1 && strcmp(str{1}, 'XXXXXXXX')
-                        handles.config.pittags.num_bottom = int32(-1);
+                        handles.config.pittags.num_bottom = int32(-9999);
                     elseif numel(str)==1 && strcmp(str{1}, '????????')
                         handles.config.pittags.num_bottom = int32(9999);
                     else
@@ -2699,7 +2699,7 @@ if handles.config.scenario.num>2
                 else
                     str = cellstr(str);
                     if numel(str)==1 && strcmp(str{1}, 'XXXXXXXX')
-                        handles.config.pittags.num_led_1 = int32(-1);
+                        handles.config.pittags.num_led_1 = int32(-9999);
                     elseif numel(str)==1 && strcmp(str{1}, '????????')
                         handles.config.pittags.num_led_1 = int32(9999);
                     else
@@ -2712,7 +2712,7 @@ if handles.config.scenario.num>2
                 else
                     str = cellstr(str);
                     if numel(str)==1 && strcmp(str{1}, 'XXXXXXXX')
-                        handles.config.pittags.num_led_2 = int32(-1);
+                        handles.config.pittags.num_led_2 = int32(-9999);
                     elseif numel(str)==1 && strcmp(str{1}, '????????')
                         handles.config.pittags.num_led_2 = int32(9999);
                     else
@@ -2725,7 +2725,7 @@ if handles.config.scenario.num>2
                 else
                     str = cellstr(str);
                     if numel(str)==1 && strcmp(str{1}, 'XXXXXXXX')
-                        handles.config.pittags.num_led_3 = int32(-1);
+                        handles.config.pittags.num_led_3 = int32(-9999);
                     elseif numel(str)==1 && strcmp(str{1}, '????????')
                         handles.config.pittags.num_led_3 = int32(9999);
                     else
@@ -2738,7 +2738,7 @@ if handles.config.scenario.num>2
                 else
                     str = cellstr(str);
                     if numel(str)==1 && strcmp(str{1}, 'XXXXXXXX')
-                        handles.config.pittags.num_led_4 = int32(-1);
+                        handles.config.pittags.num_led_4 = int32(-9999);
                     elseif numel(str)==1 && strcmp(str{1}, '????????')
                         handles.config.pittags.num_led_4 = int32(9999);
                     else
@@ -2754,7 +2754,7 @@ if handles.config.scenario.num>2
         else
             str = cellstr(str);
             if numel(str)==1 && strcmp(str{1}, 'XXXXXXXX')
-                handles.config.pittags.num_color_A = int32(-1);
+                handles.config.pittags.num_color_A = int32(-9999);
             elseif numel(str)==1 && strcmp(str{1}, '????????')
                 handles.config.pittags.num_color_A = int32(9999);
             else
@@ -2767,7 +2767,7 @@ if handles.config.scenario.num>2
         else
             str = cellstr(str);
             if numel(str)==1 && strcmp(str{1}, 'XXXXXXXX')
-                handles.config.pittags.num_color_B = int32(-1);
+                handles.config.pittags.num_color_B = int32(-9999);
             elseif numel(str)==1 && strcmp(str{1}, '????????')
                 handles.config.pittags.num_color_B = int32(9999);
             else
@@ -2781,7 +2781,7 @@ if handles.config.scenario.num>2
         else
             str = cellstr(str);
             if numel(str)==1 && strcmp(str{1}, 'XXXXXXXX')
-                handles.config.pittags.num_denied = int32(-1);
+                handles.config.pittags.num_denied = int32(-9999);
             elseif numel(str)==1 && strcmp(str{1}, '????????')
                 handles.config.pittags.num_denied = int32(9999);
             else
@@ -2794,7 +2794,7 @@ if handles.config.scenario.num>2
         else
             str = cellstr(str);
             if numel(str)==1 && strcmp(str{1}, 'XXXXXXXX')
-                handles.config.pittags.num_accepted = int32(-1);
+                handles.config.pittags.num_accepted = int32(-9999);
             elseif numel(str)==1 && strcmp(str{1}, '????????')
                 handles.config.pittags.num_accepted = int32(9999);
             else
@@ -3369,8 +3369,8 @@ set([handles.uiRadioPitTags1
 
 for n = 1:4
     hcmenu(n) = uicontextmenu;
-    uimenu(hcmenu(n), 'Label', 'Include all', 'callback', {@pitTagSelect, n, 'inc'});
-    uimenu(hcmenu(n), 'Label', 'Exclude all', 'callback', {@pitTagSelect, n, 'exc'});
+    uimenu(hcmenu(n), 'Label', 'All accepted', 'callback', {@pitTagSelect, n, 'inc'});
+    uimenu(hcmenu(n), 'Label', 'All denied', 'callback', {@pitTagSelect, n, 'exc'});
     uimenu(hcmenu(n), 'Label', 'Clear', 'separator', 'on', 'callback', {@pitTagSelect, n, 'cl'});
 end
 
