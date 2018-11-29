@@ -102,3 +102,15 @@ OF_PIT_TAG_OK, PIT tag OK
 OF_PIT_TAG_X, PIT tag X
 OF_PIT_TAG_U, PIT tag ?
 OF_FLUSH_DATA_ON_USB_DEVICE, Flush data on USB device
+OF_RESET_TRAP_EVENT
+OF_RESET_ILLEGAL_OPCODE
+OF_RESET_MCLR_DEEP_SLEEP_MODE, Reset master clear (deep sleep)
+OF_RESET_WDT_IDLE_MODE, WDT time-out reset (idle)
+OF_RESET_WDT_SLEEP_MODE,  WDT time-out reset (sleep)
+OF_RESET_WDT_RUN_MODE,  WDT time-out reset (run)
+OF_RESET_CONF_WORD_MISMATCH, Configuration word mismatch reset
+OF_RESET_DEEP_SLEEP_MODE, Reset deep sleep mode
+OF_RESET_VBAT_DISCONT, Wake from VBAT mode with discontinuous VBAT source
+OF_RESET_VBAT_CONT, Wake from VBAT mode with continuous VBAT source
+OF_RESET_POR_VDD, Power-on reset on VDD
+OF_RESET_BROWN_OUT, Brown-out reset
