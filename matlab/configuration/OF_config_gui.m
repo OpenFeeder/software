@@ -1512,7 +1512,8 @@ switch scenarios{val}
         set([handles.uiDoorOpenMinute
             handles.uiDoorOpenHour
             handles.uiDoorCloseMinute
-            handles.uiDoorCloseHour], 'enable', 'off');
+            handles.uiDoorCloseHour], 'enable', 'off');        
+        set([handles.uiDoorDelaysOpen handles.uiDoorDelaysClose], 'enable', 'on');
         
         syncLedDoorTime();
         
@@ -1597,6 +1598,7 @@ switch scenarios{val}
             handles.uiDoorOpenHour
             handles.uiDoorCloseMinute
             handles.uiDoorCloseHour], 'enable', 'off');
+        set([handles.uiDoorDelaysOpen handles.uiDoorDelaysClose], 'enable', 'on');
         
         syncLedDoorTime();
         
@@ -1681,6 +1683,7 @@ switch scenarios{val}
             handles.uiDoorOpenHour
             handles.uiDoorCloseMinute
             handles.uiDoorCloseHour], 'enable', 'off');
+        set([handles.uiDoorDelaysOpen handles.uiDoorDelaysClose], 'enable', 'on');
         
         syncLedDoorTime();
         
@@ -1765,6 +1768,7 @@ switch scenarios{val}
             handles.uiDoorOpenHour
             handles.uiDoorCloseMinute
             handles.uiDoorCloseHour], 'enable', 'off');
+        set([handles.uiDoorDelaysOpen handles.uiDoorDelaysClose], 'enable', 'on');
         
         % Door habituation
         set(handles.uiDoorHabitPercent, 'value', 1, 'enable', 'off');
@@ -1854,6 +1858,7 @@ switch scenarios{val}
             handles.uiDoorOpenHour
             handles.uiDoorCloseMinute
             handles.uiDoorCloseHour], 'enable', 'off');
+        set([handles.uiDoorDelaysOpen handles.uiDoorDelaysClose], 'enable', 'on');
         
         syncLedDoorTime();
         
@@ -1935,6 +1940,7 @@ switch scenarios{val}
             handles.uiDoorOpenHour
             handles.uiDoorCloseMinute
             handles.uiDoorCloseHour], 'enable', 'off');
+        set([handles.uiDoorDelaysOpen handles.uiDoorDelaysClose], 'enable', 'on');
         
         syncLedDoorTime();
         
@@ -2017,6 +2023,7 @@ switch scenarios{val}
             handles.uiDoorOpenHour
             handles.uiDoorCloseMinute
             handles.uiDoorCloseHour], 'enable', 'off');
+        set([handles.uiDoorDelaysOpen handles.uiDoorDelaysClose], 'enable', 'on');
         
         syncLedDoorTime();
         
