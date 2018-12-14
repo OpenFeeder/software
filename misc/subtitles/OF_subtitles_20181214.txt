@@ -1,0 +1,127 @@
+OF_RESET_SWR, Software reset
+OF_RESET_MCLR_RUN_MODE, Reset master clear (run)
+OF_RESET_POR, Reset POR
+OF_RESET_VBAT, Reset VBAT
+OF_RESET_MCLR_IDLE_MODE, Reset master clear (idle)
+OF_RESET_MCLR_SLEEP_MODE, Reset master clear (sleep)
+OF_RESET_OTHER, Other reset
+OF_ENTER_NORMAL_MODE, Enter normal mode
+OF_ENTER_DEBUG_MODE, Enter debug mode
+OF_STATE_INITIALIZE, **INITIALIZE**
+OF_STATE_CONFIGURE_SYSTEM, **CONFIGURE SYSTEM**
+OF_STATE_IDLE, **IDLE**
+OF_STATE_RFID_READING_PIT_TAG, **READING PIT TAG**
+OF_STATE_OPENING_DOOR, **OPENING DOOR**
+OF_STATE_WAITING_CATCH_REWARD, **WAITING CATCH REWARD**
+OF_STATE_CLOSING_DOOR, **CLOSING DOOR**
+OF_STATE_REOPEN_DOOR, **REOPEN DOOR**
+OF_STATE_DATA_LOG, **DATA LOG**
+OF_STATE_STANDBY, **STANDBY**
+OF_STATE_SLEEP, **SLEEP**
+OF_STATE_WAKE_UP, **WAKE UP**
+OF_STATE_FLUSH_DATA_TO_USB, **FLUSH DATA TO USB**
+OF_STATE_REMOVE_USB_DEVICE, **REMOVE USB DEVICE**
+OF_STATE_FLUSH_DATA_BEFORE_ERROR, **FLUSH DATA BEFORE ERROR**
+OF_STATE_TEST_RFID, **TEST RFID**
+OF_STATE_ERROR, **ERROR**
+OF_SYSTEM_RESET, System reset
+OF_FIND_INI, Find INI
+OF_READ_INI, Read INI
+OF_READ_PIT_TAGS, Read PIT tags
+OF_CHECK_BATTERY, Check battery
+OF_CHECK_VBAT, Check VBAT
+OF_CHECK_FOOD, Check food
+OF_CHECK_RFID, Check RFID
+OF_CALIBRATE_TIME, Calibrate time
+OF_POPULATE_LOG_BUFFER, Populate log buffer
+OF_WRITE_DATA_LOG, Write data log
+OF_WRITE_BATTERY_LOG, Write battery log
+OF_WRITE_UDID_LOG, Write UDID log
+OF_WRITE_RFID_LOG, Write RFID log
+OF_WRITE_EVENTS_LOG, Write events log
+OF_WRITE_ERRORS_LOG, Write error log
+OF_POWER_PIR_ON, PIR on
+OF_POWER_PIR_OFF, PIR off
+OF_POWER_USB_RFID_ON, USB & RFID on
+OF_POWER_USB_RFID_OFF, USB & RFID off
+OF_POWER_SERVO_ON, Servo on
+OF_POWER_SERVO_OFF, Servo off
+OF_OPEN_DOOR, Open door
+OF_CLOSE_DOOR, Close door
+OF_RECONFIGURE_SYSTEM, Reconfigure system
+OF_MOUNT_USB_DRIVE, Mount USB drive
+OF_UNMOUNT_USB_DRIVE, Unmount USB drive
+OF_SUSPEND_USB_DRIVE, Suspend USB drive
+OF_RESUME_USB_DRIVE, Resume USB drive
+OF_ALREADY_MOUNT_USB_DRIVE, USB drive already mounted
+OF_ALREADY_UNMOUNT_USB_DRIVE, USB drive already unmounted
+OF_ATTRACTIVE_LEDS_ON, LEDs on
+OF_ATTRACTIVE_LEDS_OFF, LEDs off
+OF_ATTRACTIVE_LEDS_TEST, LEDs test
+OF_ATTRACTIVE_LEDS_SET_INDEX, LEDs set index
+OF_ATTRACTIVE_LEDS_NO_COLOR, LEDs no color
+OF_GO_NO_GO_ALL_ON, Go-No go: all on 
+OF_GO_NO_GO_ALL_OFF, Go-No go: all off 
+OF_GO_NO_GO_LR_L, Go-No go: lr l
+OF_GO_NO_GO_LR_R, Go-No go: lr r
+OF_GO_NO_GO_TB_T, Go-No go: tb t
+OF_GO_NO_GO_TB_B, Go-No go: tb b
+OF_GO_NO_GO_ONE_NONE, Go-No go: one none
+OF_GO_NO_GO_ONE_1, Go-No go: one 1
+OF_GO_NO_GO_ONE_2, Go-No go: one 2
+OF_GO_NO_GO_ONE_3, Go-No go: one 3
+OF_GO_NO_GO_ONE_4, Go-No go: one 4
+OF_CAL_A, LEDs curent color A
+OF_CAL_B, LEDs curent color B
+OF_READ_REWARD_PROBABILITIES, Read reward probabilities
+OF_CALIBRATE_TIME_FAIL, Time calibration fail
+OF_DS3231_NOT_FOUND, DS3231 not found
+OF_BIRD_X_REWARD_REOPEN, Bird puts its head in during door close => reopen
+OF_BIRD_X_REWARD_NO_REOPEN, Bird puts its head in during door close but reopen security disable
+OF_DOOR_CLOSE_SLOW_REOPEN, Door take too much time to close => reopen
+OF_SERVO_FAR_CLOSE_POS_REOPEN, Servo too far from goal position => reopen
+OF_REWARD_TAKEN, Reward taken
+OF_REWARD_TIMEOUT, Reward timeout
+OF_REWARD_TIMEOUT_WRONG, Reward timeout but something wrong
+OF_ATTRACTIVE_LEDS_INIT, Initialize attractive LEDs
+OF_PIT_TAG_DENIED, PIT tag denied
+OF_PIT_TAG_NOT_LISTED_DENIED, PIT tag not listed => denied
+OF_ATTRACTIVE_LEDS_PUNISHMENT, Punishment LEDs off
+OF_RFID_TIMEOUT, RFID timeout
+OF_ATTRACTIVE_LEDS_CHECK_INDEX, LEDs check index
+OF_FIND_UDID_LEDS, Find UDIDLEDS.TXT
+OF_READ_UDID_LEDS, Read UDIDLEDS.TXT
+OF_DS3231_GET_TEMPERATURE, Get DS3231 temperature
+OF_CALIBRATE_TIME_WRONG, Time calibration wrong value
+OF_WRITE_EXT_TEMP_LOG, Write ext temperature log
+OF_WRITE_CALIB_LOG, Write calibration log
+OF_PUNISHMENT_START, Punishment start
+OF_PUNISHMENT_RESTART, Punishment re-start
+OF_PUNISHMENT_STOP, Punishment stop
+OF_PIT_TAG_OK, PIT tag OK
+OF_PIT_TAG_X, PIT tag X
+OF_PIT_TAG_U, PIT tag ?
+OF_FLUSH_DATA_ON_USB_DEVICE, Flush data on USB device
+OF_RESET_TRAP_EVENT
+OF_RESET_ILLEGAL_OPCODE
+OF_RESET_MCLR_DEEP_SLEEP_MODE, Reset master clear (deep sleep)
+OF_RESET_WDT_IDLE_MODE, WDT time-out reset (idle)
+OF_RESET_WDT_SLEEP_MODE,  WDT time-out reset (sleep)
+OF_RESET_WDT_RUN_MODE,  WDT time-out reset (run)
+OF_RESET_CONF_WORD_MISMATCH, Configuration word mismatch reset
+OF_RESET_DEEP_SLEEP_MODE, Reset deep sleep mode
+OF_RESET_VBAT_DISCONT, Wake from VBAT mode with discontinuous VBAT source
+OF_RESET_VBAT_CONT, Wake from VBAT mode with continuous VBAT source
+OF_RESET_POR_VDD, Power-on reset on VDD
+OF_RESET_BROWN_OUT, Brown-out reset
+OF_EVENT_OVERFLOW, Event buffer overflow
+OF_CALIBRATE_TIME_OVERFLOW, Calibrate time buffer overflow
+OF_BATTERY_LEVEL_OVERFLOW, Battery level buffer overflow
+OF_RFID_FREQ_OVERFLOW, RFID frequency buffer overflow
+OF_DS3231_TEMP_OVERFLOW, DS3231 temperature buffer overflow
+OF_SET_DATE_TIME_FAIL, Date time set fail
+OF_DEBUG_SET_DATE_TIME_FAIL, Date time set fail in debug
+OF_DEBUG_GET_PIC_DATE_TIME_FAIL, PIC date time get fail in debug
+OF_DEBUG_GET_EXT_DATE_TIME_FAIL, EXT date time get fail in debug
+OF_STATE_SERIAL_COMMUNICATION, **SERIAL COMMUNICATION**
+OF_WRITE_FIRMWARE_LOG, Write firmware log
