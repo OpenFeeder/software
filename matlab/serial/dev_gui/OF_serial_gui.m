@@ -245,7 +245,7 @@ uiFileIOImport = uicontrol(fig, ...
     'units', 'pixels', ...
     'position', [20 73 button_size_2]*uiSketchfactor, ...
     'fontweight', 'bold', ...
-    'string', 'Import files', ...
+    'string', 'Files OF => PC', ...
     'tag', 'uiFileIOImport', ...
     'enable', 'off', ...
     'callback', {@fileio, 'imp'});
@@ -254,7 +254,7 @@ uiFileIOExport = uicontrol(fig, ...
     'units', 'pixels', ...
     'position', [35 73 button_size_2]*uiSketchfactor, ...
     'fontweight', 'bold', ...
-    'string', 'Export files', ...
+    'string', 'Files PC => OF', ...
     'tag', 'uiFileIOExport', ...
     'enable', 'off', ...
     'callback', {@fileio, 'exp'});
@@ -474,7 +474,7 @@ uiStatusLeds = uicontrol(fig, ...
     'string', 'Status LEDs', ...
     'tag', 'uiStatusLeds', ...
     'enable', 'off', ...
-    'callback', {@sendCommand, 'q'});
+    'callback', {@sendCommand, 'e'});
 
 uiTestRfid = uicontrol(fig, ...
     'units', 'pixels', ...
@@ -641,7 +641,7 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
         set(uiFileIOEventsDelete, 'enable', 'on')
         set(uiFileIOCsvDelete, 'enable', 'on')
         set(uiFileIOLogDelete, 'enable', 'on')
-
+        
         set(uiFileIOCsv, 'enable', 'on')
         set(uiFileIOIni, 'enable', 'on')
         set(uiFileIOErr, 'enable', 'on')
@@ -649,7 +649,7 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
         
         set(uiDataBuffers, 'enable', 'on')
         set(uiFlushData, 'enable', 'on')
-
+        
         set(uiButtonOpenDoor, 'enable', 'on')
         set(uiButtonCloseDoor, 'enable', 'on')
         set(uiButtonSetDoor, 'enable', 'on')
@@ -673,7 +673,7 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
         set(uiInformation, 'enable', 'on')
         set(uiUSBdevice, 'enable', 'on')
         set(uiUDID, 'enable', 'on')
- 
+        
         set(fig, 'name', sprintf('OpenFeeder - Serial interface - v%d.%d.%d - Connected to port %s ', version.major, version.minor, version.patch, comPort))
     end
 
@@ -936,13 +936,27 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
 
     function sendCommand(~, ~, arg)
         
+        if numel(arg)==1 && arg~=13 && (arg<33 || arg>126)
+            return
+        end
+        
         if echoCommands
             
-            str = sprintf('<html><font color="#%02X%02X%02X"><b>=> %s</b></font></html>', ...
-                text_color.command(1), ...
-                text_color.command(2), ...
-                text_color.command(3), ...
-                arg);
+            if arg==13
+                str = sprintf('<html><font color="#%02X%02X%02X"><b>=> %s</b></font></html>', ...
+                    text_color.command(1), ...
+                    text_color.command(2), ...
+                    text_color.command(3), ...
+                    32);
+            else
+                str = sprintf('<html><font color="#%02X%02X%02X"><b>=> %s</b></font></html>', ...
+                    text_color.command(1), ...
+                    text_color.command(2), ...
+                    text_color.command(3), ...
+                    arg);
+            end
+            
+            
             
             populateCommunicationWindow(str)
             
@@ -1060,21 +1074,21 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
             end
             
             if n==1
-                str = sprintf('\r\nBefore calibration:');
+                str = sprintf('\r\n\tBefore calibration:');
             else
-                str = sprintf('\r\nAfter calibration:');
+                str = sprintf('\r\n\tAfter calibration:');
             end
             populateCommunicationWindow(str)
             
             % Print dates and times in the console
-            str = sprintf('\r\nPC : %s\r\n', datestr(PC_time, 'dd/mm/yyyy HH:MM:SS'));
+            str = sprintf('\r\n\tPC : %s\r\n', datestr(PC_time, 'dd/mm/yyyy HH:MM:SS'));
             populateCommunicationWindow(str)
-            str = sprintf('PIC: %02d/%02d/20%02d %02d:%02d:%02d\r\n', OF_time(3), OF_time(2), OF_time(1) , OF_time(4), OF_time(5), OF_time(6));
+            str = sprintf('\tPIC: %02d/%02d/20%02d %02d:%02d:%02d\r\n', OF_time(3), OF_time(2), OF_time(1) , OF_time(4), OF_time(5), OF_time(6));
             populateCommunicationWindow(str)
             if ext_rtc_available
-                str = sprintf('EXT: %02d/%02d/20%02d %02d:%02d:%02d\r\n', OF_time(9), OF_time(8), OF_time(7), OF_time(10), OF_time(11), OF_time(12));
+                str = sprintf('\tEXT: %02d/%02d/20%02d %02d:%02d:%02d\r\n', OF_time(9), OF_time(8), OF_time(7), OF_time(10), OF_time(11), OF_time(12));
             else
-                str = sprintf('EXT: --/--/---- --:--:--\r\n');
+                str = sprintf('\tEXT: --/--/---- --:--:--\r\n');
             end
             populateCommunicationWindow(str)
             
@@ -1096,9 +1110,9 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
             deltaPic = datevec(deltaPic);
             
             if deltaPic(3) < 1
-                str = sprintf('\r\nDiff PC-PIC: %c%02d:%02d:%02d (%e)\r\n', s, floor(deltaPic(4:6)) , datenum(deltaPic));
+                str = sprintf('\r\n\tDiff PC-PIC: %c%02d:%02d:%02d (%e)\r\n', s, floor(deltaPic(4:6)) , datenum(deltaPic));
             else
-                str = sprintf('\r\nDiff PC-PIC: greater than one day (%e)\r\n', datenum(deltaPic));
+                str = sprintf('\r\n\tDiff PC-PIC: greater than one day (%e)\r\n', datenum(deltaPic));
             end
             populateCommunicationWindow(str)
             
@@ -1122,15 +1136,15 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
                 deltaExt = datevec(deltaExt);
                 
                 if deltaExt(3) < 1
-                    str = sprintf('Diff PC-EXT: %c%02d:%02d:%02d (%e)\r\n', s, floor(deltaExt(4:6)) , datenum(deltaExt));
+                    str = sprintf('\tDiff PC-EXT: %c%02d:%02d:%02d (%e)\r\n', s, floor(deltaExt(4:6)) , datenum(deltaExt));
                 else
-                    str = sprintf('Diff PC-EXT: greater than one day (%e)\r\n', datenum(deltaExt));
+                    str = sprintf('\tDiff PC-EXT: greater than one day (%e)\r\n', datenum(deltaExt));
                 end
                 populateCommunicationWindow(str)
                 
             else
                 timeCalib.deltaExt = NaN;
-                str = sprintf('Diff PC-EXT:  --:--:-- (0)\r\n');
+                str = sprintf('\tDiff PC-EXT:  --:--:-- (0)\r\n');
                 populateCommunicationWindow(str)
             end
             
@@ -1156,7 +1170,7 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
         getZone;
         
         if strcmp(zone, 'XXXX')
-            str = sprintf('\r\nWarning zone incorrect\r\n');
+            str = sprintf('\r\n\tWarning zone incorrect\r\n');
             populateCommunicationWindow(str)
         end
         
@@ -1168,7 +1182,7 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
         
         fclose(fid);
         
-        str = sprintf('\r\nCalibration data appended to file:\r\n%s\r\n', filename);
+        str = sprintf('\r\n\tCalibration data appended to file:\r\n\t%s\r\n', filename);
         populateCommunicationWindow(str)
         
     end
@@ -1220,14 +1234,14 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
                     choice = questdlg('Do you really want to import files from the OF?', ...
                         'Files import', 'Yes', 'No', 'No');
                     
-                    if strcmpi(choice, 'No')        
+                    if strcmpi(choice, 'No')
                         return
                     end
-
+                    
                     choice = questdlg('Don''t forget to flush data before import?', ...
                         'Flush before import', 'Continue', 'Abort', 'Abort');
                     
-                    if strcmpi(choice, 'Abort')        
+                    if strcmpi(choice, 'Abort')
                         return
                     end
                     
@@ -1275,7 +1289,7 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
                 end
                 
                 p = uigetdir();
-
+                
                 if ~p
                     return
                 end
@@ -1289,7 +1303,7 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
                 if strcmpi(timerReadData.Running, 'on')
                     stop(timerReadData)
                 end
-
+                
                 d = dir(fullfile(p, '*.*'));
                 
                 d([d.isdir]) = [];
@@ -1297,22 +1311,22 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
                 fwrite(serialObj, uint8(numel(d)))
                 
                 for n = 1:numel(d)
-
+                    
                     fwrite(serialObj, uint8([numel(d(n).name) d(n).name]))
                     
                     num = numel(d(n).name)+5;
                     while(serialObj.BytesAvailable<num)
-%                         t = toc(T2);
-%                         if t>maxTime
-%                             if serialObj.BytesAvailable==0
-%                                 error('No reply from the OF after %ds (iteration %d).\nNo data received', maxTime, n);
-%                             else
-%                                 c = fread(serialObj, [1 serialObj.BytesAvailable], '*char');
-%                                 error('No reply from the OF after %ds (iteration %d).\n%d characters received: %s', maxTime, n, c);
-%                             end
-%                         end
+                        %                         t = toc(T2);
+                        %                         if t>maxTime
+                        %                             if serialObj.BytesAvailable==0
+                        %                                 error('No reply from the OF after %ds (iteration %d).\nNo data received', maxTime, n);
+                        %                             else
+                        %                                 c = fread(serialObj, [1 serialObj.BytesAvailable], '*char');
+                        %                                 error('No reply from the OF after %ds (iteration %d).\n%d characters received: %s', maxTime, n, c);
+                        %                             end
+                        %                         end
                     end
-            
+                    
                     X = fread(serialObj, [1 num]);
                     
                     file_name_size = X(2);
@@ -1330,19 +1344,19 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
                             fwrite(serialObj, uint8([buffer_size X]))
                             
                             num = 1;
-                        
+                            
                             while(serialObj.BytesAvailable<num)
-
+                                
                             end
-
+                            
                             X = fread(serialObj, [1 num]);
-                        
+                            
                         end
                         
                         m = mod(d(n).bytes, buffer_size);
                         if m==0
                             fwrite(serialObj, uint8(0))
-                        else                            
+                        else
                             X = fread(fid, [1,m]);
                             fwrite(serialObj, uint8([m X 0]))
                         end
@@ -1377,7 +1391,7 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
                         break;
                         
                     end
-
+                    
                     
                 end
                 
@@ -1544,14 +1558,14 @@ timerReadData = timer('ExecutionMode', 'fixedDelay', 'Period', 0.01, 'TimerFcn',
             if files.size(n)==numel(files.content{n})
                 populateCommunicationWindow(sprintf('\t%s saved. File size OK.\r\n', files.name{n}))
             else
-                populateCommunicationWindow(sprintf('\t%s saved. File size PB.\r\n\t\tSize should be %d but %s read.\r\n', files.name{n}, files.size(n), numel(files.content{n}))) 
+                populateCommunicationWindow(sprintf('\t%s saved. File size PB.\r\n\t\tSize should be %d but %s read.\r\n', files.name{n}, files.size(n), numel(files.content{n})))
                 success = false;
             end
             
         end
         
         if success == false
-           populateCommunicationWindow(sprintf('\n\t/!\\ Problem during importation. See above.\r\n')) 
+            populateCommunicationWindow(sprintf('\n\t/!\\ Problem during importation. See above.\r\n'))
         end
         
         files = [];
