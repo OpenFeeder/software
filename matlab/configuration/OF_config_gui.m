@@ -16,6 +16,7 @@ default.ServoOpeningSpeed = 10;
 default.ServoClosePosition = 600;
 default.ServoOpenPosition = 1400;
 default.ServoMsStep = 20;
+default.ServoMaxOffset = 150;
 
 default.WakeUpMinute = 30;
 default.WakeUpHour = 6;
@@ -68,13 +69,13 @@ uiLogGroupPos        =   [5 126 50 5 2 5];
 uiPitTagGroupPos     =   [5 100 90 5 2 95];
 uiLedsGroupPos       =   [50 170 50 5 2 5];
 uiDoorGroupPos       =   [95 170 50 5 2 5];
-uiServoGroupPos      =   [95 127 50 5 2 5];
+uiServoGroupPos      =   [95 132 50 5 2 5];
 uiDoorHabitGroupPos  =   [95 92 50 5 2 5];
 uiRewardGroupPos     =   [95 81 48 5 2 5];
-uiTimeoutsGroupPos   =   [95 56 48 5 2 5];
-uiSecurityGroupPos   =   [95 41 48 5 2 5];
-uiPunishmentGroupPos =   [95 30 50 5 2 5];
-uiCheckGroupPos      =   [95 11 50 5 2 5];
+uiSecurityGroupPos   =   [95 56 48 5 2 5];
+uiTimeoutsGroupPos   =   [95 41 48 5 2 5];
+uiPunishmentGroupPos =   [95 26 50 5 2 5];
+uiCheckGroupPos      =   [95 9 50 5 2 5];
 uiPreviewGroupPos    =   [145+5*ismac 170 50 5 2 148];
 uiButtonGroupPos     =   [145+5*ismac 15 50 5 2 5];
 
@@ -777,7 +778,7 @@ uicontrol(fig, ...
     'callback', @previewIniFile);
 
 xPos = uiDoorGroupPos(1)+uiDoorGroupPos(5);
-yPos = yPos-8;
+yPos = yPos-6;
 uicontrol(fig, ...
     'style', 'checkbox', ...
     'units', 'pixels', ...
@@ -787,7 +788,7 @@ uicontrol(fig, ...
     'callback', @previewIniFile);
 
 xPos = uiDoorGroupPos(1)+uiDoorGroupPos(5);
-yPos = yPos-8;
+yPos = yPos-6;
 
 uicontrol(fig, ...
     'style', 'text', ...
@@ -805,7 +806,7 @@ uicontrol(fig, ...
     'fontweight', 'bold', ...
     'callback', @previewIniFile);
 xPos = uiDoorGroupPos(1)+uiDoorGroupPos(5);
-yPos = yPos-8;
+yPos = yPos-6;
 uicontrol(fig, ...
     'style', 'text', ...
     'units', 'pixels', ...
@@ -871,7 +872,7 @@ uicontrol(fig, ...
     'units', 'pixels', ...
     'position', [xPos yPos 25 uiServoGroupPos(6)]*uiSketchfactor, ...
     'string', 'Close speed factor', ...
-    'hor', 'left');
+    'hor', 'left')
 xPos = xPos + 25;
 uicontrol(fig, ...
     'style', 'edit', ...
@@ -898,6 +899,23 @@ uicontrol(fig, ...
     'tag', 'uiServoOpeningSpeed', ...
     'fontweight', 'bold', ...
     'callback', @updateServoMoveTime);
+xPos = xPos - 25;
+yPos = yPos - uiServoGroupPos(6);
+uicontrol(fig, ...
+    'style', 'text', ...
+    'units', 'pixels', ...
+    'position', [xPos yPos 25 uiServoGroupPos(6)]*uiSketchfactor, ...
+    'string', 'Max offset position', ...
+    'hor', 'left');
+xPos = xPos + 25;
+uicontrol(fig, ...
+    'style', 'edit', ...
+    'units', 'pixels', ...
+    'position', [xPos yPos 15 uiServoGroupPos(6)]*uiSketchfactor, ...
+    'string', default.ServoMaxOffset, ...
+    'tag', 'uiServoMaxPosOffset', ...
+    'fontweight', 'bold', ...
+    'callback', @previewIniFile);
 yPos = yPos - uiServoGroupPos(6);
 xPos = xPos - 25;
 uicontrol(fig, ...
@@ -1018,6 +1036,45 @@ uicontrol(fig, ...
     'fontweight', 'bold', ...
     'callback', @previewIniFile);
 
+%% Security
+uicontrol(fig, ...
+    'style', 'text', ...
+    'units', 'pixels', ...
+    'position', uiSecurityGroupPos(1:4)*uiSketchfactor, ...
+    'string', 'Security', ...
+    'horizontalalignment', 'left', ...
+    'fontweight', 'bold');
+xPos = uiSecurityGroupPos(1)+uiSecurityGroupPos(5);
+yPos = uiSecurityGroupPos(2)-uiSecurityGroupPos(6)+1;
+uicontrol(fig, ...
+    'style', 'checkbox', ...
+    'units', 'pixels', ...
+    'position', [xPos yPos 30 5]*uiSketchfactor, ...
+    'string', 'Guillotine', ...
+    'value', 0, ...
+    'tag', 'uiSecurityGuillotine', ...
+    'callback', @previewIniFile);
+xPos = xPos+20;
+uicontrol(fig, ...
+    'style', 'popup', ...
+    'units', 'pixels', ...
+    'position', [xPos yPos 12+8*ismac 5]*uiSketchfactor, ...
+    'tag', 'uiSecurityGuillotineOffset', ...
+    'string', strtrim(cellstr(num2str((0.5:0.5:5).', '%.1f'))), ...
+    'value', 10, ...
+    'fontweight', 'bold', ...
+    'callback', @previewIniFile);
+
+xPos = uiSecurityGroupPos(1)+uiSecurityGroupPos(5);
+yPos = uiSecurityGroupPos(2)-uiSecurityGroupPos(6)-5;
+uicontrol(fig, ...
+    'style', 'checkbox', ...
+    'units', 'pixels', ...
+    'position', [xPos yPos 30 5]*uiSketchfactor, ...
+    'string', 'Bird reward reopen', ...
+    'tag', 'uiSecurityBirdRewReopen', ...
+    'callback', @previewIniFile);
+
 %% Timeouts
 uicontrol(fig, ...
     'style', 'text', ...
@@ -1076,7 +1133,8 @@ uicontrol(fig, ...
     'units', 'pixels', ...
     'position', [xPos yPos 12+8*ismac 5]*uiSketchfactor, ...
     'tag', 'uiGuillotineTimeout', ...
-    'string', sprintf('%.3f',(default.ServoOpenPosition-default.ServoClosePosition)/default.ServoClosingSpeed*default.ServoMsStep/1000+0.5), ...
+    'string', '0', ...
+    'enable', 'off', ...
     'fontweight', 'bold', ...
     'callback', @previewIniFile);
 xPos = uiTimeoutsGroupPos(1)+uiTimeoutsGroupPos(5);
@@ -1097,25 +1155,6 @@ uicontrol(fig, ...
     'fontweight', 'bold', ...
     'callback', @previewIniFile, ...
     'enable', 'on');
-
-%% Security
-uicontrol(fig, ...
-    'style', 'text', ...
-    'units', 'pixels', ...
-    'position', uiSecurityGroupPos(1:4)*uiSketchfactor, ...
-    'string', 'Security', ...
-    'horizontalalignment', 'left', ...
-    'fontweight', 'bold');
-xPos = uiSecurityGroupPos(1)+uiSecurityGroupPos(5);
-yPos = uiSecurityGroupPos(2)-uiSecurityGroupPos(6);
-uicontrol(fig, ...
-    'style', 'checkbox', ...
-    'units', 'pixels', ...
-    'position', [xPos yPos 30 5]*uiSketchfactor, ...
-    'string', 'Bird reward reopen', ...
-    'value', 0, ...
-    'tag', 'uiSecurityBirdRewReopen', ...
-    'callback', @previewIniFile);
 
 %% Punishment
 uicontrol(fig, ...
@@ -1292,7 +1331,7 @@ guidata(fig, handles);
 
 set(handles.uiSiteName, 'string', sites{1});
 
-syncLedDoorTime;
+syncLedDoorTime();
 
 function setDefaultTime
 
@@ -1367,6 +1406,9 @@ switch scenarios{val}
         
         % Security
         set(handles.uiSecurityBirdRewReopen, 'value', 0, 'enable', 'on')
+        set(handles.uiSecurityGuillotine, 'value', 0, 'enable', 'on')
+        set(handles.uiSecurityGuillotineOffset, 'value', 10, 'enable', 'off')
+        set(handles.uiGuillotineTimeout', 'enable', 'off', 'string', '0')
         
         % Timeouts
         set(handles.uiUniqueVisitTimeout, 'enable', 'on', 'value', 1)
@@ -1428,6 +1470,7 @@ switch scenarios{val}
             handles.uiDoorCloseHour
             handles.uiDoorDelaysOpen
             handles.uiDoorDelaysClose], 'enable', 'off');
+        set(handles.uiDoorDelaysClose, 'value', 1);
         
         syncLedDoorTime();
         
@@ -1438,12 +1481,15 @@ switch scenarios{val}
         set(handles.uiUniqueVisitTimeout, 'enable', 'off', 'value', 1)
         
         % Reward
-        set(handles.uiRewardEnable, 'value', 1);
-        set(handles.uiRewardTimeout, 'value', 6)
+        set(handles.uiRewardEnable, 'value', 0);
+        set(handles.uiRewardTimeout, 'value', 1, 'enable', 'off')
         set(handles.uiRewardProbability, 'enable', 'off')
         
         % Security
         set(handles.uiSecurityBirdRewReopen, 'value', 0, 'enable', 'off')
+        set(handles.uiSecurityGuillotine, 'value', 0, 'enable', 'off')
+        set(handles.uiSecurityGuillotineOffset, 'value', 10, 'enable', 'off')
+        set(handles.uiGuillotineTimeout', 'enable', 'off', 'string', '0')
         
         % Punishment
         set(handles.uiPunishmentDelay, 'enable', 'off')
@@ -1514,6 +1560,7 @@ switch scenarios{val}
             handles.uiDoorCloseMinute
             handles.uiDoorCloseHour], 'enable', 'off');        
         set([handles.uiDoorDelaysOpen handles.uiDoorDelaysClose], 'enable', 'on');
+        set(handles.uiDoorDelaysClose, 'value', 2);
         
         syncLedDoorTime();
         
@@ -1524,12 +1571,17 @@ switch scenarios{val}
         set(handles.uiUniqueVisitTimeout, 'enable', 'off', 'value', 1)
         
         % Reward
-        set(handles.uiRewardEnable, 'value', 1);
-        set(handles.uiRewardTimeout, 'value', 6)
+        set(handles.uiRewardEnable, 'value', 0);
+        set(handles.uiRewardTimeout, 'value', 1, 'enable', 'off')
         set(handles.uiRewardProbability, 'enable', 'off')
         
         % Security
         set(handles.uiSecurityBirdRewReopen, 'value', 1, 'enable', 'on')
+        if get(handles.uiSecurityGuillotine, 'value') == 0
+            set(handles.uiSecurityGuillotine, 'value', 1, 'enable', 'on')
+            set(handles.uiSecurityGuillotineOffset, 'value', 10, 'enable', 'on')
+            setGuillotineTimeout();
+        end
         
         % Punishment
         set(handles.uiPunishmentDelay, 'enable', 'off')
@@ -1599,6 +1651,7 @@ switch scenarios{val}
             handles.uiDoorCloseMinute
             handles.uiDoorCloseHour], 'enable', 'off');
         set([handles.uiDoorDelaysOpen handles.uiDoorDelaysClose], 'enable', 'on');
+        set(handles.uiDoorDelaysClose, 'value', 2);
         
         syncLedDoorTime();
         
@@ -1606,8 +1659,8 @@ switch scenarios{val}
         set(handles.uiDoorHabitPercent, 'value', 1, 'enable', 'off');
         
         % Reward
-        set(handles.uiRewardEnable, 'value', 1);
-        set(handles.uiRewardTimeout, 'value', 6)
+        set(handles.uiRewardEnable, 'value', 0);
+        set(handles.uiRewardTimeout, 'value', 1, 'enable', 'off')
         set(handles.uiRewardProbability, 'enable', 'on')
         
         % Timeouts
@@ -1615,6 +1668,11 @@ switch scenarios{val}
         
         % Security
         set(handles.uiSecurityBirdRewReopen, 'value', 1, 'enable', 'on')
+        if get(handles.uiSecurityGuillotine, 'value') == 0
+            set(handles.uiSecurityGuillotine, 'value', 1, 'enable', 'on')
+            set(handles.uiSecurityGuillotineOffset, 'value', 10, 'enable', 'on')
+            setGuillotineTimeout();
+        end
         
         % Punishment
         set(handles.uiPunishmentDelay, 'value', 3, 'enable', 'on')
@@ -1684,6 +1742,7 @@ switch scenarios{val}
             handles.uiDoorCloseMinute
             handles.uiDoorCloseHour], 'enable', 'off');
         set([handles.uiDoorDelaysOpen handles.uiDoorDelaysClose], 'enable', 'on');
+        set(handles.uiDoorDelaysClose, 'value', 2);
         
         syncLedDoorTime();
         
@@ -1691,8 +1750,8 @@ switch scenarios{val}
         set(handles.uiDoorHabitPercent, 'value', 1, 'enable', 'off');
         
         % Reward
-        set(handles.uiRewardEnable, 'value', 1);
-        set(handles.uiRewardTimeout, 'value', 6)
+        set(handles.uiRewardEnable, 'value', 0);
+        set(handles.uiRewardTimeout, 'value', 1, 'enable', 'off')
         set(handles.uiRewardProbability, 'enable', 'on')
         
         % Timeouts
@@ -1700,6 +1759,11 @@ switch scenarios{val}
         
         % Security
         set(handles.uiSecurityBirdRewReopen, 'value', 1, 'enable', 'on')
+        if get(handles.uiSecurityGuillotine, 'value') == 0
+            set(handles.uiSecurityGuillotine, 'value', 1, 'enable', 'on')
+            set(handles.uiSecurityGuillotineOffset, 'value', 10, 'enable', 'on')
+            setGuillotineTimeout();
+        end
         
         % Punishment
         set(handles.uiPunishmentDelay, 'value', 3)
@@ -1769,6 +1833,7 @@ switch scenarios{val}
             handles.uiDoorCloseMinute
             handles.uiDoorCloseHour], 'enable', 'off');
         set([handles.uiDoorDelaysOpen handles.uiDoorDelaysClose], 'enable', 'on');
+        set(handles.uiDoorDelaysClose, 'value', 2);
         
         % Door habituation
         set(handles.uiDoorHabitPercent, 'value', 1, 'enable', 'off');
@@ -1776,8 +1841,8 @@ switch scenarios{val}
         syncLedDoorTime();
         
         % Reward
-        set(handles.uiRewardEnable, 'value', 1);
-        set(handles.uiRewardTimeout, 'value', 6)
+        set(handles.uiRewardEnable, 'value', 0);
+        set(handles.uiRewardTimeout, 'value', 1, 'enable', 'off')
         set(handles.uiRewardProbability, 'enable', 'on')
         
         % Timeouts
@@ -1785,6 +1850,11 @@ switch scenarios{val}
         
         % Security
         set(handles.uiSecurityBirdRewReopen, 'value', 1, 'enable', 'on')
+        if get(handles.uiSecurityGuillotine, 'value') == 0
+            set(handles.uiSecurityGuillotine, 'value', 1, 'enable', 'on')
+            set(handles.uiSecurityGuillotineOffset, 'value', 10, 'enable', 'on')
+            setGuillotineTimeout();
+        end
         
         % Punishment
         set(handles.uiPunishmentDelay, 'value', 3, 'enable', 'on')
@@ -1859,6 +1929,7 @@ switch scenarios{val}
             handles.uiDoorCloseMinute
             handles.uiDoorCloseHour], 'enable', 'off');
         set([handles.uiDoorDelaysOpen handles.uiDoorDelaysClose], 'enable', 'on');
+        set(handles.uiDoorDelaysClose, 'value', 2);
         
         syncLedDoorTime();
         
@@ -1866,14 +1937,19 @@ switch scenarios{val}
         set(handles.uiDoorHabitPercent, 'value', 1, 'enable', 'off');
         
         % Reward
-        set(handles.uiRewardEnable, 'value', 1);
-        set(handles.uiRewardTimeout, 'value', 6)
+        set(handles.uiRewardEnable, 'value', 0);
+        set(handles.uiRewardTimeout, 'value', 1, 'enable', 'off')
         
         % Timeouts
         set(handles.uiUniqueVisitTimeout, 'enable', 'off', 'value', 1)
         
         % Security
         set(handles.uiSecurityBirdRewReopen, 'value', 1, 'enable', 'on')
+        if get(handles.uiSecurityGuillotine, 'value') == 0
+            set(handles.uiSecurityGuillotine, 'value', 1, 'enable', 'on')
+            set(handles.uiSecurityGuillotineOffset, 'value', 10, 'enable', 'on')
+            setGuillotineTimeout();
+        end
         
         % Punishment
         set(handles.uiPunishmentDelay, 'value', 3, 'enable', 'on')
@@ -1941,6 +2017,7 @@ switch scenarios{val}
             handles.uiDoorCloseMinute
             handles.uiDoorCloseHour], 'enable', 'off');
         set([handles.uiDoorDelaysOpen handles.uiDoorDelaysClose], 'enable', 'on');
+        set(handles.uiDoorDelaysClose, 'value', 2);
         
         syncLedDoorTime();
         
@@ -1948,8 +2025,8 @@ switch scenarios{val}
         set(handles.uiDoorHabitPercent, 'value', 1, 'enable', 'off');
         
         % Reward
-        set(handles.uiRewardEnable, 'value', 1);
-        set(handles.uiRewardTimeout, 'value', 6)
+        set(handles.uiRewardEnable, 'value', 0);
+        set(handles.uiRewardTimeout, 'value', 1, 'enable', 'off')
         set(handles.uiRewardProbability, 'enable', 'on')
         
         % Timeouts
@@ -1957,6 +2034,11 @@ switch scenarios{val}
         
         % Security
         set(handles.uiSecurityBirdRewReopen, 'value', 1, 'enable', 'on')
+        if get(handles.uiSecurityGuillotine, 'value') == 0
+            set(handles.uiSecurityGuillotine, 'value', 1, 'enable', 'on')
+            set(handles.uiSecurityGuillotineOffset, 'value', 10, 'enable', 'on')
+            setGuillotineTimeout();
+        end
         
         % Punishment
         set(handles.uiPunishmentDelay, 'value', 3, 'enable', 'on')
@@ -2024,6 +2106,7 @@ switch scenarios{val}
             handles.uiDoorCloseMinute
             handles.uiDoorCloseHour], 'enable', 'off');
         set([handles.uiDoorDelaysOpen handles.uiDoorDelaysClose], 'enable', 'on');
+        set(handles.uiDoorDelaysClose, 'value', 2);
         
         syncLedDoorTime();
         
@@ -2031,8 +2114,8 @@ switch scenarios{val}
         set(handles.uiDoorHabitPercent, 'value', 1, 'enable', 'off');
         
         % Reward
-        set(handles.uiRewardEnable, 'value', 1);
-        set(handles.uiRewardTimeout, 'value', 6)
+        set(handles.uiRewardEnable, 'value', 0);
+        set(handles.uiRewardTimeout, 'value', 1, 'enable', 'off')
         set(handles.uiRewardProbability, 'enable', 'off', 'value', 1)
         
         % Timeouts
@@ -2040,6 +2123,11 @@ switch scenarios{val}
         
         % Security
         set(handles.uiSecurityBirdRewReopen, 'value', 1, 'enable', 'on')
+        if get(handles.uiSecurityGuillotine, 'value') == 0
+            set(handles.uiSecurityGuillotine, 'value', 1, 'enable', 'on')
+            set(handles.uiSecurityGuillotineOffset, 'value', 10, 'enable', 'on')
+            setGuillotineTimeout();
+        end
         
         % Punishment
         set(handles.uiPunishmentDelay, 'value', 3, 'enable', 'on')
@@ -2851,19 +2939,49 @@ val = get(handles.uiDoorDelaysClose, 'value');
 handles.config.door.close_delay = int32(str2double(str{val}));
 
 % Servomotor
-v = int32(str2double(get(handles.uiServoMinPos, 'string')));
-if v<600
-    v = 600;
+v = str2double(get(handles.uiServoMinPos, 'string'));
+if v<600 || v>2400
+    errordlg('Close position must be in the range [600 2400]')
+    v = int32(600);
+    set(handles.uiServoMinPos, 'string', num2str(v))
+    updateServoMoveTime();
 end
-handles.config.door.close_position = v;
+handles.config.door.close_position = int32(v);
 
-v = int32(str2double(get(handles.uiServoMaxPos, 'string')));
-if v>2400
+v = str2double(get(handles.uiServoMaxPos, 'string'));
+if v<600 || v>2400
+    errordlg('Open position must be in the range [600 2400]')
     v = 2400;
+    set(handles.uiServoMaxPos, 'string', num2str(v))
+    updateServoMoveTime();
 end
-handles.config.door.open_position = v;
-handles.config.door.closing_speed = int32(str2double(get(handles.uiServoClosingSpeed, 'string')));
-handles.config.door.opening_speed = int32(str2double(get(handles.uiServoOpeningSpeed, 'string')));
+handles.config.door.open_position = int32(v);
+
+v = str2double(get(handles.uiServoClosingSpeed, 'string'));
+if v<1
+    v = 1;
+    errordlg('Closing speed must greater than 1')
+    set(handles.uiServoClosingSpeed, 'string', num2str(v))
+    updateServoMoveTime();
+end
+handles.config.door.closing_speed = int32(v);
+
+v = str2double(get(handles.uiServoOpeningSpeed, 'string'));
+if v<1
+    v = 1;
+    errordlg('Opening speed must greater than 1')
+    set(handles.uiServoOpeningSpeed, 'string', num2str(v))
+    updateServoMoveTime();
+end
+handles.config.door.opening_speed = int32(v);
+
+v = str2double(get(handles.uiServoMaxPosOffset, 'string'));
+if v<100
+    v = 100;
+    errordlg('Max offset position must greater than 100')
+    set(handles.uiServoMaxPosOffset, 'string', num2str(v))
+end
+handles.config.door.max_position_offset = int32(v);
 
 % Door habituation
 if handles.config.scenario.num==0 || handles.config.scenario.num==2
@@ -2879,9 +2997,13 @@ if handles.config.reward.enable
     str = get(handles.uiRewardTimeout, 'string');
     val = get(handles.uiRewardTimeout, 'value');
     handles.config.reward.timeout = int32(str2double(str{val}));
-    set(handles.uiRewardTimeout, 'enable', 'on')
+    if handles.config.scenario.num~=1
+        set(handles.uiRewardTimeout, 'enable', 'on')
+        set(handles.uiSecurityBirdRewReopen, 'enable', 'on', 'value', 1)
+    end
 else
     set(handles.uiRewardTimeout, 'enable', 'off')
+    set(handles.uiSecurityBirdRewReopen, 'enable', 'off', 'value', 0)
 end
 if handles.config.scenario.num>2 && handles.config.scenario.num<8
     str = get(handles.uiRewardProbability, 'string');
@@ -2903,9 +3025,24 @@ end
 % handles.config.timeouts.pir = int32(str2double(str{val}));
 
 % Security
-if handles.config.scenario.num>1
+if handles.config.scenario.num~=1
     val = get(handles.uiSecurityBirdRewReopen, 'value');
     handles.config.security.bird_reward_reopen = val==1;
+    val = get(handles.uiSecurityGuillotine, 'value');
+    handles.config.security.guillotine = val==1;
+    if handles.config.security.guillotine
+        set(handles.uiSecurityGuillotineOffset, 'enable', 'on')
+        
+        str = get(handles.uiSecurityGuillotineOffset, 'string');
+        val = get(handles.uiSecurityGuillotineOffset, 'value');
+        handles.config.security.guillotine_offset = int32(1000*str2double(str{val}));
+
+        setGuillotineTimeout();
+
+    else
+        set(handles.uiSecurityGuillotineOffset, 'enable', 'off')
+        set(handles.uiGuillotineTimeout', 'enable', 'off', 'string', '0')
+    end
 end
 
 % Punishment
@@ -3248,11 +3385,36 @@ end
 %     set(handles.uiPIRTimeout, 'value', 1, 'enable', 'off')
 % end
 
-% Security
-if handles.config.security.bird_reward_reopen==-1
-    set(handles.uiSecurityBirdRewReopen, 'value', 1)
+%% Security
+if isfield(handles.config, 'security')
+    
+    if handles.config.security.bird_reward_reopen==-1
+        set(handles.uiSecurityBirdRewReopen, 'value', 1)
+    else
+        set(handles.uiSecurityBirdRewReopen, 'value', handles.config.security.bird_reward_reopen)
+    end
+    
+    if handles.config.security.guillotine==-1
+        set(handles.uiSecurityGuillotine, 'value', 0, 'enable', 'on')
+        set(handles.uiSecurityGuillotineOffset, 'value', 10, 'enable', 'off')
+        set(handles.uiGuillotineTimeout', 'enable', 'off', 'string', '0');
+    else
+        set(handles.uiSecurityGuillotine, 'value', handles.config.security.guillotine, 'enable', 'on')
+        str = get(handles.uiSecurityGuillotineOffset, 'string');
+        idx = find(strcmp(str, num2str(handles.config.security.guillotine_offset/1000)));
+        set(handles.uiSecurityGuillotineOffset, 'value', idx, 'enable', 'on')
+        setGuillotineTimeout();
+    end
+    
 else
-    set(handles.uiSecurityBirdRewReopen, 'value', handles.config.security.bird_reward_reopen)
+    set(handles.uiSecurityBirdRewReopen, 'value', 0, 'enable', 'on')
+    set(handles.uiSecurityGuillotine, 'value', 0, 'enable', 'on')
+    set(handles.uiSecurityGuillotineOffset, 'value', 10, 'enable', 'off')
+    set(handles.uiGuillotineTimeout', 'enable', 'off', 'string', '0');
+    if handles.config.scenario.num == 1
+        set(handles.uiSecurityBirdRewReopen, 'enable', 'off')
+        set(handles.uiSecurityGuillotine, 'enable', 'off')
+    end
 end
 
 %% Punishment
@@ -3298,10 +3460,20 @@ servoClosingSpeed = str2double(servoClosingSpeed);
 servoOpeningSpeed = get(handles.uiServoOpeningSpeed, 'string');
 servoOpeningSpeed = str2double(servoOpeningSpeed);
 
-set(handles.uiServoClosingTime, 'string', sprintf('%.3f', (servoOpenPosition-servoClosePosition)/servoClosingSpeed*handles.default.ServoMsStep/1000))
-set(handles.uiServoOpeningTime, 'string', sprintf('%.3f', (servoOpenPosition-servoClosePosition)/servoOpeningSpeed*handles.default.ServoMsStep/1000))
-
-set(handles.uiGuillotineTimeout', 'string', sprintf('%.3f', (servoOpenPosition-servoClosePosition)/servoClosingSpeed*handles.default.ServoMsStep/1000+0.5));
+t = (servoOpenPosition-servoClosePosition)/servoClosingSpeed*handles.default.ServoMsStep/1000;
+set(handles.uiServoClosingTime, 'string', sprintf('%.3f', t))
+if t<0
+    set(handles.uiServoClosingTime, 'foregroundcolor', 'r')
+else
+    set(handles.uiServoClosingTime, 'foregroundcolor', 'k')
+end
+t = (servoOpenPosition-servoClosePosition)/servoOpeningSpeed*handles.default.ServoMsStep/1000;
+set(handles.uiServoOpeningTime, 'string', sprintf('%.3f', t))
+if t<0
+    set(handles.uiServoOpeningTime, 'foregroundcolor', 'r')
+else
+    set(handles.uiServoOpeningTime, 'foregroundcolor', 'k')
+end
 
 previewIniFile
 
@@ -3331,6 +3503,24 @@ set(handles.uiDoorCloseMinute, 'value', val);
 
 previewIniFile;
 
+function setGuillotineTimeout(~, ~)
+
+fig = findobj('type', 'figure', 'tag', 'fig_OF_config');
+handles = guidata(fig);
+
+close_position = str2double(get(handles.uiServoMinPos, 'string'));
+
+open_position = str2double(get(handles.uiServoMaxPos, 'string'));
+
+closing_speed = str2double(get(handles.uiServoClosingSpeed, 'string'));
+
+str = get(handles.uiSecurityGuillotineOffset, 'string');
+val = get(handles.uiSecurityGuillotineOffset, 'value');
+guillotine_offset = str2double(str{val});
+
+set(handles.uiGuillotineTimeout', 'enable', 'on', 'string', ...        
+            sprintf('%.3f',(open_position-close_position)/closing_speed*handles.default.ServoMsStep/1000+guillotine_offset))
+    
 function setAttractLEDsColor(obj, ~)
 
 fig = findobj('type', 'figure', 'tag', 'fig_OF_config');
@@ -3524,7 +3714,11 @@ config.timeouts.pir = ini_getl('timeouts', 'pir', -1, filename);
 config.timeouts.unique_visit = ini_getl('timeouts', 'unique_visit', -1, filename);
 
 %%Security
-config.security.bird_reward_reopen = ini_getl('security', 'bird_reward_reopen', -1, filename);
+if ismember('security', sections)
+    config.security.bird_reward_reopen = ini_getl('security', 'bird_reward_reopen', -1, filename);
+    config.security.guillotine = ini_getl('security', 'guillotine', -1, filename);
+    config.security.guillotine_offset = ini_getl('security', 'guillotine_offset', -1, filename);
+end
 
 %%Punishment
 config.punishment.delay = ini_getl('punishment', 'delay', -1, filename);
