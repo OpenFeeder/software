@@ -73,8 +73,22 @@ SEND
 
 SEND
 2
-    Test LEDs
+    Test LEDs simple
 61 74
+0
+5
+
+SEND
+2
+    Test LEDs order
+61 6F
+0
+5
+
+SEND
+2
+    Test LEDs color
+61 63
 0
 5
 
