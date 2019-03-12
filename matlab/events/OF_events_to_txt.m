@@ -68,8 +68,40 @@ if nargin<3
     
 end
 
+corrupted_lines = zeros(1,size(ev,1));
 fid = fopen(textFile, 'wt');
 for n = 1:size(ev,1)
-    fprintf(fid, '%02d:%02d:%02d%s%s\n', ev(n,1), ev(n,2), ev(n,3), separator, X{ev(n,4)});
+    
+    if ev(n,1)>=0 && ev(n,1)<=23
+        fprintf(fid, '%02d:', ev(n,1));
+    else
+        fprintf(fid, '~~:');
+        corrupted_lines(n) = 1;
+    end
+    
+    if ev(n,2)>=0 && ev(n,2)<=59
+        fprintf(fid, '%02d:', ev(n,2));
+    else
+        fprintf(fid, '~~:');
+        corrupted_lines(n) = 1;
+    end
+    
+    if ev(n,3)>=0 && ev(n,3)<=59
+        fprintf(fid, '%02d', ev(n,3));
+    else
+        fprintf(fid, '~~');
+        corrupted_lines(n) = 1;
+    end
+    
+    if ev(n,4)>0 && ev(n,4)<=numel(X)
+        fprintf(fid, '%s%s\n', separator, X{ev(n,4)});
+    else
+        fprintf(fid, '%s~~~~~~~~~~~~~~~~~~~\n', separator);
+        corrupted_lines(n) = 1;
+    end
 end
 fclose(fid);
+
+if any(corrupted_lines)
+    warning('Corrupted data found')
+end
