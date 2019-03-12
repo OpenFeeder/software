@@ -102,8 +102,8 @@ OF_PIT_TAG_OK, PIT tag OK
 OF_PIT_TAG_X, PIT tag X
 OF_PIT_TAG_U, PIT tag ?
 OF_FLUSH_DATA_ON_USB_DEVICE, Flush data on USB device
-OF_RESET_TRAP_EVENT
-OF_RESET_ILLEGAL_OPCODE
+OF_RESET_TRAP_EVENT, Trap event reset
+OF_RESET_ILLEGAL_OPCODE, Illegal opcode / Uninitialized WREG reset
 OF_RESET_MCLR_DEEP_SLEEP_MODE, Reset master clear (deep sleep)
 OF_RESET_WDT_IDLE_MODE, WDT time-out reset (idle)
 OF_RESET_WDT_SLEEP_MODE,  WDT time-out reset (sleep)
